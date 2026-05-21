@@ -1,0 +1,6 @@
+#profileSliderTrack {
+  width: calc(100% * 5);
+}
+.profile-slide {
+  width: calc(100% / 5);
+}

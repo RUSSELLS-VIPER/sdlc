@@ -1,0 +1,75 @@
+/* PlayFair Font */
+@import url("https://fonts.googleapis.com/css2?family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap");
+/* Inter Font */
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+/* Manrope Font*/
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
+
+body,
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+body,
+p {
+  font-family: "Inter", sans-serif;
+}
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Playfair", serif;
+}
+.font-404 {
+  font-family: "Manrope", sans-serif;
+}
+.h3-heading {
+  font-family: "Playfair", serif;
+  font-size: 16px;
+}
+
+/* Hamburger */
+
+.force-show {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+#mobile-menu {
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#menu-overlay {
+  transition:
+    opacity 0.3s ease-in-out,
+    visibility 0.3s ease-in-out;
+}
+#mobile-properties-menu {
+  transition:
+    max-height 0.3s ease-in-out,
+    opacity 0.3s ease-in-out;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+#mobile-properties-menu.open {
+  max-height: 250px;
+  opacity: 1;
+}
+/* Nav */
+.nav-link {
+  position: relative;
+  display: inline-block;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: #facc15;
+  transition: width 0.3s ease-in-out;
+}
+.nav-link:hover::after,
+.group:hover .nav-link::after {
+  width: 100%;
+}

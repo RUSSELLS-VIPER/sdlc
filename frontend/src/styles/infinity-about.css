@@ -1,0 +1,242 @@
+/* PlayFair Font */
+@import url("https://fonts.googleapis.com/css2?family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap");
+/* Inter Font */
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+/* Manrope Font*/
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
+
+body,
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+body,
+p {
+  font-family: "Inter", sans-serif;
+}
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Playfair", serif;
+}
+.font-404 {
+  font-family: "Manrope", sans-serif;
+}
+.h3-heading {
+  font-family: "Playfair", serif;
+  font-size: 16px;
+}
+
+/* Hamburger */
+
+.force-show {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+#mobile-menu {
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#menu-overlay {
+  transition:
+    opacity 0.3s ease-in-out,
+    visibility 0.3s ease-in-out;
+}
+#mobile-properties-menu {
+  transition:
+    max-height 0.3s ease-in-out,
+    opacity 0.3s ease-in-out;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+#mobile-properties-menu.open {
+  max-height: 250px;
+  opacity: 1;
+}
+/* Nav */
+.nav-link {
+  position: relative;
+  display: inline-block;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: #facc15;
+  transition: width 0.3s ease-in-out;
+}
+.nav-link:hover::after,
+.group:hover .nav-link::after {
+  width: 100%;
+}
+
+/* Testi */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.testi-card,
+.testi-bubble,
+.testi-text,
+.testi-tail,
+.testi-author,
+.testi-role {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.testi-card.inactive {
+  background-color: #1a2133;
+  transform: translateY(0) scale(0.98);
+  opacity: 0.6;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+.testi-card.inactive .testi-bubble {
+  background-color: white;
+}
+.testi-card.inactive .testi-tail {
+  background-color: white;
+}
+.testi-card.inactive .testi-text {
+  color: #1a2133;
+}
+.testi-card.inactive .testi-author {
+  color: white;
+}
+.testi-card.inactive .testi-role {
+  color: #9ca3af;
+}
+
+.testi-card.active {
+  background-color: white;
+  transform: translateY(-24px) scale(1);
+  opacity: 1;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  z-index: 10;
+}
+.testi-card.active .testi-bubble {
+  background-color: #1a2133;
+}
+.testi-card.active .testi-tail {
+  background-color: #1a2133;
+}
+.testi-card.active .testi-text {
+  color: white;
+}
+.testi-card.active .testi-author {
+  color: #1a2133;
+}
+.testi-card.active .testi-role {
+  color: #4b5563;
+}
+
+@media (min-width: 1024px) {
+  .testi-card.active {
+    transform: translateY(-32px) scale(1.02);
+  }
+}
+
+/* Banner photo down to up scroll */
+@keyframes scroll-vertical {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.animate-scroll-vertical {
+  animation: scroll-vertical 12s linear infinite;
+}
+
+/* 2nd Building Scroll */
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-left {
+  animation: scroll-left 60s linear infinite;
+}
+
+/* Who we are */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* logo Slider */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 30s linear infinite;
+  width: max-content;
+}
+
+/* Text Rotate */
+@keyframes spin-slow {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 15s linear infinite;
+}
+/* When service-card is hovered, target the card-title */
+.service-card:hover .card-title {
+  color: #000000 !important;
+}
+
+/* When service-card is hovered, target the card-desc */
+.service-card:hover .card-desc {
+  color: #D4AF37 !important;
+}
+/* Force the background to turn dark blue on hover */
+.offer-card:hover {
+  background-color: #11212C !important;
+}
+
+/* Force the number, title, and description to turn white on hover */
+.offer-card:hover .offer-num,
+.offer-card:hover .offer-title,
+.offer-card:hover .offer-desc {
+  color: #FFFFFF !important;
+}
+
+/* Force the bottom border of the number to turn white on hover */
+.offer-card:hover .offer-num {
+  border-color: #FFFFFF !important;
+}
+
+/* If you want the description text to be slightly transparent white like your code suggested (white/70) */
+.offer-card:hover .offer-desc {
+  color: rgba(255, 255, 255, 0.7) !important;
+}

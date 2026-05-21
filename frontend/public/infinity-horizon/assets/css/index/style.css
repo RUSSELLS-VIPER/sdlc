@@ -1,0 +1,136 @@
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #161d2d;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #161d2d #cbd5e1;
+}
+
+@keyframes scrollWheel {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(12px);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.animate-scroll-wheel {
+  animation: scrollWheel 2.5s infinite ease-in-out;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.ribbon {
+  clip-path: polygon(0 0, 100% 0, 90% 50%, 100% 100%, 0 100%);
+}
+/* Logo Slider */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+.animate-scroll {
+  animation: scroll 15s linear infinite;
+  width: max-content;
+}
+
+/* Testi */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.testi-card,
+.testi-bubble,
+.testi-text,
+.testi-tail,
+.testi-author,
+.testi-role {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.testi-card.inactive {
+  background-color: #1a2133;
+  transform: translateY(0) scale(0.98);
+  opacity: 0.6;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+.testi-card.inactive .testi-bubble {
+  background-color: white;
+}
+.testi-card.inactive .testi-tail {
+  background-color: white;
+}
+.testi-card.inactive .testi-text {
+  color: #1a2133;
+}
+.testi-card.inactive .testi-author {
+  color: white;
+}
+.testi-card.inactive .testi-role {
+  color: #9ca3af;
+}
+
+.testi-card.active {
+  background-color: white;
+  transform: translateY(-24px) scale(1);
+  opacity: 1;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  z-index: 10;
+}
+.testi-card.active .testi-bubble {
+  background-color: #1a2133;
+}
+.testi-card.active .testi-tail {
+  background-color: #1a2133;
+}
+.testi-card.active .testi-text {
+  color: white;
+}
+.testi-card.active .testi-author {
+  color: #1a2133;
+}
+.testi-card.active .testi-role {
+  color: #4b5563;
+}
+
+@media (min-width: 1024px) {
+  .testi-card.active {
+    transform: translateY(-32px) scale(1.02);
+  }
+}

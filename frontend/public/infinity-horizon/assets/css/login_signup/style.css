@@ -1,0 +1,24 @@
+/* PlayFair Font */
+@import url("https://fonts.googleapis.com/css2?family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap");
+/* Inter Font */
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+/* Manrope Font*/
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
+
+body,
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+body,
+p {
+  font-family: "Inter", sans-serif;
+}
+h1,
+h2,
+h3 {
+  font-family: "Playfair", serif;
+}
+.font-404 {
+  font-family: "Manrope", sans-serif;
+}
