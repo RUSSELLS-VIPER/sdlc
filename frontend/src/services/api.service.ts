@@ -13,7 +13,7 @@ export const apiService = {
     },
     properties: {
         getAll: () => axiosInstance.get(endPoint.properties.list),
-        getById: (id: string) => axiosInstance.get(endPoint.properties.byId(id)),
+        getById: (id: string) => axiosInstance.get(endPoint.properties.propertyById(id)),
         create: (formData: FormData) => axiosInstance.post(endPoint.properties.create, formData),
         update: (id: string, formData: FormData) => axiosInstance.put(endPoint.properties.update(id), formData),
         remove: (id: string) => axiosInstance.delete(endPoint.properties.remove(id)),

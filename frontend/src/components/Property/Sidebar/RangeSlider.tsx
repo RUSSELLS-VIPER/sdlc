@@ -1,60 +1,68 @@
+import type { Dispatch, SetStateAction } from "react";
+import type { PropertyFilters } from "../properties/PropertySection";
 
+type Props = {
+  filters: PropertyFilters;
+  setFilters: Dispatch<SetStateAction<PropertyFilters>>;
+  ranges: {
+    minPrice: number;
+    maxPrice: number;
+    minSqft: number;
+    maxSqft: number;
+  };
+};
 
-import React, { useState } from "react";
+const RangeSlider = ({ filters, setFilters, ranges }: Props) => {
+  const maxSqft = ranges.maxSqft || 0;
+  const minSqft = ranges.minSqft || 0;
+  const maxPrice = ranges.maxPrice || 0;
+  const minPrice = ranges.minPrice || 0;
 
-const RangeSlider = () => {
-  const [sqft, setSqft] = useState(1600);
-  const [price, setPrice] = useState(45);
+  const selectedSqft = filters.maxSqft || maxSqft;
+  const selectedPrice = filters.maxPrice || maxPrice;
 
   return (
     <div>
       <div className="mb-6">
-        <label className="block text-sm font-bold text-[#171E2E] mb-2">
-          Square feet
-        </label>
+        <label className="block text-sm font-bold text-[#171E2E] mb-2">Square feet</label>
 
         <div className="border border-yellow-400 rounded-xl px-4 py-4 bg-white">
           <input
             type="range"
-            min="0"
-            max="3200"
-            value={sqft}
-            onChange={(e:any) => setSqft(e.target.value)}
+            min={minSqft}
+            max={maxSqft || minSqft}
+            value={selectedSqft}
+            onChange={(e) => setFilters((prev) => ({ ...prev, maxSqft: Number(e.target.value) }))}
             className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer"
           />
 
           <div className="flex justify-between text-xs font-semibold text-gray-600 mt-2 relative">
-            <span>0</span>
-            <span className="absolute left-1/2 -translate-x-1/2 text-[#171E2E] font-bold">
-              {sqft} Sq.Ft
-            </span>
-            <span>3200 Sq.Ft</span>
+            <span>{minSqft}</span>
+            <span className="absolute left-1/2 -translate-x-1/2 text-[#171E2E] font-bold">{selectedSqft} Sq.Ft</span>
+            <span>{maxSqft} Sq.Ft</span>
           </div>
         </div>
       </div>
 
-      {/* Price */}
       <div className="mb-8">
-        <label className="block text-sm font-bold text-[#171E2E] mb-2">
-          Price
-        </label>
+        <label className="block text-sm font-bold text-[#171E2E] mb-2">Price</label>
 
         <div className="border border-yellow-400 rounded-xl px-4 py-4 bg-white">
           <input
             type="range"
-            min="30"
-            max="60"
-            value={price}
-            onChange={(e:any) => setPrice(e.target.value)}
+            min={minPrice}
+            max={maxPrice || minPrice}
+            value={selectedPrice}
+            onChange={(e) => setFilters((prev) => ({ ...prev, maxPrice: Number(e.target.value) }))}
             className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer"
           />
 
           <div className="flex justify-between text-xs font-semibold text-gray-600 mt-2 relative">
-            <span>30L</span>
+            <span>{minPrice.toLocaleString("en-IN")}</span>
             <span className="absolute left-1/2 -translate-x-1/2 text-[#171E2E] font-bold">
-              {price}L
+              {selectedPrice.toLocaleString("en-IN")}
             </span>
-            <span>60L</span>
+            <span>{maxPrice.toLocaleString("en-IN")}</span>
           </div>
         </div>
       </div>
