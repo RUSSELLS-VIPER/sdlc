@@ -3,11 +3,10 @@ import { useForm } from "react-hook-form";
 import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { useAppDispatch, useAppSeletor } from "../../services/helper/reduxstore";
 import { clearAuthState, verifyEmail } from "../../store/slices/auth.slice";
+import type { VerifyEmailForm } from "../../type/type/auth/auth.type";
+import { toast } from "sonner";
 
-type VerifyEmailForm = {
-  email: string;
-  otp: string;
-};
+
 
 const VerifyEmail = () => {
   const dispatch = useAppDispatch();
@@ -38,6 +37,7 @@ const VerifyEmail = () => {
   const onSubmit = async (data: VerifyEmailForm) => {
     try {
       await dispatch(verifyEmail(data)).unwrap();
+      toast.success("Email verified successfully!")
       setTimeout(() => navigate("/login"), 1200);
     } catch {
       // handled by redux error state

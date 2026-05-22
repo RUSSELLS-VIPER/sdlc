@@ -1,7 +1,19 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useAppDispatch, useAppSeletor } from "../../services/helper/reduxstore";
+import { getProperties } from "../../store/slices/property.slice";
 
 export const CardsSection = () => {
+  const {items, loading, error} = useAppSeletor((state)=> state.property)
+  const dispatch = useAppDispatch()
+  // console.log("items", items)
+
+  useEffect(()=>{
+    dispatch(getProperties())
+    
+  }, [dispatch])
+
+
   useEffect(() => {
     const cleanups: Array<() => void> = [];
     const on = <K extends keyof HTMLElementEventMap>(
@@ -401,7 +413,7 @@ export const CardsSection = () => {
                       Infinity Horizon's most popular watchlists. View all 2412 listings
                     </p>
                     <Link
-                       to="#"
+                       to={"/property"}
                       className="flex items-center justify-center w-6 sm:w-8 md:w-10 h-6 sm:h-8 md:h-10 rounded-full bg-[#111827] text-amber-500 border-2 hover:bg-white hover:text-black hover:border-black transition-colors"
                     >
                       <i
@@ -441,12 +453,18 @@ export const CardsSection = () => {
                 <div
                   className="drag-slider flex gap-6 overflow-x-auto no-scrollbar cursor-grab active:cursor-grabbing pb-8 select-none"
                 >
-                  <div
+
+                  {error && <p>{error}</p>}
+
+                {
+                  items?.map((item)=> (
+                    <div
+                    key={item._id}
                     className="w-[85vw] sm:w-[380px] md:w-[410px] flex-shrink-0 bg-[#f8fafc] rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
                   >
                     <div className="relative h-[220px] bg-gray-200">
                       <img
-                        src="/assets/infinity-home/images/index/popular-listing-1.png"
+                        src={item.image}
                         alt="Duplex House"
                         className="w-full h-full object-cover pointer-events-none"
                         draggable={false}
@@ -459,7 +477,7 @@ export const CardsSection = () => {
                     </div>
                     <div className="p-5">
                       <div className="flex justify-between items-start mb-3">
-                        <h3 className="text-xl font-bold text-slate-900">Duplex House</h3>
+                        <h3 className="text-xl font-bold text-slate-900">{item.title}</h3>
                         <div className="flex items-center gap-3">
                           <div
                             className="flex items-center gap-1 text-slate-800 font-medium text-sm"
@@ -483,7 +501,7 @@ export const CardsSection = () => {
                                 d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
                               />
                             </svg>
-                            BT Road
+                            {item.address}
                           </div>
                           <button className="text-slate-900 hover:text-red-500 transition">
                             <svg
@@ -505,12 +523,12 @@ export const CardsSection = () => {
                       </div>
                       <p className="text-slate-600 text-sm mb-6">
                         Size:
-                        <span className="font-semibold text-slate-800">9580 sq. ft.</span>
+                        <span className="font-semibold text-slate-800">{item.sqft}</span>
                       </p>
                       <div className="flex justify-between items-center mt-auto">
                         <p className="text-slate-600 text-sm">
                           Start From:
-                          <span className="font-bold text-slate-900">₹ 48 Lacs</span>
+                          <span className="font-bold text-slate-900">{item.price}</span>
                         </p>
         
                         <Link
@@ -522,322 +540,9 @@ export const CardsSection = () => {
                       </div>
                     </div>
                   </div>
-        
-                  <div
-                    className="w-[85vw] sm:w-[380px] md:w-[410px] flex-shrink-0 bg-[#f8fafc] rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
-                  >
-                    <div className="relative h-[220px] bg-gray-200">
-                      <img
-                        src="/assets/infinity-home/images/index/popular-listing-2.png"
-                        alt="Single Family House"
-                        className="w-full h-full object-cover pointer-events-none"
-                        draggable={false}
-                      />
-                      <div
-                        className="absolute top-4 left-0 bg-[#1e293b] text-white text-xs font-bold px-4 py-1.5 ribbon pr-6"
-                      >
-                        Featured
-                      </div>
-                    </div>
-                    <div className="p-5">
-                      <div className="flex justify-between items-start mb-3">
-                        <h3 className="text-xl font-bold text-slate-900">
-                          Single Family House
-                        </h3>
-                        <div className="flex items-center gap-3">
-                          <div
-                            className="flex items-center gap-1 text-slate-800 font-medium text-sm"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke-width="2"
-                              stroke="currentColor"
-                              className="w-4 h-4"
-                            >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                              />
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
-                              />
-                            </svg>
-                            Sonarpur
-                          </div>
-                          <button className="text-slate-900 hover:text-red-500 transition">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke-width="1.5"
-                              stroke="currentColor"
-                              className="w-5 h-5"
-                            >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
-                              />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-                      <p className="text-slate-600 text-sm mb-6">
-                        Size:
-                        <span className="font-semibold text-slate-800">4580 sq. ft.</span>
-                      </p>
-                      <div className="flex justify-between items-center mt-auto">
-                        <p className="text-slate-600 text-sm">
-                          Start From:
-                          <span className="font-bold text-slate-900">₹ 38 Lacs</span>
-                        </p>
-                        <Link
-                           to="#"
-                          className="bg-[#171e2e] text-white px-5 py-2.5 rounded-lg text-xs font-bold hover:bg-[#facc15] hover:text-[#171E2E] transform hover:-translate-x-2 shadow hover:shadow-md transition-all duration-200"
-                        >
-                          Get Quote
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-        
-                  <div
-                    className="w-[85vw] sm:w-[380px] md:w-[410px] flex-shrink-0 bg-[#f8fafc] rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
-                  >
-                    <div className="relative h-[220px] bg-gray-200">
-                      <img
-                        src="/assets/infinity-home/images/index/popular-listing-3.png"
-                        alt="Single Family House"
-                        className="w-full h-full object-cover pointer-events-none"
-                        draggable={false}
-                      />
-                    </div>
-                    <div className="p-5">
-                      <div className="flex justify-between items-start mb-3">
-                        <h3 className="text-xl font-bold text-slate-900">
-                          Single Family House
-                        </h3>
-                        <div className="flex items-center gap-3">
-                          <div
-                            className="flex items-center gap-1 text-slate-800 font-medium text-sm"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke-width="2"
-                              stroke="currentColor"
-                              className="w-4 h-4"
-                            >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                              />
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
-                              />
-                            </svg>
-                            Baruipur
-                          </div>
-                          <button className="text-slate-900 hover:text-red-500 transition">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke-width="1.5"
-                              stroke="currentColor"
-                              className="w-5 h-5"
-                            >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
-                              />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-                      <p className="text-slate-600 text-sm mb-6">
-                        Size:
-                        <span className="font-semibold text-slate-800">4580 sq. ft.</span>
-                      </p>
-                      <div className="flex justify-between items-center mt-auto">
-                        <p className="text-slate-600 text-sm">
-                          Start From:
-                          <span className="font-bold text-slate-900">₹ 38 Lacs</span>
-                        </p>
-                        <Link
-                           to="#"
-                          className="bg-[#171e2e] text-white px-5 py-2.5 rounded-lg text-xs font-bold hover:bg-[#facc15] hover:text-[#171E2E] transform hover:-translate-x-2 shadow hover:shadow-md transition-all duration-200"
-                        >
-                          Get Quote
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-        
-                  <div
-                    className="w-[85vw] sm:w-[380px] md:w-[410px] flex-shrink-0 bg-[#f8fafc] rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
-                  >
-                    <div className="relative h-[220px] bg-gray-200">
-                      <img
-                        src="/assets/infinity-home/images/index/popular-listing-3.png"
-                        alt="Single Family House"
-                        className="w-full h-full object-cover pointer-events-none"
-                        draggable={false}
-                      />
-                    </div>
-                    <div className="p-5">
-                      <div className="flex justify-between items-start mb-3">
-                        <h3 className="text-xl font-bold text-slate-900">
-                          Single Family House
-                        </h3>
-                        <div className="flex items-center gap-3">
-                          <div
-                            className="flex items-center gap-1 text-slate-800 font-medium text-sm"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke-width="2"
-                              stroke="currentColor"
-                              className="w-4 h-4"
-                            >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                              />
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
-                              />
-                            </svg>
-                            Baruipur
-                          </div>
-                          <button className="text-slate-900 hover:text-red-500 transition">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke-width="1.5"
-                              stroke="currentColor"
-                              className="w-5 h-5"
-                            >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
-                              />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-                      <p className="text-slate-600 text-sm mb-6">
-                        Size:
-                        <span className="font-semibold text-slate-800">4580 sq. ft.</span>
-                      </p>
-                      <div className="flex justify-between items-center mt-auto">
-                        <p className="text-slate-600 text-sm">
-                          Start From:
-                          <span className="font-bold text-slate-900">₹ 38 Lacs</span>
-                        </p>
-                        <Link
-                           to="#"
-                          className="bg-[#171e2e] text-white px-5 py-2.5 rounded-lg text-xs font-bold hover:bg-[#facc15] hover:text-[#171E2E] transform hover:-translate-x-2 shadow hover:shadow-md transition-all duration-200"
-                        >
-                          Get Quote
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    className="w-[85vw] sm:w-[380px] md:w-[410px] flex-shrink-0 bg-[#f8fafc] rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
-                  >
-                    <div className="relative h-[220px] bg-gray-200">
-                      <img
-                        src="/assets/infinity-home/images/index/popular-listing-3.png"
-                        alt="Single Family House"
-                        className="w-full h-full object-cover pointer-events-none"
-                        draggable={false}
-                      />
-                    </div>
-                    <div className="p-5">
-                      <div className="flex justify-between items-start mb-3">
-                        <h3 className="text-xl font-bold text-slate-900">
-                          Single Family House
-                        </h3>
-                        <div className="flex items-center gap-3">
-                          <div
-                            className="flex items-center gap-1 text-slate-800 font-medium text-sm"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke-width="2"
-                              stroke="currentColor"
-                              className="w-4 h-4"
-                            >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                              />
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
-                              />
-                            </svg>
-                            Baruipur
-                          </div>
-                          <button className="text-slate-900 hover:text-red-500 transition">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke-width="1.5"
-                              stroke="currentColor"
-                              className="w-5 h-5"
-                            >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
-                              />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-                      <p className="text-slate-600 text-sm mb-6">
-                        Size:
-                        <span className="font-semibold text-slate-800">4580 sq. ft.</span>
-                      </p>
-                      <div className="flex justify-between items-center mt-auto">
-                        <p className="text-slate-600 text-sm">
-                          Start From:
-                          <span className="font-bold text-slate-900">₹ 38 Lacs</span>
-                        </p>
-                        <Link
-                           to="#"
-                          className="bg-[#171e2e] text-white px-5 py-2.5 rounded-lg text-xs font-bold hover:bg-[#facc15] hover:text-[#171E2E] transform hover:-translate-x-2 shadow hover:shadow-md transition-all duration-200"
-                        >
-                          Get Quote
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
+                  ))
+
+                }
                 </div>
               </div>
             </section>
@@ -855,7 +560,7 @@ export const CardsSection = () => {
                       Type of our property View All 4142 listings
                     </p>
                     <Link
-                       to="#"
+                       to={"/property"}
                       className="flex items-center justify-center w-6 sm:w-8 md:w-10 h-6 sm:h-8 md:h-10 rounded-full bg-[#111827] text-amber-500 border-2 hover:bg-white hover:text-black hover:border-black transition-colors"
                     >
                       <i

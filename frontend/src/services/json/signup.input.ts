@@ -23,6 +23,6 @@ export const signupinputfield:Array<Omit<DynamicInputProps<signupformvalue>, "re
         label:"Enter Password",
         type:"password",
         required:true,
-        placeholder: "john@123"
+        placeholder: "John@123"
     }
 ]

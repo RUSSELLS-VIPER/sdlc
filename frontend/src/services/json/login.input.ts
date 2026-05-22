@@ -16,6 +16,6 @@ export const logininputfield:Array<Omit<DynamicInputProps<Loginformvalue>, "regi
         label:"Enter Password",
         type:"password",
         required:true,
-        placeholder: "john@123"
+        placeholder: "John@123"
     }
 ]

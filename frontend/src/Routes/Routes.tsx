@@ -10,32 +10,44 @@ import Contact from "../pages/user/Contact";
 import Login from "../pages/auth/Login";
 import Signup from "../pages/auth/Signup";
 import VerifyEmail from "../pages/auth/VerifyEmail";
+import AdminWrapper from "../layout/admin/AdminWrapper";
+import Dashboard from "../pages/admin/Dashboard";
+import PublicRoute from "../components/PublicRoute";
+import AdminRoute from "../components/AdminRoute";
+import UserDashboard from "../pages/user/UserDashboard";
+import Wishlist from "../pages/user/Wishlist";
 
 const Routes = createBrowserRouter([
   {
-    path: "/login",
-    element: <Login />,
+    element: <PublicRoute />,
+    children: [
+      {
+        path: "/login",
+        element: <Login />,
+      },
+      {
+        path: "/signup",
+        element: <Navigate to="/signup/user" replace />,
+      },
+      {
+        path: "/signup/user",
+        element: <Signup />,
+      },
+      {
+        path: "/signup/agent",
+        element: <Signup />,
+      },
+      {
+        path: "/signup/super-admin",
+        element: <Signup />,
+      },
+      {
+        path: "/verify-email",
+        element: <VerifyEmail />,
+      },
+    ],
   },
-  {
-    path: "/signup",
-    element: <Navigate to="/signup/user" replace />,
-  },
-  {
-    path: "/signup/user",
-    element: <Signup />,
-  },
-  {
-    path: "/signup/agent",
-    element: <Signup />,
-  },
-  {
-    path: "/signup/super-admin",
-    element: <Signup />,
-  },
-  {
-    path: "/verify-email",
-    element: <VerifyEmail />,
-  },
+
   {
     path: "/",
     element: <Wrapper />,
@@ -52,6 +64,31 @@ const Routes = createBrowserRouter([
       {
         path: "contact",
         element: <Contact />,
+      },
+      {
+        path: "userDashboard",
+        element: <UserDashboard />
+
+      },
+      {
+        path: "wishlist",
+        element: <Wishlist />
+      }
+    ],
+  },
+
+  {
+    path: "/admin",
+    element: <AdminRoute />,
+    children: [
+      {
+        element: <AdminWrapper />,
+        children: [
+          {
+            path: "dashboard",
+            element: <Dashboard />,
+          },
+        ],
       },
     ],
   },

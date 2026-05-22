@@ -1,48 +1,57 @@
 import { NavLink } from "react-router-dom";
 import bgimage from "../../assets/images/login_Signup/login-bg.png";
 import logo from "../../assets/images/login_Signup/logo.png";
-import googleicon from "../../assets/images/login_Signup/google-icon.png";
-import fbicon from "../../assets/images/login_Signup/fb-icon.png";
 import { useForm } from "react-hook-form";
 import type { Loginformvalue } from "../../type/interface/auth.interface";
 import { loginSchema } from "../../services/validation/login.validation";
 import { yupResolver } from "@hookform/resolvers/yup";
 import DynamicInput from "../../components/DynamicInput";
 import { logininputfield } from "../../services/json/login.input";
-import { useAppDispatch, useAppSeletor } from "../../services/helper/reduxstore";
+import {
+  useAppDispatch,
+  useAppSeletor,
+} from "../../services/helper/reduxstore";
 import { clearAuthState, login } from "../../store/slices/auth.slice";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { toast } from "sonner";
 const Login = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { loading, error } = useAppSeletor((state) => state.auth);
   const {
-      handleSubmit,
-      register,
-      reset,
-      formState: { errors },
-    } = useForm<Loginformvalue>({
-      resolver: yupResolver(loginSchema),
-      defaultValues: {
-        email: "",
-        password: "",
-      },
-    });
+    handleSubmit,
+    register,
+    reset,
+    formState: { errors },
+  } = useForm<Loginformvalue>({
+    resolver: yupResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-    useEffect(() => {
-      dispatch(clearAuthState());
-    }, [dispatch]);
-  
-    const onSubmit = async (data: Loginformvalue) => {
-      try {
-        await dispatch(login(data)).unwrap();
-        reset();
+  useEffect(() => {
+    dispatch(clearAuthState());
+  }, [dispatch]);
+
+  const onSubmit = async (data: Loginformvalue) => {
+    try {
+      const response = await dispatch(login(data)).unwrap();
+      if (response.user.role === "admin" || response.user.role === "agent") {
+        toast.success("Successfully Loged in!");
+        navigate("/admin/dashboard");
+      } else {
+        toast.success("Successfully Loged in!");
         navigate("/");
-      } catch (error) {
-        console.log(error);
       }
-    };
+
+      reset();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div>
       <div className="bg-white">
@@ -86,12 +95,14 @@ const Login = () => {
               <p className="text-gray-500 text-sm mb-10">
                 Sign in your account to continue your journey.
               </p>
-              {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
 
-              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="flex flex-col gap-2"
+              >
                 {logininputfield?.map((input) => (
                   <DynamicInput
-                  key={input.name}
+                    key={input.name}
                     label={input.label}
                     name={input.name}
                     register={register}
@@ -119,54 +130,20 @@ const Login = () => {
                     Forgot Password?
                   </NavLink>
                 </div>
+                <div className="flex items-center justify-center">
+                  {error && (
+                    <p className="mb-4 text-sm text-red-600">{error}</p>
+                  )}
+                </div>
 
                 <button
                   type="submit"
                   disabled={loading}
                   className="w-full bg-[#111827] text-white rounded-md py-3.5 text-base font-medium transition-all duration-300 hover:bg-[#FCA311] hover:shadow-md active:scale-[0.98] cursor-pointer outline-none mb-8"
-                >{loading ? "Logging in..." : "Login"}</button>
+                >
+                  {loading ? "Logging in..." : "Login"}
+                </button>
               </form>
-
-              <div className="flex items-center mb-8">
-                <div className="flex-1 h-px bg-gray-100"></div>
-                <span className="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                  Instant Sign Up
-                </span>
-                <div className="flex-1 h-px bg-gray-100"></div>
-              </div>
-
-              {/* <div className="flex flex-col sm:flex-row gap-4 mb-4">
-                <button
-                  type="button"
-                  className="flex-1 flex items-center justify-center gap-3 py-3 border border-gray-200 bg-white rounded-md transition-all duration-300 hover:border-[#FCA311] hover:bg-gray-50 hover:shadow-sm active:scale-[0.98]"
-                >
-                  <img
-                    src={googleicon}
-                    alt="google-icon"
-                    className="h-[21px] w-[21px]"
-                    loading="lazy"
-                  />
-
-                  <span className="text-sm font-medium text-gray-700">
-                    Google
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  className="flex-1 flex items-center justify-center gap-3 py-3 border border-gray-200 bg-white rounded-md transition-all duration-300 hover:border-[#FCA311] hover:bg-gray-50 hover:shadow-sm active:scale-[0.98]"
-                >
-                  <img
-                    src={fbicon}
-                    alt="fb-icon"
-                    className="h-[18px] w-[18px]"
-                    loading="lazy"
-                  />
-
-                  <span className="text-sm font-medium text-gray-700">
-                    Facebook
-                  </span>
-                </button>
-              </div> */}
 
               <div className="text-center mt-2">
                 <p className="text-sm text-gray-600">
@@ -183,12 +160,18 @@ const Login = () => {
 
             <div className="w-full mt-auto flex flex-col sm:flex-row justify-between items-center px-6 sm:px-12 md:px-16 py-8 bg-white text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase tracking-widest gap-4 sm:gap-0">
               <div className="flex gap-6">
-                <a href="#" className="hover:text-gray-700 transition-colors">
+                <NavLink
+                  to="#"
+                  className="hover:text-gray-700 transition-colors"
+                >
                   Privacy Policy
-                </a>
-                <a href="#" className="hover:text-gray-700 transition-colors">
+                </NavLink>
+                <NavLink
+                  to="#"
+                  className="hover:text-gray-700 transition-colors"
+                >
                   Terms
-                </a>
+                </NavLink>
               </div>
               <div>
                 © 2026

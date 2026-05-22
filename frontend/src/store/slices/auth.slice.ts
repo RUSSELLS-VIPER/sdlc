@@ -3,27 +3,19 @@ import { axiosInstance } from "../../lib/axiosInstance";
 import { endPoint } from "../../services/helper/apiEndPoint";
 import { getErrorMessage } from "../../services/helper/global.helper";
 import type { Loginformvalue, signupformvalue } from "../../type/interface/auth.interface";
+import type { AuthInitialState, AuthUser } from "../../type/type/auth/auth.type";
+const token = localStorage.getItem("token") ?? null
+const role = localStorage.getItem("role") ?? null
+const user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user") as string) : null
 
-type AuthUser = {
-    id: string;
-    name: string;
-    email: string;
-    role: string;
-};
 
-type AuthInitialState = {
-    loading: boolean;
-    error: string | null;
-    token: string | null;
-    user: AuthUser | null;
-    message: string | null;
-};
 
 const initialState: AuthInitialState = {
     loading: false,
     error: null,
-    token: localStorage.getItem("token"),
-    user: null,
+    role: role,
+    token: token,
+    user: user,
     message: null
 };
 
@@ -77,6 +69,8 @@ const authSlice = createSlice({
             state.error = null;
             state.message = null;
             localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            localStorage.removeItem("role")
         }
     },
     extraReducers: (builder) => {
@@ -103,8 +97,11 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.token = action.payload.token;
                 state.user = action.payload.user;
+                state.role = action.payload.user.role
                 state.message = "Login successful";
-                localStorage.setItem("token", action.payload.token);
+                localStorage.setItem("token", action.payload.token)
+                localStorage.setItem("role", action.payload.user.role)
+                localStorage.setItem("user", JSON.stringify(action.payload.user))
             })
             .addCase(login.rejected, (state, action) => {
                 state.loading = false;

@@ -1,4 +1,5 @@
 
+import { NavLink } from "react-router-dom";
 import heroimg from "../../assets/images/Properties/prpperty-bg.png";
 const Hero = () => {
   return (
@@ -21,7 +22,7 @@ const Hero = () => {
            <div
           className="flex items-center gap-2 text-white/90 text-xs sm:text-sm md:text-base font-medium mt-2"
         >
-          <a href="#" className="hover:text-yellow-400 transition">Home</a>
+          <NavLink to="/" className="hover:text-yellow-400 transition">Home</NavLink>
           <span className="text-[10px] sm:text-xs"
             ><i className="fa-solid fa-angle-right"></i>
           </span>

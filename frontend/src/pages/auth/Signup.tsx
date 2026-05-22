@@ -1,8 +1,6 @@
 import logo from "../../assets/images/login_Signup/logo.png";
 import bgimg from "../../assets/images/login_Signup/signup-forgot-bg.png";
 import { NavLink } from "react-router-dom";
-import google from "../../assets/images/login_Signup/google-icon.png";
-import facebook from "../../assets/images/login_Signup/fb-icon.png";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { signupSchema } from "../../services/validation/signup.validation";
@@ -10,9 +8,13 @@ import DynamicInput from "../../components/DynamicInput";
 import { signupinputfield } from "../../services/json/signup.input";
 import type { signupformvalue } from "../../type/interface/auth.interface";
 import { clearAuthState, signUp } from "../../store/slices/auth.slice";
-import { useAppDispatch, useAppSeletor } from "../../services/helper/reduxstore";
+import {
+  useAppDispatch,
+  useAppSeletor,
+} from "../../services/helper/reduxstore";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 const Signup = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -23,10 +25,14 @@ const Signup = () => {
     location.pathname === "/signup/agent"
       ? "agent"
       : location.pathname === "/signup/super-admin"
-      ? "admin"
-      : "user";
+        ? "admin"
+        : "user";
   const roleLabel =
-    roleFromPath === "agent" ? "Agent" : roleFromPath === "admin" ? "Super Admin" : "User";
+    roleFromPath === "agent"
+      ? "Agent"
+      : roleFromPath === "admin"
+        ? "Super Admin"
+        : "User";
   const {
     handleSubmit,
     register,
@@ -40,6 +46,7 @@ const Signup = () => {
       password: "",
       name: "",
       role: roleFromPath,
+      terms: false,
     },
   });
 
@@ -52,12 +59,21 @@ const Signup = () => {
   }, [roleFromPath, setValue]);
 
   const onSubmit = async (data: signupformvalue) => {
+    // console.log(data)
     try {
-      const response = await dispatch(signUp({ ...data, role: roleFromPath })).unwrap();
-      setSuccessMessage(response?.message ?? "Signup successful. Please verify your email.");
+      const response = await dispatch(
+        signUp({ ...data, role: roleFromPath }),
+      ).unwrap();
+      toast.success(response?.message ?? "Signup successful. Please verify your email.")
+      setSuccessMessage(
+        response?.message ?? "Signup successful. Please verify your email.",
+      );
       reset();
-      setTimeout(() => navigate(`/verify-email?email=${encodeURIComponent(data.email)}`), 1000);
-    } catch (_error) {
+      setTimeout(
+        () => navigate(`/verify-email?email=${encodeURIComponent(data.email)}`),
+        1000,
+      );
+    } catch {
       setSuccessMessage(null);
     }
   };
@@ -116,13 +132,18 @@ const Signup = () => {
               <p className="text-gray-500 text-sm mb-10">
                 Sign up to get started with your curated collection.
               </p>
-              {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
-              {successMessage && <p className="mb-4 text-sm text-green-600">{successMessage}</p>}
+             
+              {successMessage && (
+                <p className="mb-4 text-sm text-green-600">{successMessage}</p>
+              )}
 
-              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="flex flex-col gap-2"
+              >
                 {signupinputfield?.map((input) => (
                   <DynamicInput
-                  key={input.name}
+                    key={input.name}
                     label={input.label}
                     name={input.name}
                     register={register}
@@ -132,11 +153,12 @@ const Signup = () => {
                     errors={errors}
                   />
                 ))}
-               
-                <div className="flex items-center mb-8 mt-6">
+
+                <div className="flex items-center mt-6 ">
                   <label className="flex items-center cursor-pointer group">
                     <input
                       type="checkbox"
+                      {...register("terms")}
                       className="w-4 h-4 rounded border-gray-300 text-[#111827] focus:ring-[#111827] cursor-pointer"
                     />
                     <span className="ml-3 text-sm text-gray-500 group-hover:text-gray-800 transition-colors">
@@ -146,56 +168,29 @@ const Signup = () => {
                       </span>
                     </span>
                   </label>
+                 
                 </div>
+                 {errors.terms && (
+                  <p className="text-sm text-red-600 mb-6">
+                    {errors.terms.message}
+                  </p>
+                )}
+
+                <div className="flex items-center justify-center">
+                  {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
+                </div>
+                
 
                 <button
                   type="submit"
                   disabled={loading}
                   className="w-full bg-[#111827] text-white rounded-md py-3.5 text-base font-medium transition-all duration-300 hover:bg-[#FCA311] hover:shadow-md active:scale-[0.98] cursor-pointer mb-8"
-                >{loading ? "Submitting..." : "Submit"}</button>
+                >
+                  {loading ? "Submitting..." : "Submit"}
+                </button>
               </form>
 
-              <div className="flex items-center mb-8">
-                <div className="flex-1 h-px bg-gray-100"></div>
-                <span className="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                  Instant Sign Up
-                </span>
-
-                <div className="flex-1 h-px bg-gray-100"></div>
-              </div>
-
-              {/* <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <button
-                  type="button"
-                  className="flex-1 flex items-center justify-center gap-3 py-3 border border-gray-100 bg-white rounded-md transition-all duration-300 hover:border-[#FCA311] hover:bg-gray-50 hover:shadow-sm active:scale-[0.98]"
-                >
-                  <img
-                    src={google}
-                    alt="google-icon"
-                    className="h-[21px] w-[21px]"
-                    loading="lazy"
-                  />
-
-                  <span className="text-sm font-medium text-gray-700">
-                    Google
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  className="flex-1 flex items-center justify-center gap-3 py-3 border border-gray-100 bg-white rounded-md transition-all duration-300 hover:border-[#FCA311] hover:bg-gray-50 hover:shadow-sm active:scale-[0.98]"
-                >
-                  <img
-                    src={facebook}
-                    alt="fb-icon"
-                    className="h-[18px] w-[18px]"
-                    loading="lazy"
-                  />
-
-                  <span className="text-sm font-medium text-gray-700">
-                    Facebook
-                  </span>
-                </button>
-              </div> */}
+            
 
               <div className="text-center mt-2">
                 <p className="text-sm text-gray-600">
@@ -207,23 +202,23 @@ const Signup = () => {
                     Login
                   </NavLink>
                 </p>
-                {/* <p className="text-xs text-gray-500 mt-2">
-                  Signup as
-                  <NavLink to="/signup/user" className="text-[#4A90E2] ml-1">User</NavLink> |
-                  <NavLink to="/signup/agent" className="text-[#4A90E2] ml-1">Agent</NavLink> |
-                  <NavLink to="/signup/super-admin" className="text-[#4A90E2] ml-1">Super Admin</NavLink>
-                </p> */}
               </div>
             </div>
 
             <div className="w-full mt-auto flex flex-col sm:flex-row justify-between items-center px-6 sm:px-12 md:px-16 py-8 bg-white text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase tracking-widest gap-4 sm:gap-0">
               <div className="flex gap-6">
-                <a href="#" className="hover:text-gray-700 transition-colors">
+                <NavLink
+                  to="#"
+                  className="hover:text-gray-700 transition-colors"
+                >
                   Privacy Policy
-                </a>
-                <a href="#" className="hover:text-gray-700 transition-colors">
+                </NavLink>
+                <NavLink
+                  to="#"
+                  className="hover:text-gray-700 transition-colors"
+                >
                   Terms
-                </a>
+                </NavLink>
               </div>
               <div>
                 © 2026

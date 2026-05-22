@@ -18,7 +18,7 @@ export type PropertyItem = {
     description: string;
     price: number;
     address: string;
-    image: string | null;
+    image: string | undefined;
     status?: string;
     sqft?: string;
     bhk?: string;
