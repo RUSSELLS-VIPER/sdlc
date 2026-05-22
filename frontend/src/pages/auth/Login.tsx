@@ -124,7 +124,7 @@ const Login = () => {
                     </span>
                   </label>
                   <NavLink
-                    to="/forgot"
+                    to="/forgot-password"
                     className="text-sm text-gray-500 hover:text-gray-800 transition-colors"
                   >
                     Forgot Password?

@@ -10,3 +10,13 @@ export interface Loginformvalue{
     password:string;
     
 }
+
+export interface ForgotPasswordValue {
+    email: string;
+}
+
+export interface ResetPasswordValue {
+    email: string;
+    otp: string;
+    newPassword: string;
+}

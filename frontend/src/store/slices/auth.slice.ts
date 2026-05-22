@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { axiosInstance } from "../../lib/axiosInstance";
 import { endPoint } from "../../services/helper/apiEndPoint";
 import { getErrorMessage } from "../../services/helper/global.helper";
-import type { Loginformvalue, signupformvalue } from "../../type/interface/auth.interface";
+import type { ForgotPasswordValue, Loginformvalue, ResetPasswordValue, signupformvalue } from "../../type/interface/auth.interface";
 import type { AuthInitialState, AuthUser } from "../../type/type/auth/auth.type";
 const token = localStorage.getItem("token") ?? null
 const role = localStorage.getItem("role") ?? null
@@ -48,6 +48,30 @@ export const verifyEmail = createAsyncThunk(
     async (data: { email: string; otp: string }, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.post(endPoint.auth.verifyEmail, data);
+            return response.data as { message: string };
+        } catch (error) {
+            return rejectWithValue(getErrorMessage(error));
+        }
+    }
+);
+
+export const forgotPassword = createAsyncThunk(
+    "auth/forgotPassword",
+    async (data: ForgotPasswordValue, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.post(endPoint.auth.forgotPassword, data);
+            return response.data as { message: string; email?: string; emailSent?: boolean; otp?: string };
+        } catch (error) {
+            return rejectWithValue(getErrorMessage(error));
+        }
+    }
+);
+
+export const resetPassword = createAsyncThunk(
+    "auth/resetPassword",
+    async (data: ResetPasswordValue, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.post(endPoint.auth.resetPassword, data);
             return response.data as { message: string };
         } catch (error) {
             return rejectWithValue(getErrorMessage(error));
@@ -119,6 +143,32 @@ const authSlice = createSlice({
             .addCase(verifyEmail.rejected, (state, action) => {
                 state.loading = false;
                 state.error = (action.payload as string) ?? "Email verification failed";
+            })
+            .addCase(forgotPassword.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.message = null;
+            })
+            .addCase(forgotPassword.fulfilled, (state, action) => {
+                state.loading = false;
+                state.message = action.payload.message;
+            })
+            .addCase(forgotPassword.rejected, (state, action) => {
+                state.loading = false;
+                state.error = (action.payload as string) ?? "Failed to send OTP";
+            })
+            .addCase(resetPassword.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.message = null;
+            })
+            .addCase(resetPassword.fulfilled, (state, action) => {
+                state.loading = false;
+                state.message = action.payload.message;
+            })
+            .addCase(resetPassword.rejected, (state, action) => {
+                state.loading = false;
+                state.error = (action.payload as string) ?? "Failed to reset password";
             });
     }
 });
