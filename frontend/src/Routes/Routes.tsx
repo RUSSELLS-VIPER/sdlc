@@ -16,8 +16,13 @@ import PublicRoute from "../components/PublicRoute";
 import AdminRoute from "../components/AdminRoute";
 import UserDashboard from "../pages/user/UserDashboard";
 import Wishlist from "../pages/user/Wishlist";
+import ForgotPassword from "../pages/auth/ForgotPassword";
 
 const Routes = createBrowserRouter([
+    {
+        path: "/forgot-password",
+        element: <ForgotPassword />
+      },
   {
     element: <PublicRoute />,
     children: [
