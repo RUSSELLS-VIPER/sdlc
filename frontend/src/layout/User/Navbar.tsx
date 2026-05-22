@@ -3,8 +3,6 @@ import Logo from "../../assets/images/services/logo.png";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   ArrowUpRight,
-  ChevronDown,
-  ChevronUp,
   Heart,
   LayoutDashboard,
   LogOut,
@@ -20,7 +18,6 @@ import { logout } from "../../store/slices/auth.slice";
 const Navbar = () => {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
-  const [mobileDropdown, setMobileDropdown] = useState<boolean>(false);
   const { role, token, user } = useAppSeletor((state) => state.auth);
   const [desktopUserDropdown, setDesktopUserDropdown] = useState(false);
 
@@ -50,13 +47,6 @@ const Navbar = () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, []);
-
-  const propertiesItem = [
-    { name: "All Properties", path: "/property" },
-    { name: "Buy Properties", path: "/property" },
-    { name: "Rent Properties", path: "/property" },
-    { name: "Sell Properties", path: "/property" },
-  ];
 
   return (
     <div className="relative z-50">
@@ -92,35 +82,12 @@ const Navbar = () => {
                   About US
                 </NavLink>
 
-                {/* Dropdown */}
-                <div className="relative group cursor-pointer">
-                  <div className="flex items-center py-2.5 text-sm text-white transition">
-                    <NavLink
-                      to="/property"
-                      className="nav-link text-white group-hover:text-[#facc15] text-sm font-semibold transition-colors"
-                    >
-                      Properties
-                    </NavLink>
-                    <span className="ml-1.5 text-white group-hover:text-[#facc15] inline-block transition-transform duration-300 group-hover:-rotate-180">
-                      <ChevronDown size={14} strokeWidth={2.5} />
-                    </span>
-                  </div>
-
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-48 bg-gray-50 backdrop-blur-md rounded-t-sm rounded-b-2xl border border-[#facc15] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 overflow-hidden">
-                    <ul className="py-2 font-sans">
-                      {propertiesItem.map((item) => (
-                        <li key={item.name}>
-                          <NavLink
-                            to={item.path}
-                            className="block px-5 py-2.5 text-sm text-black hover:bg-[#facc15] hover:text-[#0F172a] transition"
-                          >
-                            {item.name}
-                          </NavLink>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
+                <NavLink
+                  to="/property"
+                  className="nav-link text-white text-sm font-semibold hover:text-[#facc15] transition-colors"
+                >
+                  Properties
+                </NavLink>
 
                 <NavLink
                   className="nav-link text-white text-sm font-semibold hover:text-[#facc15] transition-colors"
@@ -310,57 +277,14 @@ const Navbar = () => {
                 </NavLink>
               </div>
 
-              {/* Properties Dropdown */}
-              <div className="flex flex-col group">
-                <button
-                  onClick={() => setMobileDropdown(!mobileDropdown)}
-                  className="text-white hover:text-yellow-400 text-lg font-semibold flex justify-between items-center w-full focus:outline-none transition"
+              <div>
+                <NavLink
+                  to="/property"
+                  className="nav-link text-white text-lg font-medium hover:text-yellow-400 transition-colors"
+                  onClick={() => setMobileOpen(false)}
                 >
-                  <span className="nav-link">Properties</span>
-                  <span className="inline-block transition-transform duration-300 text-sm">
-                    {mobileDropdown ? (
-                      <ChevronUp size={20} />
-                    ) : (
-                      <ChevronDown size={20} />
-                    )}
-                  </span>
-                </button>
-
-                {mobileDropdown && (
-                  <div className="flex flex-col pl-4 mt-3 space-y-4">
-                    <NavLink
-                      to="/properties/apartments"
-                      className="text-gray-300 hover:text-yellow-400 transition block"
-                      onClick={() => setMobileOpen(false)}
-                    >
-                      Apartments
-                    </NavLink>
-
-                    <NavLink
-                      to="/properties/villas"
-                      className="text-gray-300 hover:text-yellow-400 transition block"
-                      onClick={() => setMobileOpen(false)}
-                    >
-                      Villas
-                    </NavLink>
-
-                    <NavLink
-                      to="/properties/commercial"
-                      className="text-gray-300 hover:text-yellow-400 transition block"
-                      onClick={() => setMobileOpen(false)}
-                    >
-                      Commercial Spaces
-                    </NavLink>
-
-                    <NavLink
-                      to="/properties/plots"
-                      className="text-gray-300 hover:text-yellow-400 transition block pb-2"
-                      onClick={() => setMobileOpen(false)}
-                    >
-                      Land & Plots
-                    </NavLink>
-                  </div>
-                )}
+                  Properties
+                </NavLink>
               </div>
 
               {/* Services */}
@@ -440,7 +364,6 @@ const Navbar = () => {
                                 } else {
                                   navigate("/admin/dashboard");
                                 }
-                                setMobileDropdown(false);
                                 setMobileOpen(false);
                                 setMobileUserDropdown(false);
                               }}
@@ -453,7 +376,6 @@ const Navbar = () => {
                             <button
                               onClick={() => {
                                 dispatch(logout());
-                                setMobileDropdown(false);
                                 setMobileOpen(false);
                                 setMobileUserDropdown(false);
                               }}

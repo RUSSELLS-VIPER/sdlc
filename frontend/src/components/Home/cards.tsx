@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSeletor } from "../../services/helper/reduxstore";
 import { getProperties } from "../../store/slices/property.slice";
@@ -6,6 +6,48 @@ import { getProperties } from "../../store/slices/property.slice";
 export const CardsSection = () => {
   const {items, loading, error} = useAppSeletor((state)=> state.property)
   const dispatch = useAppDispatch()
+  const [activeCategory, setActiveCategory] = useState<"all" | "home" | "apartment" | "villa" | "office">("all");
+
+  const popularCategories = [
+    { label: "All", value: "all" as const },
+    { label: "House", value: "home" as const },
+    { label: "Apartment", value: "apartment" as const },
+    { label: "Villa", value: "villa" as const },
+    { label: "Office", value: "office" as const },
+  ];
+
+  const filteredPopularItems = useMemo(() => {
+    if (activeCategory === "all") return items;
+    return items.filter((item) => item.propertyType === activeCategory);
+  }, [activeCategory, items]);
+
+  const categoryImageMap: Record<string, string> = {
+    home: "/assets/infinity-home/images/index/house-img.png",
+    apartment: "/assets/infinity-home/images/index/apartment-img.png",
+    villa: "/assets/infinity-home/images/index/villa-img.png",
+    office: "/assets/infinity-home/images/index/villa-img.png",
+    rental: "/assets/infinity-home/images/index/apartment-img.png",
+    other: "/assets/infinity-home/images/index/house-img.png",
+  };
+
+  const dynamicCategories = useMemo(() => {
+    const counts: Record<string, number> = {};
+
+    items.forEach((item) => {
+      const rawType = item.propertyType?.trim().toLowerCase();
+      const key = rawType && rawType !== "--" ? rawType : "other";
+      counts[key] = (counts[key] ?? 0) + 1;
+    });
+
+    return Object.entries(counts)
+      .map(([key, count]) => ({
+        key,
+        count,
+        label: key === "other" ? "Other" : key.charAt(0).toUpperCase() + key.slice(1),
+        image: categoryImageMap[key] ?? categoryImageMap.other,
+      }))
+      .sort((a, b) => b.count - a.count);
+  }, [items]);
   // console.log("items", items)
 
   useEffect(()=>{
@@ -173,9 +215,9 @@ export const CardsSection = () => {
                                 viewBox="0 0 24 24"
                               >
                                 <path
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  stroke-width="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="1.5"
                                   d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
                                 ></path>
                               </svg>
@@ -209,9 +251,9 @@ export const CardsSection = () => {
                             viewBox="0 0 24 24"
                           >
                             <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
                               d="M14 5l7 7m0 0l-7 7m7-7H3"
                             ></path>
                           </svg>
@@ -232,9 +274,9 @@ export const CardsSection = () => {
                                 viewBox="0 0 24 24"
                               >
                                 <path
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  stroke-width="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="1.5"
                                   d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
                                 ></path>
                               </svg>
@@ -268,9 +310,9 @@ export const CardsSection = () => {
                             viewBox="0 0 24 24"
                           >
                             <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
                               d="M14 5l7 7m0 0l-7 7m7-7H3"
                             ></path>
                           </svg>
@@ -291,9 +333,9 @@ export const CardsSection = () => {
                                 viewBox="0 0 24 24"
                               >
                                 <path
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  stroke-width="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="1.5"
                                   d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
                                 ></path>
                               </svg>
@@ -327,9 +369,9 @@ export const CardsSection = () => {
                             viewBox="0 0 24 24"
                           >
                             <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
                               d="M14 5l7 7m0 0l-7 7m7-7H3"
                             ></path>
                           </svg>
@@ -350,9 +392,9 @@ export const CardsSection = () => {
                                 viewBox="0 0 24 24"
                               >
                                 <path
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  stroke-width="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="1.5"
                                   d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
                                 ></path>
                               </svg>
@@ -386,9 +428,9 @@ export const CardsSection = () => {
                             viewBox="0 0 24 24"
                           >
                             <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
                               d="M14 5l7 7m0 0l-7 7m7-7H3"
                             ></path>
                           </svg>
@@ -424,47 +466,42 @@ export const CardsSection = () => {
                 </div>
         
                 <div className="flex flex-wrap gap-3 mb-8">
-                  <Link
-                     to="#"
-                    className="px-6 py-2.5 rounded-full border border-slate-400 text-slate-700 bg-transparent hover:border-slate-800 hover:text-slate-900 font-medium text-sm transition"
-                  >
-                    House
-                  </Link>
-                  <Link
-                     to="#"
-                    className="px-6 py-2.5 rounded-full border border-slate-400 text-slate-700 bg-transparent hover:border-slate-800 hover:text-slate-900 font-medium text-sm transition"
-                  >
-                    Apartment
-                  </Link>
-                  <Link
-                     to="#"
-                    className="px-6 py-2.5 rounded-full border border-slate-400 text-slate-700 bg-transparent hover:border-slate-800 hover:text-slate-900 font-medium text-sm transition"
-                  >
-                    Villa
-                  </Link>
-                  <Link
-                     to="#"
-                    className="px-6 py-2.5 rounded-full border border-slate-400 text-slate-700 bg-transparent hover:border-slate-800 hover:text-slate-900 font-medium text-sm transition"
-                  >
-                    Office
-                  </Link>
+                  {popularCategories.map((category) => (
+                    <button
+                      key={category.value}
+                      type="button"
+                      onClick={() => setActiveCategory(category.value)}
+                      className={`px-6 py-2.5 rounded-full border font-medium text-sm transition ${
+                        activeCategory === category.value
+                          ? "border-slate-900 bg-slate-900 text-white"
+                          : "border-slate-400 text-slate-700 bg-transparent hover:border-slate-800 hover:text-slate-900"
+                      }`}
+                    >
+                      {category.label}
+                    </button>
+                  ))}
                 </div>
         
                 <div
                   className="drag-slider flex gap-6 overflow-x-auto no-scrollbar cursor-grab active:cursor-grabbing pb-8 select-none"
                 >
 
-                  {error && <p>{error}</p>}
+                  {loading && <p className="text-slate-600">Loading properties...</p>}
+                  {error && <p className="text-red-600">{error}</p>}
+                  {!loading && !error && filteredPopularItems.length === 0 && (
+                    <p className="text-slate-600">
+                      No properties found for this category.
+                    </p>
+                  )}
 
-                {
-                  items?.map((item)=> (
+                {!loading && !error && filteredPopularItems.map((item)=> (
                     <div
                     key={item._id}
                     className="w-[85vw] sm:w-[380px] md:w-[410px] flex-shrink-0 bg-[#f8fafc] rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
                   >
                     <div className="relative h-[220px] bg-gray-200">
                       <img
-                        src={item.image}
+                        src={item.image || "/assets/infinity-home/images/index/house-img.png"}
                         alt="Duplex House"
                         className="w-full h-full object-cover pointer-events-none"
                         draggable={false}
@@ -486,18 +523,18 @@ export const CardsSection = () => {
                               xmlns="http://www.w3.org/2000/svg"
                               fill="none"
                               viewBox="0 0 24 24"
-                              stroke-width="2"
+                              strokeWidth="2"
                               stroke="currentColor"
                               className="w-4 h-4"
                             >
                               <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                                 d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
                               />
                               <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                                 d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
                               />
                             </svg>
@@ -508,13 +545,13 @@ export const CardsSection = () => {
                               xmlns="http://www.w3.org/2000/svg"
                               fill="none"
                               viewBox="0 0 24 24"
-                              stroke-width="1.5"
+                              strokeWidth="1.5"
                               stroke="currentColor"
                               className="w-5 h-5"
                             >
                               <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                                 d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
                               />
                             </svg>
@@ -523,12 +560,12 @@ export const CardsSection = () => {
                       </div>
                       <p className="text-slate-600 text-sm mb-6">
                         Size:
-                        <span className="font-semibold text-slate-800">{item.sqft}</span>
+                        <span className="font-semibold text-slate-800">{item.sqft || "--"}</span>
                       </p>
                       <div className="flex justify-between items-center mt-auto">
                         <p className="text-slate-600 text-sm">
                           Start From:
-                          <span className="font-bold text-slate-900">{item.price}</span>
+                          <span className="font-bold text-slate-900">₹{item.price}</span>
                         </p>
         
                         <Link
@@ -557,7 +594,7 @@ export const CardsSection = () => {
                   </h2>
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                     <p className="text-slate-800 text-lg">
-                      Type of our property View All 4142 listings
+                      Type of our property View All {items.length} listings
                     </p>
                     <Link
                        to={"/property"}
@@ -573,89 +610,36 @@ export const CardsSection = () => {
                 <div
                   className="drag-slider flex gap-6 overflow-x-auto no-scrollbar cursor-grab active:cursor-grabbing pb-8 select-none"
                 >
-                  <div
-                    className="flex w-[85vw] sm:w-[320px] md:w-[380px] lg:w-[410px] flex-shrink-0 bg-white rounded-2xl shadow-sm hover:shadow-md transition duration-300 overflow-hidden"
-                  >
+                  {loading && <p className="text-slate-600">Loading categories...</p>}
+                  {error && <p className="text-red-600">{error}</p>}
+                  {!loading && !error && dynamicCategories.length === 0 && (
+                    <p className="text-slate-600">No categories found.</p>
+                  )}
+                  {!loading && !error && dynamicCategories.map((category) => (
                     <div
-                      className="w-[130px] sm:w-[150px] h-[130px] sm:h-[150px] flex-shrink-0"
+                      key={category.key}
+                      className="flex w-[85vw] sm:w-[320px] md:w-[380px] lg:w-[410px] flex-shrink-0 bg-white rounded-2xl shadow-sm hover:shadow-md transition duration-300 overflow-hidden"
                     >
-                      <img
-                        src="/assets/infinity-home/images/index/house-img.png"
-                        alt="House"
-                        className="w-full h-full object-cover pointer-events-none rounded-2xl"
-                        draggable={false}
-                      />
+                      <div
+                        className="w-[130px] sm:w-[150px] h-[130px] sm:h-[150px] flex-shrink-0"
+                      >
+                        <img
+                          src={category.image}
+                          alt={category.label}
+                          className="w-full h-full object-cover pointer-events-none rounded-2xl"
+                          draggable={false}
+                        />
+                      </div>
+                      <div className="flex-1 p-5 flex flex-col justify-center">
+                        <h3 className="text-xl sm:text-2xl font-bold text-[#1e293b] mb-1.5">
+                          {category.label}
+                        </h3>
+                        <p className="text-slate-600 font-medium text-sm">
+                          {category.count} listings
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex-1 p-5 flex flex-col justify-center">
-                      <h3 className="text-xl sm:text-2xl font-bold text-[#1e293b] mb-1.5">
-                        House
-                      </h3>
-                      <p className="text-slate-600 font-medium text-sm">1,049 listings</p>
-                    </div>
-                  </div>
-        
-                  <div
-                    className="flex w-[85vw] sm:w-[320px] md:w-[380px] lg:w-[410px] flex-shrink-0 bg-white rounded-2xl shadow-sm hover:shadow-md transition duration-300 overflow-hidden"
-                  >
-                    <div
-                      className="w-[130px] sm:w-[150px] h-[130px] sm:h-[150px] flex-shrink-0"
-                    >
-                      <img
-                        src="/assets/infinity-home/images/index/apartment-img.png"
-                        alt="Apartment"
-                        className="w-full h-full object-cover pointer-events-none rounded-2xl"
-                        draggable={false}
-                      />
-                    </div>
-                    <div className="flex-1 p-5 flex flex-col justify-center">
-                      <h3 className="text-xl sm:text-2xl font-bold text-[#1e293b] mb-1.5">
-                        Apartment
-                      </h3>
-                      <p className="text-slate-600 font-medium text-sm">1,400 listings</p>
-                    </div>
-                  </div>
-        
-                  <div
-                    className="flex w-[85vw] sm:w-[320px] md:w-[380px] lg:w-[410px] flex-shrink-0 bg-white rounded-2xl shadow-sm hover:shadow-md transition duration-300 overflow-hidden"
-                  >
-                    <div
-                      className="w-[130px] sm:w-[150px] h-[130px] sm:h-[150px] flex-shrink-0"
-                    >
-                      <img
-                        src="/assets/infinity-home/images/index/villa-img.png"
-                        alt="Villa"
-                        className="w-full h-full object-cover pointer-events-none rounded-2xl"
-                        draggable={false}
-                      />
-                    </div>
-                    <div className="flex-1 p-5 flex flex-col justify-center">
-                      <h3 className="text-xl sm:text-2xl font-bold text-[#1e293b] mb-1.5">
-                        Villa
-                      </h3>
-                      <p className="text-slate-600 font-medium text-sm">400 listings</p>
-                    </div>
-                  </div>
-        
-                  <div
-                    className="flex w-[85vw] sm:w-[320px] md:w-[380px] lg:w-[410px] flex-shrink-0 bg-white rounded-2xl shadow-sm hover:shadow-md transition duration-300 overflow-hidden"
-                  >
-                    <div
-                      className="w-[130px] sm:w-[150px] h-[130px] sm:h-[150px] flex-shrink-0"
-                    >
-                      <img
-                        src="/assets/infinity-home/images/index/villa-img.png"
-                        alt="Villa"
-                        className="w-full h-full object-cover pointer-events-none rounded-2xl"
-                        draggable={false}
-                      />
-                    </div>
-                    <div className="flex-1 p-5 flex flex-col justify-center">
-                      <h3 className="text-xl sm:text-2xl font-bold text-[#1e293b] mb-1.5">
-                        Villa
-                      </h3>
-                      <p className="text-slate-600 font-medium text-sm">400 listings</p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </section>
