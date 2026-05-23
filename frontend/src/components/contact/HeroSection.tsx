@@ -1,4 +1,4 @@
-import React from 'react'
+import { NavLink } from "react-router-dom"
 import banner from "../../assets/images/contacts-images/banner.png"
 const HeroContact = () => {
   return (
@@ -19,7 +19,7 @@ const HeroContact = () => {
         <div
           className="flex items-center gap-2 text-white/90 text-xs sm:text-sm md:text-base font-medium mt-2"
         >
-          <a href="index.html" className="hover:text-yellow-400 transition">Home</a>
+          <NavLink to="/" className="hover:text-yellow-400 transition">Home</NavLink>
           <span className="text-[10px] sm:text-xs"
             ><i className="fa-solid fa-angle-right"></i></span>
           <span className="text-white">Contacts Us</span>
