@@ -1,4 +1,3 @@
-import React from 'react'
 import bgimg from '../../assets/images/contacts-images/newsltr-bg.png'
 const Newslettersection = () => {
   return (

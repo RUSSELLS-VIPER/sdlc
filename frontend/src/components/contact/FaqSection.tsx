@@ -1,4 +1,3 @@
-import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { Plus } from "lucide-react";
 import  faqillustrate from "../../assets/images/contacts-images/Frame 575.png"
