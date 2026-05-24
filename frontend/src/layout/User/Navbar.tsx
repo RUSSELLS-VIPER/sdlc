@@ -67,7 +67,7 @@ const Navbar = () => {
               </div>
 
               {/* Desktop Menu */}
-              <div className="hidden lg:flex flex-none items-center gap-6 backdrop-blur-xl border-2 border-white/50 rounded-full px-6 py-1">
+              <div className="hidden lg:flex flex-none items-center h-11 gap-6 backdrop-blur-xl border-2 border-white/50 rounded-full px-6">
                 <NavLink
                   className="nav-link text-white text-sm font-semibold hover:text-[#facc15] transition-colors"
                   to="/"
