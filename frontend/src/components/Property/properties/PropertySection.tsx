@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import SidebarFilters from "../Sidebar/SidebarFilters";
 import BrokerList from "../Sidebar/BrokerList";
 import PropertyTabs from "./PropertyTabs";
@@ -18,13 +19,16 @@ export type PropertyFilters = {
 
 const PropertySection = () => {
   const { items } = useAppSeletor((state) => state.property);
+  const [searchParams] = useSearchParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  const selectedCategory = searchParams.get("category") || "All";
 
   const [filters, setFilters] = useState<PropertyFilters>({
     country: "All",
     city: "All",
-    category: "All",
+    category: selectedCategory,
     bhk: [],
     apartment: [],
     maxSqft: 0,
@@ -34,6 +38,13 @@ const PropertySection = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [filters]);
+
+  useEffect(() => {
+    setFilters((currentFilters) => ({
+      ...currentFilters,
+      category: selectedCategory
+    }));
+  }, [selectedCategory]);
 
   useEffect(() => {
     if (currentPage > totalPages) {

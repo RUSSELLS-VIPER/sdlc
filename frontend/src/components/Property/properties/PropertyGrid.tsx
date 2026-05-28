@@ -23,6 +23,7 @@ const getCityFromAddress = (address: string) => {
 };
 
 const parseSqft = (sqft: string | undefined) => Number(String(sqft ?? "").replace(/[^\d.]/g, "")) || 0;
+const normalizeCategory = (value: string) => value.trim().toLowerCase();
 
 const PropertyGrid = ({ filters, currentPage, pageSize, onTotalPagesChange }: Props) => {
   const dispatch = useAppDispatch();
@@ -44,7 +45,9 @@ const PropertyGrid = ({ filters, currentPage, pageSize, onTotalPagesChange }: Pr
 
       const countryMatch = filters.country === "All" || itemCountry === filters.country;
       const cityMatch = filters.city === "All" || itemCity === filters.city;
-      const categoryMatch = filters.category === "All" || itemCategory === filters.category;
+      const categoryMatch =
+        filters.category === "All" ||
+        normalizeCategory(itemCategory) === normalizeCategory(filters.category);
       const bhkMatch = !filters.bhk.length || filters.bhk.includes(item.bhk || "--");
       const apartmentMatch = !filters.apartment.length || filters.apartment.includes(itemApartmentType);
       const sqftMatch = !filters.maxSqft || itemSqft <= filters.maxSqft;

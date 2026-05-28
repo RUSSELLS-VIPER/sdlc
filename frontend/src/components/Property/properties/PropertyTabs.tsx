@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom'
 const PropertyTabs = () => {
   return (
     <div>
-       {/* <div
+       <div
             className="bg-[#F0F4F9] py-3 rounded-2xl flex justify-center mb-8 gap-4"
           >
             <NavLink
@@ -19,7 +19,7 @@ const PropertyTabs = () => {
             >
               For Rent
             </NavLink>
-          </div> */}
+          </div>
     </div>
   )
 }

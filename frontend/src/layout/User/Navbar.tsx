@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import Logo from "../../assets/images/services/logo.png";
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
   ArrowUpRight,
+  ChevronDown,
   Heart,
   LayoutDashboard,
   LogOut,
@@ -20,11 +21,19 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const { role, token, user } = useAppSeletor((state) => state.auth);
   const [desktopUserDropdown, setDesktopUserDropdown] = useState(false);
+  const [desktopPropertyDropdown, setDesktopPropertyDropdown] = useState(false);
 
   const [mobileUserDropdown, setMobileUserDropdown] = useState(false);
+  const [mobilePropertyDropdown, setMobilePropertyDropdown] = useState(false);
   const desktopRef = useRef<HTMLDivElement>(null);
   const mobileRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
+  const propertyDropdownItems = [
+    { label: "Apartments", to: "/property?category=apartment" },
+    { label: "Villas", to: "/property?category=villa" },
+    { label: "Commercial Spaces", to: "/property?category=office" },
+    { label: "Land & Plots", to: "/property?category=home" },
+  ];
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -82,12 +91,36 @@ const Navbar = () => {
                   About US
                 </NavLink>
 
-                <NavLink
-                  to="/property"
-                  className="nav-link text-white text-sm font-semibold hover:text-[#facc15] transition-colors"
+                <div
+                  className="relative group"
+                  onMouseEnter={() => setDesktopPropertyDropdown(true)}
+                  onMouseLeave={() => setDesktopPropertyDropdown(false)}
                 >
-                  Properties
-                </NavLink>
+                  <NavLink
+                    to="/property"
+                    className="nav-link !inline-flex items-center gap-1 text-white text-sm font-semibold hover:text-[#facc15] transition-colors pb-1"
+                  >
+                    Properties
+                    <ChevronDown size={16} strokeWidth={2.25} />
+                  </NavLink>
+
+                  {desktopPropertyDropdown && (
+                    <div className="absolute left-1/2 top-full mt-4 w-[280px] -translate-x-1/2 rounded-3xl bg-white p-3 shadow-[0_20px_60px_rgba(15,23,42,0.18)]">
+                      <div className="flex flex-col gap-1">
+                        {propertyDropdownItems.map((item) => (
+                          <Link
+                            key={item.label}
+                            to={item.to}
+                            onClick={() => setDesktopPropertyDropdown(false)}
+                            className="rounded-2xl px-5 py-3 text-[15px] text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-950"
+                          >
+                            {item.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 <NavLink
                   className="nav-link text-white text-sm font-semibold hover:text-[#facc15] transition-colors"
@@ -230,7 +263,11 @@ const Navbar = () => {
           {mobileOpen && (
             <div
               className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
-              onClick={() => setMobileOpen(false)}
+              onClick={() => {
+                setMobileOpen(false);
+                setMobilePropertyDropdown(false);
+                setMobileUserDropdown(false);
+              }}
             />
           )}
 
@@ -245,7 +282,11 @@ const Navbar = () => {
               <span className="text-white font-bold tracking-wider">MENU</span>
 
               <button
-                onClick={() => setMobileOpen(false)}
+                onClick={() => {
+                  setMobileOpen(false);
+                  setMobilePropertyDropdown(false);
+                  setMobileUserDropdown(false);
+                }}
                 className="text-gray-400 hover:text-white transition p-1  leading-none"
                 aria-label="Close menu"
               >
@@ -278,13 +319,42 @@ const Navbar = () => {
               </div>
 
               <div>
-                <NavLink
-                  to="/property"
-                  className="nav-link text-white text-lg font-medium hover:text-yellow-400 transition-colors"
-                  onClick={() => setMobileOpen(false)}
+                <button
+                  type="button"
+                  className="nav-link !inline-flex items-center gap-1 text-white text-lg font-medium hover:text-yellow-400 transition-colors"
+                  onClick={() =>
+                    setMobilePropertyDropdown((currentValue) => !currentValue)
+                  }
                 >
                   Properties
-                </NavLink>
+                  <ChevronDown
+                    size={18}
+                    strokeWidth={2.25}
+                    className={`transition-transform duration-300 ${
+                      mobilePropertyDropdown ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                <div
+                  id="mobile-properties-menu"
+                  className={mobilePropertyDropdown ? "open mt-4" : "mt-4"}
+                >
+                  <div className="flex flex-col gap-2 pl-4">
+                    {propertyDropdownItems.map((item) => (
+                      <Link
+                        key={item.label}
+                        to={item.to}
+                        onClick={() => {
+                          setMobileOpen(false);
+                          setMobilePropertyDropdown(false);
+                        }}
+                        className="rounded-2xl px-4 py-2 text-sm font-medium text-gray-200 transition-colors hover:bg-white/10 hover:text-white"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               {/* Services */}
@@ -404,7 +474,11 @@ const Navbar = () => {
                 <NavLink
                   to="/contact"
                   className={`group flex items-center ${mobileUserDropdown && "mt-52"} justify-center gap-4 px-4 py-2 rounded-2xl transition-all duration-500 ease-in-out bg-[#0F172A] text-white hover:bg-white hover:text-[#0F172A] border-2 border-white hover:border-[#0F172A]`}
-                  onClick={() => setMobileOpen(false)}
+                  onClick={() => {
+                    setMobileOpen(false);
+                    setMobilePropertyDropdown(false);
+                    setMobileUserDropdown(false);
+                  }}
                 >
                   <span className="text-sm font-medium whitespace-nowrap">
                     Contact Us
