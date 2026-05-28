@@ -2,7 +2,7 @@
 import { NavLink } from "react-router-dom";
 import Ftr from "../../assets/images/services/ftr-1.png"
 import Logo from "../../assets/images/services/logo.png"
-import { ArrowUp, House } from "lucide-react";
+
 
 const Footer = () => {
   return (
@@ -52,7 +52,7 @@ const Footer = () => {
                   </NavLink>
                   <NavLink
                     to="https://www.facebook.com/"
-                    className="w-8 h-8 bg-white rounded-full flex items-center justify-center transition border border-white transition-colors duration-300 hover:border-[#fca311] hover:bg-[#12192b]"
+                    className="w-8 h-8 bg-white rounded-full flex items-center justify-center transition-colors border border-white transition-colors duration-300 hover:border-[#fca311] hover:bg-[#12192b]"
                   >
                     <i
                       className="fa-brands fa-facebook-f text-[#fca311]"
@@ -61,7 +61,7 @@ const Footer = () => {
                   </NavLink>
                   <NavLink
                     to="https://x.com/"
-                    className="w-8 h-8 bg-white rounded-full flex items-center justify-center transition border border-white transition-colors duration-300 hover:border-[#fca311] hover:bg-[#12192b]"
+                    className="w-8 h-8 bg-white rounded-full flex items-center justify-center transition-colors border border-white transition-colors duration-300 hover:border-[#fca311] hover:bg-[#12192b]"
                   >
                     <i
                       className="fa-brands fa-twitter text-[#fca311]"
@@ -110,7 +110,7 @@ const Footer = () => {
                         <i
                           className="fa-solid fa-house text-[#fca311]"
                         
-                        ><House size={15} /></i>
+                        ></i>
                       </span>
                       Home
                     </NavLink>
@@ -295,7 +295,7 @@ const Footer = () => {
             onClick={()=> window.scrollTo({ top: 0, behavior: 'smooth' })}
             className="absolute right-4 md:right-6 bottom-11 w-12 h-12 rounded-full bg-white/95 text-[#fca311] flex items-center justify-center shadow-lg hover:bg-[#fca311] hover:text-white transition duration-300 text-xl z-30 leading-none"
           >
-            <i className="fa-solid fa-arrow-up"><ArrowUp size={25} /></i>
+            <i className="fa-solid fa-arrow-up"></i>
           </button>
         </div>
       </footer>

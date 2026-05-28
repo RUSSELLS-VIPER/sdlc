@@ -189,7 +189,7 @@ const Navbar = () => {
                   <button
                     onClick={() => navigate("/login")}
                     className={
-                      "bg-[#0F172A]  text-amber-500 px-4 text-bold rounded-xl hover:bg-white hover:border-2 hover:border-red-500 hover:text-red-500 py-2"
+                      "bg-[#0F172A]  text-amber-500 px-4 text-bold rounded-xl hover:bg-white border-2 border-[#0F172A] hover:border-2 hover:border-red-500 hover:text-red-500 py-2"
                     }
                   >
                     Login
@@ -202,11 +202,12 @@ const Navbar = () => {
                 >
                   Contact Us
                   <div className="flex items-center justify-center w-7 h-7 rounded-xl transition-colors duration-300 ease-in-out bg-white group-hover:bg-[#0F172A]">
-                    <ArrowUpRight
+                    {/* <ArrowUpRight
                       size={20}
                       strokeWidth={2.4}
                       className="text-slate-900 transition-transform duration-300 ease-in-out -rotate-45 group-hover:text-amber-400 group-hover:rotate-0"
-                    />
+                    /> */}
+                     <i className="fa-solid fa-arrow-right text-sm transition-transform duration-300 ease-in-out text-slate-900 -rotate-45 group-hover:text-amber-400 group-hover:rotate-0"></i>
                   </div>
                 </button>
               </div>

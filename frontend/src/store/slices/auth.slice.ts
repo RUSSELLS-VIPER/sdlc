@@ -94,7 +94,8 @@ const authSlice = createSlice({
             state.message = null;
             localStorage.removeItem("token");
             localStorage.removeItem("user");
-            localStorage.removeItem("role")
+            localStorage.removeItem("role");
+            window.location.href = "/login"
         }
     },
     extraReducers: (builder) => {
