@@ -6,3 +6,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Inactive dot style matching your hidden comment block */
+#sliderDots .swiper-pagination-bullet {
+  background-color: #e5e7eb !important; /* gray-200 */
+  opacity: 1;
+}
+
+/* Active dot style matching your yellow design */
+#sliderDots .swiper-pagination-bullet-active {
+  background-color: #fcaa31 !important; /* Your signature yellow */
+}

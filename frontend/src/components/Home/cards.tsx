@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSeletor } from "../../services/helper/reduxstore";
 import { getProperties } from "../../store/slices/property.slice";
 
@@ -7,6 +7,7 @@ export const CardsSection = () => {
   const {items, loading, error} = useAppSeletor((state)=> state.property)
   const dispatch = useAppDispatch()
   const [activeCategory, setActiveCategory] = useState<"all" | "home" | "apartment" | "villa" | "office">("all");
+  const navigate = useNavigate()
 
   const popularCategories = [
     { label: "All", value: "all" as const },
@@ -568,12 +569,12 @@ export const CardsSection = () => {
                           <span className="font-bold text-slate-900">₹{item.price}</span>
                         </p>
         
-                        <Link
-                           to="#"
+                        <button
+                          onClick={()=> navigate(`/property/${item._id}`)}
                           className="bg-[#171e2e] text-white px-5 py-2.5 rounded-lg text-xs font-bold hover:bg-[#facc15] hover:text-[#171E2E] transform hover:-translate-x-2 shadow hover:shadow-md transition-all duration-200"
                         >
                           Get Quote
-                        </Link>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -708,8 +709,8 @@ export const CardsSection = () => {
                           </p>
                         </div>
         
-                        <Link
-                           to="/property"
+                        <NavLink
+                           to={"ongoingProject"}
                           className="group/btn flex items-center gap-2 text-lg text-white font-medium hover:text-[#f59e0b] transition-colors duration-300 pointer-events-auto cursor-pointer self-start focus:outline-none"
                         >
                           More Details
@@ -721,7 +722,7 @@ export const CardsSection = () => {
                               
                             ></i>
                           </span>
-                        </Link>
+                        </NavLink>
                       </div>
                     </div>
         
@@ -749,7 +750,7 @@ export const CardsSection = () => {
                         </div>
         
                         <Link
-                           to="/property"
+                           to="/ongoingProject"
                           className="group/btn flex items-center gap-2 text-lg text-white font-medium hover:text-[#f59e0b] transition-colors duration-300 pointer-events-auto cursor-pointer self-start focus:outline-none"
                         >
                           More Details
@@ -789,7 +790,7 @@ export const CardsSection = () => {
                         </div>
         
                         <Link
-                           to="/property"
+                           to="/ongoingProject"
                           className="group/btn flex items-center gap-2 text-lg text-white font-medium hover:text-[#f59e0b] transition-colors duration-300 pointer-events-auto cursor-pointer self-start focus:outline-none"
                         >
                           More Details

@@ -17,6 +17,9 @@ import AdminRoute from "../components/AdminRoute";
 import UserDashboard from "../pages/user/UserDashboard";
 import Wishlist from "../pages/user/Wishlist";
 import ForgotPassword from "../pages/auth/ForgotPassword";
+import NotFound from "../pages/NotFound";
+import OnGoingProject from "../pages/user/OnGoingProject";
+import PropertyById from "../pages/user/PropertyById";
 
 const Routes = createBrowserRouter([
     {
@@ -78,6 +81,15 @@ const Routes = createBrowserRouter([
       {
         path: "wishlist",
         element: <Wishlist />
+      },
+      {
+        path: "ongoingProject",
+        element: <OnGoingProject />
+      },
+      {
+        path: "property/:id",
+        element: <PropertyById />
+
       }
     ],
   },
@@ -97,5 +109,9 @@ const Routes = createBrowserRouter([
       },
     ],
   },
+  {
+    path: "*",
+    element: <NotFound />
+  }
 ]);
 export default Routes;

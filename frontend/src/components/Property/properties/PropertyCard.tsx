@@ -1,4 +1,5 @@
-import { NavLink } from "react-router-dom";
+
+import { useNavigate } from "react-router-dom";
 import type { Property } from "../../../type/type/property/property";
 import { Heart, MapPin } from "lucide-react";
 
@@ -6,6 +7,7 @@ type Props = {
   data: Property;
 };
 const PropertyCard = ({ data }: Props) => {
+  const navigate = useNavigate()
   return (
     <div className="bg-[#F0F4F9] rounded-2xl overflow-hidden transition duration-300 flex flex-col">
       
@@ -62,12 +64,12 @@ const PropertyCard = ({ data }: Props) => {
             </span>
           </div>
 
-          <NavLink
-            to="/get"
+          <button
+            onClick={()=> navigate(`/property/${data.id}`)}
             className="bg-[#171e2e] text-white px-5 py-2.5 rounded-lg text-xs font-bold hover:bg-yellow-400 hover:text-[#171E2E] transform hover:-translate-x-2 shadow hover:shadow-md transition-all duration-200"
           >
             Get Quote
-          </NavLink>
+          </button>
         </div>
 
       </div>
