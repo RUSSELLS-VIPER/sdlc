@@ -3,7 +3,8 @@ import { useAppDispatch, useAppSeletor } from "../../../services/helper/reduxsto
 import { getProperties } from "../../../store/slices/property.slice";
 import type { Property } from "../../../type/type/property/property";
 import PropertyCard from "./PropertyCard";
-import type { PropertyFilters } from "./PropertySection";
+import type { PropertyFilters } from "../../../type/interface/property/property.interface";
+
 
 type Props = {
   filters: PropertyFilters;
