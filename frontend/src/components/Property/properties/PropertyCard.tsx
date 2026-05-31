@@ -1,19 +1,62 @@
-
 import { useNavigate } from "react-router-dom";
 import type { Property } from "../../../type/type/property/property";
 import { Heart, MapPin } from "lucide-react";
-import { useState } from "react";
+import {
+  useAppDispatch,
+  useAppSeletor,
+} from "../../../services/helper/reduxstore";
+
+import { toast } from "sonner";
+import { getWishList, toggleLikeUnlike } from "../../../store/slices/user.slice";
+import { useEffect } from "react";
 
 type Props = {
   data: Property;
 };
+
 const PropertyCard = ({ data }: Props) => {
-  console.log(data)
-  const navigate = useNavigate()
-  const [open, setOpen] = useState(false);
+  console.log(data);
+  const navigate = useNavigate();
+  // const [Wishlist, setWishList] = useState(false);
+  const dispatch = useAppDispatch();
+  const { user, token } = useAppSeletor((state) => state.auth);
+  const {favouritesPropertyIds} = useAppSeletor((state)=> state.users)
+
+   const isLikedByMe = favouritesPropertyIds.includes(String(data.id))
+
+
+   useEffect(()=> {
+    if(token){
+      dispatch(getWishList())
+
+    }
+    
+   }, [token, dispatch])
+
+
+
+
+  const handleWishList = async (id: string) => {
+   
+    if (!user && !token) {
+      toast.success("Please Login First to like a property");
+      return;
+    }
+    try {
+      const resonse = await dispatch(
+        toggleLikeUnlike(id),
+      ).unwrap();
+      if (resonse.data.message) {
+        toast.success(resonse.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something Went wrong");
+    }
+
+  };
   return (
     <div className="bg-[#F0F4F9] rounded-2xl overflow-hidden transition duration-300 flex flex-col">
-      
       <div className="relative h-48 w-full">
         <img
           src={data.img}
@@ -21,21 +64,17 @@ const PropertyCard = ({ data }: Props) => {
           className="w-full h-full object-cover"
           loading="lazy"
         />
-        <button   onClick={() => setOpen(!open)} className="absolute top-3 right-3 bg-white w-8 h-8 rounded-full flex items-center justify-center text-yellow-400 text-lg leading-none hover:bg-gray-50 transition">
-      
-      <Heart
-    className={`text-sm ${open ? "fill-yellow-400" : ""}`}
-  />
-  
+        <button
+          onClick={()=> handleWishList(String(data.id))}
+          className="absolute top-3 right-3 bg-white w-8 h-8 rounded-full flex items-center justify-center text-yellow-400 text-lg leading-none hover:bg-gray-50 transition"
+        >
+          <Heart className={`text-sm ${isLikedByMe ? "fill-yellow-400" : ""}`} />
         </button>
       </div>
 
       <div className="p-5 flex flex-col flex-1">
-        
         <div className="flex justify-between items-center mb-1.5">
-          <h3 className="font-bold text-gray-900 text-[16px]">
-            {data.title}
-          </h3>
+          <h3 className="font-bold text-gray-900 text-[16px]">{data.title}</h3>
           <span className="text-[13px] font-bold text-gray-600">
             {data.bhk}
           </span>
@@ -43,7 +82,7 @@ const PropertyCard = ({ data }: Props) => {
 
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center text-[12px] text-gray-500 gap-1">
-            <MapPin  className=" text-[#0F172A] text-sm" />
+            <MapPin className=" text-[#0F172A] text-sm" />
             {data.location}
           </div>
           <div className="text-[11px] text-gray-500 font-medium">
@@ -54,9 +93,7 @@ const PropertyCard = ({ data }: Props) => {
         <div className="flex justify-between items-center mb-6">
           <div className="text-[12px] text-gray-500">
             Status -
-            <span className="text-gray-900 font-medium">
-              {data.status}
-            </span>
+            <span className="text-gray-900 font-medium">{data.status}</span>
           </div>
           <div className="font-bold text-[22px] text-gray-900">
             {data.price}
@@ -65,20 +102,16 @@ const PropertyCard = ({ data }: Props) => {
 
         <div className="flex justify-between items-center">
           <div className="text-[12px] text-gray-500">
-            Sq.FT -
-            <span className="text-gray-900 font-bold">
-              {data.sqft}
-            </span>
+            Sq.FT -<span className="text-gray-900 font-bold">{data.sqft}</span>
           </div>
 
           <button
-            onClick={()=> navigate(`/property/${data.id}`)}
+            onClick={() => navigate(`/property/${data.id}`)}
             className="bg-[#171e2e] text-white px-5 py-2.5 rounded-lg text-xs font-bold hover:bg-yellow-400 hover:text-[#171E2E] transform hover:-translate-x-2 shadow hover:shadow-md transition-all duration-200"
           >
             Get Quote
           </button>
         </div>
-
       </div>
     </div>
   );
