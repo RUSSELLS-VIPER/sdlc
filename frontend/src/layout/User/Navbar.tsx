@@ -26,6 +26,7 @@ const Navbar = () => {
   const [mobileUserDropdown, setMobileUserDropdown] = useState(false);
   const [mobilePropertyDropdown, setMobilePropertyDropdown] = useState(false);
   const desktopRef = useRef<HTMLDivElement>(null);
+  const desktopPropertyRef = useRef<HTMLDivElement>(null);
   const mobileRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
   const propertyDropdownItems = [
@@ -42,6 +43,13 @@ const Navbar = () => {
       // desktop dropdown
       if (desktopRef.current && !desktopRef.current.contains(target)) {
         setDesktopUserDropdown(false);
+      }
+
+      if (
+        desktopPropertyRef.current &&
+        !desktopPropertyRef.current.contains(target)
+      ) {
+        setDesktopPropertyDropdown(false);
       }
 
       // mobile dropdown
@@ -91,18 +99,34 @@ const Navbar = () => {
                   About US
                 </NavLink>
 
-                <div
-                  className="relative group"
-                  onMouseEnter={() => setDesktopPropertyDropdown(true)}
-                  onMouseLeave={() => setDesktopPropertyDropdown(false)}
-                >
-                  <NavLink
-                    to="/property"
-                    className="nav-link !inline-flex items-center gap-1 text-white text-sm font-semibold hover:text-[#facc15] transition-colors pb-1"
-                  >
-                    Properties
-                    <ChevronDown size={16} strokeWidth={2.25} />
-                  </NavLink>
+                <div className="relative" ref={desktopPropertyRef}>
+                  <div className="inline-flex items-center gap-1">
+                    <NavLink
+                      to="/property"
+                      className="nav-link text-white text-sm font-semibold hover:text-[#facc15] transition-colors pb-1"
+                      onClick={() => setDesktopPropertyDropdown(false)}
+                    >
+                      Properties
+                    </NavLink>
+
+                    <button
+                      type="button"
+                      aria-label="Toggle properties menu"
+                      aria-expanded={desktopPropertyDropdown}
+                      onClick={() =>
+                        setDesktopPropertyDropdown((currentValue) => !currentValue)
+                      }
+                      className="inline-flex items-center justify-center pb-1 text-white hover:text-[#facc15] transition-colors"
+                    >
+                      <ChevronDown
+                        size={16}
+                        strokeWidth={2.25}
+                        className={`transition-transform duration-300 ${
+                          desktopPropertyDropdown ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                  </div>
 
                   {desktopPropertyDropdown && (
                     <div className="absolute left-1/2 top-full mt-4 w-[280px] -translate-x-1/2 rounded-3xl bg-white p-3 shadow-[0_20px_60px_rgba(15,23,42,0.18)]">
