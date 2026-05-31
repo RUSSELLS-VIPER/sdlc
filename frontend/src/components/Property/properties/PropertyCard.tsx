@@ -2,12 +2,15 @@
 import { useNavigate } from "react-router-dom";
 import type { Property } from "../../../type/type/property/property";
 import { Heart, MapPin } from "lucide-react";
+import { useState } from "react";
 
 type Props = {
   data: Property;
 };
 const PropertyCard = ({ data }: Props) => {
+  console.log(data)
   const navigate = useNavigate()
+  const [open, setOpen] = useState(false);
   return (
     <div className="bg-[#F0F4F9] rounded-2xl overflow-hidden transition duration-300 flex flex-col">
       
@@ -18,8 +21,12 @@ const PropertyCard = ({ data }: Props) => {
           className="w-full h-full object-cover"
           loading="lazy"
         />
-        <button className="absolute top-3 right-3 bg-white w-8 h-8 rounded-full flex items-center justify-center text-yellow-400 text-lg leading-none hover:bg-gray-50 transition">
-         <Heart  className="text-sm"/> 
+        <button   onClick={() => setOpen(!open)} className="absolute top-3 right-3 bg-white w-8 h-8 rounded-full flex items-center justify-center text-yellow-400 text-lg leading-none hover:bg-gray-50 transition">
+      
+      <Heart
+    className={`text-sm ${open ? "fill-yellow-400" : ""}`}
+  />
+  
         </button>
       </div>
 
