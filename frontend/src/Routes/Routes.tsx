@@ -20,6 +20,7 @@ import ForgotPassword from "../pages/auth/ForgotPassword";
 import NotFound from "../pages/NotFound";
 import OnGoingProject from "../pages/user/OnGoingProject";
 import PropertyById from "../pages/user/PropertyById";
+import AgentById from "../pages/user/AgentById";
 
 const Routes = createBrowserRouter([
     {
@@ -90,6 +91,10 @@ const Routes = createBrowserRouter([
         path: "property/:id",
         element: <PropertyById />
 
+      },
+      {
+        path: "agent",
+        element: <AgentById />
       }
     ],
   },
