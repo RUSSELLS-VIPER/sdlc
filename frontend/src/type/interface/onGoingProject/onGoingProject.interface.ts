@@ -1,5 +1,5 @@
-import type { ProjectType } from "../../type/onGoingProject/onGoingProject.type";
+import type { PropertyItem } from "../../type/property/property";
 
 export interface OnGoingProjectCardType {
-    project: ProjectType
+    project: PropertyItem
 }

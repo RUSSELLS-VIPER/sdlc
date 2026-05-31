@@ -199,6 +199,11 @@ Near metro station, ready to move.</textarea
             <option value="villa">villa</option>
             <option value="rental">rental</option>
           </select>
+          <label>Project Status</label>
+          <select id="createProjectStatus">
+            <option value="Completed">Completed</option>
+            <option value="Ongoing">Ongoing</option>
+          </select>
           <label>Image (optional)</label>
           <input id="createImage" type="file" accept="image/*" />
           <button onclick="createProperty()">POST /api/properties</button>
@@ -242,6 +247,12 @@ Near metro station, ready to move.</textarea
             <option value="office">office</option>
             <option value="villa">villa</option>
             <option value="rental">rental</option>
+          </select>
+          <label>Project Status (optional)</label>
+          <select id="updateProjectStatus">
+            <option value="">-- Select --</option>
+            <option value="Completed">Completed</option>
+            <option value="Ongoing">Ongoing</option>
           </select>
           <label>Image (optional)</label>
           <input id="updateImage" type="file" accept="image/*" />
@@ -434,6 +445,10 @@ Near metro station, ready to move.</textarea
           "propertyType",
           document.getElementById("createPropertyType").value,
         );
+        formData.append(
+          "projectStatus",
+          document.getElementById("createProjectStatus").value,
+        );
 
         const file = document.getElementById("createImage").files[0];
         if (file) formData.append("image", file);
@@ -464,6 +479,9 @@ Near metro station, ready to move.</textarea
         ).value;
         const propertyType =
           document.getElementById("updatePropertyType").value;
+        const projectStatus = document.getElementById(
+          "updateProjectStatus",
+        ).value;
         const file = document.getElementById("updateImage").files[0];
 
         if (title) {
@@ -496,6 +514,10 @@ Near metro station, ready to move.</textarea
         }
         if (propertyType) {
           formData.append("propertyType", propertyType);
+          hasPayload = true;
+        }
+        if (projectStatus) {
+          formData.append("projectStatus", projectStatus);
           hasPayload = true;
         }
         if (file) {

@@ -18,8 +18,11 @@ export const CardsSection = () => {
   ];
 
   const filteredPopularItems = useMemo(() => {
-    if (activeCategory === "all") return items;
-    return items.filter((item) => item.propertyType === activeCategory);
+    const completedItems = items.filter(
+      (item) => (item.projectStatus ?? "Completed").trim().toLowerCase() === "completed",
+    );
+    if (activeCategory === "all") return completedItems;
+    return completedItems.filter((item) => item.propertyType === activeCategory);
   }, [activeCategory, items]);
 
   const categoryImageMap: Record<string, string> = {
@@ -52,7 +55,7 @@ export const CardsSection = () => {
   // console.log("items", items)
 
   useEffect(()=>{
-    dispatch(getProperties())
+    dispatch(getProperties({ projectStatus: "Completed" }))
     
   }, [dispatch])
 

@@ -9,6 +9,7 @@ export interface IProperty extends mongoose.Document {
     sqft: string;
     apartmentType: string;
     propertyType: "home" | "office" | "villa" | "apartment" | "rental" | "--";
+    projectStatus: "Completed" | "Ongoing";
     status: "Available" | "Sold" | "Rented";
     createdBy: mongoose.Types.ObjectId;
     image?: {
@@ -31,6 +32,11 @@ const propertySchema = new mongoose.Schema<IProperty>(
             type: String,
             enum: ["home", "office", "villa", "apartment", "rental", "--"],
             default: "--"
+        },
+        projectStatus: {
+            type: String,
+            enum: ["Completed", "Ongoing"],
+            default: "Completed"
         },
         status: { type: String, enum: ["Available", "Sold", "Rented"], default: "Available" },
         createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },

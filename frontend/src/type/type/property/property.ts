@@ -5,6 +5,7 @@ export type Property = {
   price: string;
   location: string;
   status: string;
+  projectStatus?: string;
   sqft: string;
   bhk: string;
   apartmentType?: string;
@@ -20,6 +21,7 @@ export type PropertyItem = {
     address: string;
     image: string | undefined;
     status?: string;
+    projectStatus?: string;
     sqft?: string;
     bhk?: string;
     apartmentType?: string;

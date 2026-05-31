@@ -17,7 +17,12 @@ export type PropertyFilters = {
   maxPrice: number;
 };
 
-const PropertySection = () => {
+type Props = {
+  projectStatus?: "Completed" | "Ongoing";
+  showTabs?: boolean;
+};
+
+const PropertySection = ({ projectStatus = "Completed", showTabs = true }: Props) => {
   const { items } = useAppSeletor((state) => state.property);
   const [searchParams] = useSearchParams();
   const [currentPage, setCurrentPage] = useState(1);
@@ -75,12 +80,13 @@ const PropertySection = () => {
             <BrokerList />
           </aside>
           <div className="flex-1 w-full">
-            <PropertyTabs />
+            {showTabs && <PropertyTabs />}
             <PropertyGrid
               filters={filters}
               currentPage={currentPage}
               pageSize={6}
               onTotalPagesChange={setTotalPages}
+              projectStatus={projectStatus}
             />
             <Pagination
               currentPage={currentPage}

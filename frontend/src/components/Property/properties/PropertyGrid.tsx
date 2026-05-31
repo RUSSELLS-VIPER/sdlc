@@ -10,6 +10,7 @@ type Props = {
   currentPage: number;
   pageSize: number;
   onTotalPagesChange: (value: number) => void;
+  projectStatus?: "Completed" | "Ongoing";
 };
 
 const getCountryFromAddress = (address: string) => {
@@ -24,17 +25,30 @@ const getCityFromAddress = (address: string) => {
 
 const parseSqft = (sqft: string | undefined) => Number(String(sqft ?? "").replace(/[^\d.]/g, "")) || 0;
 const normalizeCategory = (value: string) => value.trim().toLowerCase();
+const normalizeProjectStatus = (value: string | undefined) => (value ?? "Completed").trim().toLowerCase();
 
-const PropertyGrid = ({ filters, currentPage, pageSize, onTotalPagesChange }: Props) => {
+const PropertyGrid = ({
+  filters,
+  currentPage,
+  pageSize,
+  onTotalPagesChange,
+  projectStatus = "Completed",
+}: Props) => {
   const dispatch = useAppDispatch();
   const { items, loading, error } = useAppSeletor((state) => state.property);
+  const normalizedProjectStatus = normalizeProjectStatus(projectStatus);
 
   useEffect(() => {
-    dispatch(getProperties());
-  }, [dispatch]);
+    dispatch(getProperties({ projectStatus }));
+  }, [dispatch, projectStatus]);
 
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
+      const projectStatus = normalizeProjectStatus(item.projectStatus);
+      if (projectStatus !== normalizedProjectStatus) {
+        return false;
+      }
+
       const itemCountry = getCountryFromAddress(item.address || "");
       const itemCity = getCityFromAddress(item.address || "");
       const itemPropertyType = item.propertyType || "--";
@@ -55,7 +69,7 @@ const PropertyGrid = ({ filters, currentPage, pageSize, onTotalPagesChange }: Pr
 
       return countryMatch && cityMatch && categoryMatch && bhkMatch && apartmentMatch && sqftMatch && priceMatch;
     });
-  }, [filters, items]);
+  }, [filters, items, normalizedProjectStatus]);
 
   const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
 

@@ -4,6 +4,10 @@ import { endPoint } from "../../services/helper/apiEndPoint";
 import { getErrorMessage } from "../../services/helper/global.helper";
 import type { PropertyItem, PropertyState } from "../../type/type/property/property";
 
+type PropertyListParams = {
+    projectStatus?: "Completed" | "Ongoing";
+};
+
 type CreatePropertyPayload = FormData;
 type CreatePropertyResponse = { message?: string; property?: PropertyItem } | PropertyItem;
 
@@ -16,9 +20,16 @@ const initialState: PropertyState = {
 
 export const getProperties = createAsyncThunk(
     "property/list",
-    async (_, { rejectWithValue }) => {
+    async (params: PropertyListParams | undefined, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get(endPoint.properties.list);
+            const searchParams = new URLSearchParams();
+            if (params?.projectStatus) {
+                searchParams.set("projectStatus", params.projectStatus);
+            }
+            const url = searchParams.toString()
+                ? `${endPoint.properties.list}?${searchParams.toString()}`
+                : endPoint.properties.list;
+            const response = await axiosInstance.get(url);
             const payload = response.data as PropertyItem[] | { properties?: PropertyItem[]; data?: PropertyItem[] };
             if (Array.isArray(payload)) {
                 return payload;

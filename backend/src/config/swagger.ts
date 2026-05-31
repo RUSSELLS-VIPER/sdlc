@@ -126,6 +126,11 @@ export const swaggerSpec = {
             enum: ["home", "office", "villa", "apartment", "rental"],
             example: "apartment",
           },
+          projectStatus: {
+            type: "string",
+            enum: ["Completed", "Ongoing"],
+            example: "Completed",
+          },
           image: { type: "string", format: "binary" },
         },
       },
@@ -144,6 +149,11 @@ export const swaggerSpec = {
             enum: ["home", "office", "villa", "apartment", "rental"],
             example: "villa",
           },
+          projectStatus: {
+            type: "string",
+            enum: ["Completed", "Ongoing"],
+            example: "Ongoing",
+          },
           image: { type: "string", format: "binary" },
         },
       },
@@ -159,6 +169,11 @@ export const swaggerSpec = {
           sqft: { type: "string", example: "1200" },
           apartmentType: { type: "string", example: "Apartment" },
           propertyType: { type: "string", example: "apartment" },
+          projectStatus: {
+            type: "string",
+            enum: ["Completed", "Ongoing"],
+            example: "Completed",
+          },
           createdBy: {
             type: "object",
             properties: {
@@ -290,6 +305,18 @@ export const swaggerSpec = {
       get: {
         tags: ["Property"],
         summary: "Get all properties",
+        parameters: [
+          {
+            in: "query",
+            name: "projectStatus",
+            required: false,
+            schema: {
+              type: "string",
+              enum: ["Completed", "Ongoing"],
+            },
+            description: "Filter properties by project status",
+          },
+        ],
         responses: {
           "200": {
             description: "List of properties",

@@ -23,6 +23,22 @@ const parseError = (error: unknown) => {
     return { message: "Internal server error" };
 };
 
+const normalizeProjectStatus = (value: unknown) => {
+    if (typeof value !== "string") {
+        return null;
+    }
+
+    const normalized = value.trim().toLowerCase();
+    if (normalized === "completed") {
+        return "Completed";
+    }
+    if (normalized === "ongoing") {
+        return "Ongoing";
+    }
+
+    return null;
+};
+
 const toSafePropertyResponse = (property: any) => {
     const obj = property.toObject ? property.toObject() : property;
     const rawImageData = obj?.image?.data;
@@ -71,6 +87,7 @@ export const createProperty = async (req: AuthenticatedRequest, res: Response) =
             sqft,
             apartmentType,
             propertyType,
+            projectStatus,
             status
         } = req.body;
         const parsedPrice = Number(price);
@@ -85,6 +102,7 @@ export const createProperty = async (req: AuthenticatedRequest, res: Response) =
         const resolvedSqFt = sqFt ?? sqft ?? "--";
         const resolvedApartmentType = apartmentType ?? "--";
         const resolvedPropertyType = propertyType ?? "--";
+        const resolvedProjectStatus = normalizeProjectStatus(projectStatus) ?? "Completed";
 
         const property = await Property.create({
             title,
@@ -95,6 +113,7 @@ export const createProperty = async (req: AuthenticatedRequest, res: Response) =
             sqft: resolvedSqFt,
             apartmentType: resolvedApartmentType,
             propertyType: resolvedPropertyType,
+            projectStatus: resolvedProjectStatus,
             status: status || "Available",
             createdBy: new mongoose.Types.ObjectId(req.user.id),
             image: req.file
@@ -117,7 +136,21 @@ export const createProperty = async (req: AuthenticatedRequest, res: Response) =
 
 export const getProperties = async (_req: AuthenticatedRequest, res: Response) => {
     try {
-        const properties = await Property.find().populate("createdBy", "name email role");
+        const projectStatus = normalizeProjectStatus(_req.query.projectStatus);
+        if (_req.query.projectStatus !== undefined && !projectStatus) {
+            return res.status(400).json({ message: "projectStatus must be Completed or Ongoing" });
+        }
+
+        const query =
+            projectStatus === "Completed"
+                ? {
+                      $or: [{ projectStatus: "Completed" }, { projectStatus: { $exists: false } }]
+                  }
+                : projectStatus
+                  ? { projectStatus }
+                  : {};
+
+        const properties = await Property.find(query).populate("createdBy", "name email role");
         return res.json(properties.map((property) => toSafePropertyResponse(property)));
     } catch (error) {
         console.error("getProperties error:", error);
@@ -169,6 +202,7 @@ export const updateProperty = async (req: AuthenticatedRequest, res: Response) =
             sqft,
             apartmentType,
             propertyType,
+            projectStatus,
             status
         } = req.body;
 
@@ -186,6 +220,13 @@ export const updateProperty = async (req: AuthenticatedRequest, res: Response) =
         property.sqft = sqFt ?? sqft ?? property.sqft;
         property.apartmentType = apartmentType ?? property.apartmentType;
         property.propertyType = propertyType ?? property.propertyType;
+        if (projectStatus !== undefined) {
+            const resolvedProjectStatus = normalizeProjectStatus(projectStatus);
+            if (!resolvedProjectStatus) {
+                return res.status(400).json({ message: "projectStatus must be Completed or Ongoing" });
+            }
+            property.projectStatus = resolvedProjectStatus;
+        }
         property.status = status ?? property.status;
         if (req.file) {
             property.image = {
