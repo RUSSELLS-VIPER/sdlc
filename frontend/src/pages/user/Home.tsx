@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import "../../styles/infinity-cmn.css";
 import "../../styles/infinity-home.css";
@@ -11,8 +11,55 @@ import {
   GetInTouchSection,
   TestimonialsSection,
 } from "../../components/Home";
+import { useAppDispatch, useAppSeletor } from "../../services/helper/reduxstore";
+import { getProperties } from "../../store/slices/property.slice";
+
+type SearchFieldKey = "propertyType" | "location" | "bhk" | "budget";
+
+type SearchSelection = Record<SearchFieldKey, string>;
+
+const defaultSearchSelection: SearchSelection = {
+  propertyType: "Property Types",
+  location: "All locations",
+  bhk: "Select BHK",
+  budget: "Max Price",
+};
+
+const formatCurrency = (value: number) => `Rs.${value.toLocaleString("en-IN")}`;
+
+const getCityFromAddress = (address: string) => {
+  const parts = address.split(",").map((part) => part.trim()).filter(Boolean);
+  return parts.length ? parts[0] : "Unknown";
+};
+
+const buildBudgetOptions = (prices: number[]) => {
+  const sortedPrices = prices.filter((price) => price > 0).sort((a, b) => a - b);
+
+  if (!sortedPrices.length) {
+    return [
+      { label: "Under Rs.50,00,000", value: "5000000" },
+      { label: "Under Rs.1,00,00,000", value: "10000000" },
+      { label: "Above Rs.1,00,00,000", value: "100000000" },
+    ];
+  }
+
+  const minPrice = sortedPrices[0];
+  const maxPrice = sortedPrices[sortedPrices.length - 1];
+  const span = Math.max(maxPrice - minPrice, 1);
+  const firstBand = Math.round(minPrice + span / 3);
+  const secondBand = Math.round(minPrice + (span * 2) / 3);
+
+  return [
+    { label: `Under ${formatCurrency(firstBand)}`, value: String(firstBand) },
+    { label: `Under ${formatCurrency(secondBand)}`, value: String(secondBand) },
+    { label: `Under ${formatCurrency(maxPrice)}`, value: String(maxPrice) },
+  ];
+};
 
 const Home = () => {
+  const dispatch = useAppDispatch();
+  const { items } = useAppSeletor((state) => state.property);
+
   useEffect(() => {
     const video = document.getElementById("bgVideo") as HTMLVideoElement | null;
     const controlBtn = document.getElementById("videoControlBtn");
@@ -34,6 +81,187 @@ const Home = () => {
     controlBtn?.addEventListener("click", toggleVideo);
     return () => controlBtn?.removeEventListener("click", toggleVideo);
   }, []);
+
+  useEffect(() => {
+    dispatch(getProperties({ projectStatus: "Completed" }));
+  }, [dispatch]);
+
+  const propertyTypeOptions = useMemo(() => {
+    const seen = new Set<string>();
+
+    return items
+      .map((item) => item.propertyType?.trim() || item.apartmentType?.trim() || "")
+      .filter((value): value is string => Boolean(value))
+      .filter((value) => {
+        const key = value.toLowerCase();
+        if (seen.has(key)) {
+          return false;
+        }
+        seen.add(key);
+        return true;
+      })
+      .map((value) => ({
+        label: value,
+        value,
+      }));
+  }, [items]);
+
+  const locationOptions = useMemo(() => {
+    const seen = new Set<string>();
+
+    return items
+      .map((item) => getCityFromAddress(item.address || ""))
+      .filter((value): value is string => Boolean(value))
+      .filter((value) => {
+        const key = value.toLowerCase();
+        if (seen.has(key)) {
+          return false;
+        }
+        seen.add(key);
+        return true;
+      })
+      .map((value) => ({
+        label: value,
+        value,
+      }));
+  }, [items]);
+
+  const bhkOptions = useMemo(() => {
+    const seen = new Set<string>();
+
+    return items
+      .map((item) => item.bhk?.trim() || "")
+      .filter((value): value is string => Boolean(value))
+      .filter((value) => {
+        const key = value.toLowerCase();
+        if (seen.has(key)) {
+          return false;
+        }
+        seen.add(key);
+        return true;
+      })
+      .map((value) => ({
+        label: value,
+        value,
+      }));
+  }, [items]);
+
+  const budgetOptions = useMemo(
+    () => buildBudgetOptions(items.map((item) => Number(item.price) || 0)),
+    [items]
+  );
+
+  const [searchSelection, setSearchSelection] = useState<SearchSelection>(defaultSearchSelection);
+  const [openField, setOpenField] = useState<SearchFieldKey | null>(null);
+
+  const searchHref = useMemo(() => {
+    const params = new URLSearchParams();
+
+    if (searchSelection.propertyType !== defaultSearchSelection.propertyType) {
+      params.set("category", searchSelection.propertyType);
+    }
+
+    if (searchSelection.location !== defaultSearchSelection.location) {
+      params.set("city", searchSelection.location);
+    }
+
+    if (searchSelection.bhk !== defaultSearchSelection.bhk) {
+      params.set("bhk", searchSelection.bhk);
+    }
+
+    if (searchSelection.budget !== defaultSearchSelection.budget) {
+      params.set("maxPrice", searchSelection.budget);
+    }
+
+    return params.toString() ? `/property?${params.toString()}` : "/property";
+  }, [searchSelection]);
+
+  const searchFields: Array<{
+    key: SearchFieldKey;
+    label: string;
+    placeholder: string;
+    options: Array<{ label: string; value: string }>;
+  }> = [
+    {
+      key: "propertyType",
+      label: "Looking For",
+      placeholder: defaultSearchSelection.propertyType,
+      options: propertyTypeOptions,
+    },
+    {
+      key: "location",
+      label: "Location",
+      placeholder: defaultSearchSelection.location,
+      options: locationOptions,
+    },
+    {
+      key: "bhk",
+      label: "BHK",
+      placeholder: defaultSearchSelection.bhk,
+      options: bhkOptions,
+    },
+    {
+      key: "budget",
+      label: "Your Budget",
+      placeholder: defaultSearchSelection.budget,
+      options: budgetOptions,
+    },
+  ];
+
+  const renderDropdown = (field: (typeof searchFields)[number]) => {
+    const selectedValue = searchSelection[field.key];
+    const selectedLabel =
+      field.options.find((option) => option.value === selectedValue)?.label ?? field.placeholder;
+    const isOpen = openField === field.key;
+
+    return (
+      <div className="flex flex-col gap-1.5 w-full md:w-[calc(50%-0.5rem)] lg:flex-1 relative group">
+        <label className="text-[10px] md:text-[11px] font-medium text-white/70 uppercase tracking-widest pl-1 whitespace-nowrap">
+          {field.label}
+        </label>
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setOpenField((current) => (current === field.key ? null : field.key))}
+            className="w-full bg-white/5 border border-white/20 hover:bg-white/10 rounded-xl px-4 py-3.5 flex items-center justify-between transition-all text-left"
+          >
+            <span className="text-sm font-medium text-white whitespace-nowrap">
+              {selectedLabel}
+            </span>
+            <i className="fa-solid fa-sort text-[#d4af37] text-xs opacity-70 group-hover:opacity-100"></i>
+          </button>
+
+          {isOpen && (
+            <div className="absolute top-full mt-2 left-0 w-full bg-[#111827]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden">
+              <ul className="flex flex-col py-1 max-h-64 overflow-y-auto">
+                {field.options.length ? (
+                  field.options.map((option) => (
+                    <li key={option.value}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSearchSelection((current) => ({
+                              ...current,
+                              [field.key]: option.value,
+                            }));
+                            setOpenField(null);
+                          }}
+                        className="block w-full text-left px-4 py-3 text-sm text-gray-200 hover:bg-[#d4af37] hover:text-[#111827] transition-colors"
+                      >
+                        {option.label}
+                      </button>
+                    </li>
+                  ))
+                ) : (
+                  <li className="px-4 py-3 text-sm text-gray-400">No options available</li>
+                )}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   const [calculatorValue, setCalculatorValue] = useState("0");
 
@@ -120,178 +348,15 @@ const Home = () => {
 
             <div className="w-full max-w-5xl mx-auto p-6 md:p-8 rounded-2xl border border-white/50 relative z-10">
               <div className="flex flex-col md:flex-row flex-wrap lg:flex-nowrap items-end justify-between gap-4 lg:gap-6">
-                <div className="flex flex-col gap-1.5 w-full md:w-[calc(50%-0.5rem)] lg:flex-1 relative group">
-                  <label className="text-[10px] md:text-[11px] font-medium text-white/70 uppercase tracking-widest pl-1 whitespace-nowrap">
-                    Looking For
-                  </label>
-                  <div className="relative cursor-pointer">
-                    <div className="w-full bg-white/5 border border-white/20 hover:bg-white/10 rounded-xl px-4 py-3.5 flex items-center justify-between transition-all">
-                      <span className="text-sm font-medium text-white whitespace-nowrap">
-                        Property Types
-                      </span>
-                      <i className="fa-solid fa-sort text-[#d4af37] text-xs"></i>
-                    </div>
-                    <div className="absolute top-full mt-2 left-0 w-full bg-[#111827]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl opacity-0 invisible translate-y-4 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 z-50 overflow-hidden">
-                      <ul className="flex flex-col py-1">
-                        <li>
-                          <Link
-                            to="#"
-                            className="block px-4 py-3 text-sm text-gray-200 hover:bg-[#d4af37] hover:text-[#111827] transition-colors"
-                          >
-                            Apartment
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            to="#"
-                            className="block px-4 py-3 text-sm text-gray-200 hover:bg-[#d4af37] hover:text-[#111827] transition-colors"
-                          >
-                            Office
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            to="#"
-                            className="block px-4 py-3 text-sm text-gray-200 hover:bg-[#d4af37] hover:text-[#111827] transition-colors"
-                          >
-                            Retail Shop
-                          </Link>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
+                {searchFields.map(renderDropdown)}
 
-                <div className="flex flex-col gap-1.5 w-full md:w-[calc(50%-0.5rem)] lg:flex-1 relative group">
-                  <label className="text-[10px] md:text-[11px] font-medium text-white/70 uppercase tracking-widest pl-1 whitespace-nowrap">
-                    Location
-                  </label>
-                  <div className="relative cursor-pointer">
-                    <div className="w-full bg-white/5 border border-white/20 hover:bg-white/10 rounded-xl px-4 py-3.5 flex items-center justify-between transition-all">
-                      <span className="text-sm font-medium text-white whitespace-nowrap">
-                        All locations
-                      </span>
-                      <i className="fa-solid fa-sort text-[#d4af37] text-xs opacity-70 group-hover:opacity-100"></i>
-                    </div>
-                    <div className="absolute top-full mt-2 left-0 w-full bg-[#111827]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl opacity-0 invisible translate-y-4 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 z-50 overflow-hidden">
-                      <ul className="flex flex-col py-1">
-                        <li>
-                          <Link
-                            to="#"
-                            className="block px-4 py-3 text-sm text-gray-200 hover:bg-[#d4af37] hover:text-[#111827] transition-colors"
-                          >
-                            Kolkata
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            to="#"
-                            className="block px-4 py-3 text-sm text-gray-200 hover:bg-[#d4af37] hover:text-[#111827] transition-colors"
-                          >
-                            Mumbai
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            to="#"
-                            className="block px-4 py-3 text-sm text-gray-200 hover:bg-[#d4af37] hover:text-[#111827] transition-colors"
-                          >
-                            Delhi
-                          </Link>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-1.5 w-full md:w-[calc(50%-0.5rem)] lg:flex-1 relative group">
-                  <label className="text-[10px] md:text-[11px] font-medium text-white/70 uppercase tracking-widest pl-1 whitespace-nowrap">
-                    BHK
-                  </label>
-                  <div className="relative cursor-pointer">
-                    <div className="w-full bg-white/5 border border-white/20 hover:bg-white/10 rounded-xl px-4 py-3.5 flex items-center justify-between transition-all">
-                      <span className="text-sm font-medium text-white whitespace-nowrap">
-                        Select BHK
-                      </span>
-                      <i className="fa-solid fa-sort text-[#d4af37] text-xs opacity-70 group-hover:opacity-100"></i>
-                    </div>
-                    <div className="absolute top-full mt-2 left-0 w-full bg-[#111827]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl opacity-0 invisible translate-y-4 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 z-50 overflow-hidden">
-                      <ul className="flex flex-col py-1">
-                        <li>
-                          <Link
-                            to="#"
-                            className="block px-4 py-3 text-sm text-gray-200 hover:bg-[#d4af37] hover:text-[#111827] transition-colors"
-                          >
-                            1 BHK
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            to="#"
-                            className="block px-4 py-3 text-sm text-gray-200 hover:bg-[#d4af37] hover:text-[#111827] transition-colors"
-                          >
-                            2 BHK
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            to="#"
-                            className="block px-4 py-3 text-sm text-gray-200 hover:bg-[#d4af37] hover:text-[#111827] transition-colors"
-                          >
-                            3 BHK +
-                          </Link>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-1.5 w-full md:w-[calc(50%-0.5rem)] lg:flex-1 relative group">
-                  <label className="text-[10px] md:text-[11px] font-medium text-white/70 uppercase tracking-widest pl-1 whitespace-nowrap">
-                    Your Budget
-                  </label>
-                  <div className="relative cursor-pointer">
-                    <div className="w-full bg-white/5 border border-white/20 hover:bg-white/10 rounded-xl px-4 py-3.5 flex items-center justify-between transition-all">
-                      <span className="text-sm font-medium text-white whitespace-nowrap">
-                        Max Price
-                      </span>
-                      <i className="fa-solid fa-sort text-[#d4af37] text-xs opacity-70 group-hover:opacity-100"></i>
-                    </div>
-                    <div className="absolute top-full mt-2 left-0 w-full bg-[#111827]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl opacity-0 invisible translate-y-4 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 z-50 overflow-hidden">
-                      <ul className="flex flex-col py-1">
-                        <li>
-                          <Link
-                            to="#"
-                            className="block px-4 py-3 text-sm text-gray-200 hover:bg-[#d4af37] hover:text-[#111827] transition-colors"
-                          >
-                            Under 50L
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            to="#"
-                            className="block px-4 py-3 text-sm text-gray-200 hover:bg-[#d4af37] hover:text-[#111827] transition-colors"
-                          >
-                            50L - 1Cr
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            to="#"
-                            className="block px-4 py-3 text-sm text-gray-200 hover:bg-[#d4af37] hover:text-[#111827] transition-colors"
-                          >
-                            Over 1Cr
-                          </Link>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                <button className="w-full lg:w-auto flex-shrink-0 bg-[#111827] hover:bg-[#d4af37] text-white hover:text-[#111827] px-10 py-3.5 rounded-xl text-sm font-bold tracking-widest transition-all flex items-center justify-center gap-2 lg:gap-3 border border-white/20 shadow-xl mt-2 lg:mt-0">
+                <Link
+                  to={searchHref}
+                  className="w-full lg:w-auto flex-shrink-0 bg-[#111827] hover:bg-[#d4af37] text-white hover:text-[#111827] px-10 py-3.5 rounded-xl text-sm font-bold tracking-widest transition-all flex items-center justify-center gap-2 lg:gap-3 border border-white/20 shadow-xl mt-2 lg:mt-0"
+                >
                   <i className="fa-solid fa-magnifying-glass"></i>{" "}
                   <span>SEARCH</span>
-                </button>
+                </Link>
               </div>
             </div>
           </div>

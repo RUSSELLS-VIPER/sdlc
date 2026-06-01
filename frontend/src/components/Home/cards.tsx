@@ -4,7 +4,6 @@ import {
   useAppDispatch,
   useAppSeletor,
 } from "../../services/helper/reduxstore";
-import { getProperties } from "../../store/slices/property.slice";
 import { Heart, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { getWishList, toggleLikeUnlike } from "../../store/slices/user.slice";
@@ -69,7 +68,6 @@ export const CardsSection = () => {
   }, [items]);
 
   useEffect(() => {
-    dispatch(getProperties({ projectStatus: "Completed" }));
     if (token) {
       dispatch(getWishList());
     }

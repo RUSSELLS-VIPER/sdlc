@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import SidebarFilters from "../Sidebar/SidebarFilters";
 import BrokerList from "../Sidebar/BrokerList";
@@ -7,6 +7,8 @@ import PropertyGrid from "./PropertyGrid";
 import Pagination from "./Pagination";
 import { useAppSeletor } from "../../../services/helper/reduxstore";
 import type { PropertyFilters } from "../../../type/interface/property/property.interface";
+
+export type { PropertyFilters };
 
 type Props = {
   projectStatus?: "Completed" | "Ongoing";
@@ -19,7 +21,7 @@ const PropertySection = ({ projectStatus = "Completed", showTabs = true }: Props
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-
+  const searchParamsKey = searchParams.toString();
   const urlCategory = searchParams.get("category") || "All";
 
 
@@ -32,6 +34,28 @@ const PropertySection = ({ projectStatus = "Completed", showTabs = true }: Props
     maxSqft: 0,
     maxPrice: 0
   });
+
+  useEffect(() => {
+    const category = searchParams.get("category");
+    const city = searchParams.get("city");
+    const bhk = searchParams.get("bhk");
+    const maxPrice = searchParams.get("maxPrice");
+    const maxSqft = searchParams.get("maxSqft");
+    const country = searchParams.get("country");
+    const apartment = searchParams.get("apartment");
+
+    setFilters((prev) => ({
+      ...prev,
+      country: country ?? prev.country,
+      city: city ?? prev.city,
+      category: category ?? prev.category,
+      bhk: bhk ? [bhk] : prev.bhk,
+      apartment: apartment ? [apartment] : prev.apartment,
+      maxPrice: maxPrice ? Number(maxPrice) || 0 : prev.maxPrice,
+      maxSqft: maxSqft ? Number(maxSqft) || 0 : prev.maxSqft
+    }));
+    setCurrentPage(1);
+  }, [searchParamsKey]);
 
  
   const activeFilters = useMemo(() => {

@@ -238,7 +238,9 @@ function bindEvents() {
     const previewTargets = {
       createImage: "createImagePreview",
       updateImage: "updateImagePreview",
-      profileImage: "profileImagePreview"
+      profileImage: "profileImagePreview",
+      blogImage: "blogImagePreview",
+      blogUpdateImage: "blogUpdateImagePreview"
     };
 
     const previewId = previewTargets[target.id];

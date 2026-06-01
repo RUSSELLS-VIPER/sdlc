@@ -3,11 +3,18 @@ import {
    getAdminDashboard,
    getAdminCustomerList
 } from "../controllers/admin.controller";
+import {
+   createBlogPost,
+   deleteBlogPost,
+   getBlogPostById,
+   getBlogPosts,
+   updateBlogPost
+} from "../controllers/blog.controller";
 
 
 import { authenticate, authorize } from "../middleware/auth.middleware";
 import { Role } from "../models/user.model";
-import { uploadCheck } from "../middleware/uploadCheck.middleware"; // For profile picture
+import { uploadCheck } from "../middleware/uploadCheck.middleware";
 
 const router = express.Router();
 
@@ -21,5 +28,11 @@ router.get(
 
 // Mounts onto your administration root pipeline panel
 router.get("/customers-list", authenticate, authorize(Role.ADMIN), getAdminCustomerList);
+
+router.get("/blogs", authenticate, authorize(Role.ADMIN), getBlogPosts);
+router.get("/blogs/:id", authenticate, authorize(Role.ADMIN), getBlogPostById);
+router.post("/blogs", authenticate, authorize(Role.ADMIN), uploadCheck.single("image"), createBlogPost);
+router.put("/blogs/:id", authenticate, authorize(Role.ADMIN), uploadCheck.single("image"), updateBlogPost);
+router.delete("/blogs/:id", authenticate, authorize(Role.ADMIN), deleteBlogPost);
 
 export default router;
