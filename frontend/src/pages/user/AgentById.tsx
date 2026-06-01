@@ -1,7 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-
 import agentByImage from '../../assets/images/agent-images/agent-bg.png';
 import agentImage from '../../assets/images/agent-images/agent-1.png';
 import image1 from '../../assets/images/agent-images/list-img-1.png';

@@ -65,6 +65,14 @@ const Home = () => {
     const controlBtn = document.getElementById("videoControlBtn");
     const controlIcon = document.getElementById("controlIcon");
 
+  //   const popularCategories = [
+  //   { label: "All", value: "all" as const },
+  //   { label: "House", value: "home" as const },
+  //   { label: "Apartment", value: "apartment" as const },
+  //   { label: "Villa", value: "villa" as const },
+  //   { label: "Office", value: "office" as const },
+  // ];
+
     const toggleVideo = () => {
       if (!video || !controlIcon) return;
       if (video.paused) {
@@ -1102,3 +1110,6 @@ const Home = () => {
 };
 
 export default Home;
+
+
+

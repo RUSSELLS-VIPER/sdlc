@@ -1,37 +1,73 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Heart, MapPin } from "lucide-react";
 import industrialUnits from "../../assets/images/ongoing-projects/industrial-units.png";
 import sqftIcon from "../../assets/images/ongoing-projects/sqft.png";
 import type { OnGoingProjectCardType } from "../../type/interface/onGoingProject/onGoingProject.interface";
+import { getWishList, toggleLikeUnlike } from "../../store/slices/user.slice";
+import { toast } from "sonner";
+import {
+  useAppDispatch,
+  useAppSeletor,
+} from "../../services/helper/reduxstore";
 
-const formatPrice = (price: number) => `₹${Number(price ?? 0).toLocaleString("en-IN")}`;
+const formatPrice = (price: number) =>
+  `₹${Number(price ?? 0).toLocaleString("en-IN")}`;
 
 const OnGoingProjectCard = ({ project }: OnGoingProjectCardType) => {
-  const [wishList, setWishList] = useState(false);
+  // const [wishList, setWishList] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { user, token } = useAppSeletor((state) => state.auth);
+  const { favouritesPropertyIds } = useAppSeletor((state) => state.users);
 
   const projectType = useMemo(
     () => project.propertyType || project.apartmentType || "--",
     [project.apartmentType, project.propertyType],
   );
 
+  const isLikedByMe = favouritesPropertyIds.includes(String(project._id));
+
+  useEffect(() => {
+    if (token) {
+      dispatch(getWishList());
+    }
+  }, [token, dispatch]);
+
+  const handleWishList = async (id: string) => {
+    if (!user && !token) {
+      toast.success("Please Login First to like a property");
+      return;
+    }
+    try {
+      const resonse = await dispatch(toggleLikeUnlike(id)).unwrap();
+      if (resonse.data.message) {
+        toast.success(resonse.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something Went wrong");
+    }
+  };
+
   return (
     <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 flex flex-col h-full shadow-xl">
       <div className="relative h-56 overflow-hidden group cursor-pointer">
         <img
-          src={project.image || "/assets/infinity-home/images/index/house-img.png"}
+          src={
+            project.image || "/assets/infinity-home/images/index/house-img.png"
+          }
           alt={project.title}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-blue-900/60 mix-blend-multiply opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
 
         <button
-          onClick={() => setWishList(!wishList)}
+          onClick={() => handleWishList(project._id)}
           className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/30 flex items-center justify-center text-[#FCAA31] hover:bg-black/50 transition z-10"
           aria-label="Wishlist"
         >
-          <Heart className={`${wishList ? "fill-current" : ""}`} size={16} />
+          <Heart className={`${isLikedByMe ? "fill-current" : ""}`} size={16} />
         </button>
 
         <div className="absolute bottom-4 left-4 flex items-center gap-2 text-white z-10">
@@ -42,7 +78,9 @@ const OnGoingProjectCard = ({ project }: OnGoingProjectCardType) => {
       </div>
 
       <div className="p-5 flex flex-col flex-1 bg-white">
-        <h3 className="text-2xl font-bold text-gray-800 mb-1">{project.title}</h3>
+        <h3 className="text-2xl font-bold text-gray-800 mb-1">
+          {project.title}
+        </h3>
         <p className="text-gray-500 text-xs mb-5 flex items-center gap-1.5">
           <MapPin size={14} className="text-[#FCAA31]" />
           {project.address}
@@ -53,7 +91,9 @@ const OnGoingProjectCard = ({ project }: OnGoingProjectCardType) => {
             <p className="text-[10px] text-gray-400 uppercase tracking-wide">
               Project Type
             </p>
-            <p className="font-bold text-gray-800 text-sm mt-0.5">{projectType}</p>
+            <p className="font-bold text-gray-800 text-sm mt-0.5">
+              {projectType}
+            </p>
           </div>
           <div>
             <p className="text-[10px] text-gray-400 uppercase tracking-wide">
