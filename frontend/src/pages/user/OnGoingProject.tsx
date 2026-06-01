@@ -58,6 +58,7 @@ const OnGoingProject = () => {
     maxPrice: 0,
     maxSqft: 0,
   });
+  
 
   useEffect(() => {
     dispatch(getProperties({ projectStatus: "Ongoing" }));

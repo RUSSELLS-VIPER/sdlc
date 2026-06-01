@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   useAppDispatch,
   useAppSeletor,
@@ -8,6 +8,7 @@ import { getProperties } from "../../store/slices/property.slice";
 import { Heart, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { getWishList, toggleLikeUnlike } from "../../store/slices/user.slice";
+import HomeOnGoingProjectCard from "./HomeOnGoingProjectCard";
 
 export const CardsSection = () => {
   const { items, loading, error } = useAppSeletor((state) => state.property);
@@ -19,8 +20,6 @@ export const CardsSection = () => {
   const { user, token } = useAppSeletor((state) => state.auth);
   const { favouritesPropertyIds } = useAppSeletor((state) => state.users);
 
- 
-
   const popularCategories = [
     { label: "All", value: "all" as const },
     { label: "House", value: "home" as const },
@@ -31,10 +30,14 @@ export const CardsSection = () => {
 
   const filteredPopularItems = useMemo(() => {
     const completedItems = items.filter(
-      (item) => (item.projectStatus ?? "Completed").trim().toLowerCase() === "completed",
+      (item) =>
+        (item.projectStatus ?? "Completed").trim().toLowerCase() ===
+        "completed",
     );
     if (activeCategory === "all") return completedItems;
-    return completedItems.filter((item) => item.propertyType === activeCategory);
+    return completedItems.filter(
+      (item) => item.propertyType === activeCategory,
+    );
   }, [activeCategory, items]);
 
   const categoryImageMap: Record<string, string> = {
@@ -517,7 +520,7 @@ export const CardsSection = () => {
                       </h3>
                       <div className="flex items-center gap-3">
                         <div className="flex items-center gap-1 text-slate-800 font-medium text-sm">
-                           <MapPin className=" text-[#0F172A] text-sm" />
+                          <MapPin className=" text-[#0F172A] text-sm" />
                           {item.address}
                         </div>
                         <button
@@ -639,7 +642,7 @@ export const CardsSection = () => {
             </div>
           </div>
 
-          <div className="w-full lg:w-2/3 relative overflow-hidden rounded-2xl">
+          {/* <div className="w-full lg:w-2/3 relative overflow-hidden rounded-2xl">
             <div
               id="projects-slider"
               className="drag-slider flex gap-6 overflow-x-auto no-scrollbar cursor-grab active:cursor-grabbing select-none pb-4"
@@ -737,7 +740,9 @@ export const CardsSection = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
+
+          <HomeOnGoingProjectCard />
         </div>
       </section>
     </>
