@@ -3,7 +3,10 @@ import {
     getUserProfile,
     updateUserProfile,
     toggleFavoriteProperty,
-    getUserFavorites
+    getUserFavorites,
+     searchChatContacts,
+    getChatHistory,
+    userSendMessage
 } from "../controllers/user.controller";
 
 
@@ -37,6 +40,13 @@ router.post("/favorites/:propertyId", authenticate, toggleFavoriteProperty);
 // Get all properties liked by the current user
 router.get("/favorites/my-list", authenticate, getUserFavorites);
 
+
+// Allow ADMIN, USER, and AGENT roles to hit the sidebar route smoothly
+router.get("/search-user-to-chat", authenticate, authorize(Role.ADMIN, Role.USER, Role.AGENT), searchChatContacts);
+
+router.get("/history/:userId", authenticate, authorize(Role.ADMIN, Role.USER, Role.AGENT), getChatHistory);
+
+router.post("/chat/send", authenticate, authorize(Role.ADMIN, Role.USER, Role.AGENT),userSendMessage);
 
 
 export default router;

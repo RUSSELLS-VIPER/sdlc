@@ -11,6 +11,14 @@ import type { NextFunction, Request, Response } from "express";
 import authRoutes from "./src/routes/auth.routes";
 import propertyRoutes from "./src/routes/property.routes";
 import userRoutes from "./src/routes/user.routes";
+
+
+import adminRoutes from "./src/routes/admin.routes";
+import { createServer } from "http"; // Native Node module
+import { Server } from "socket.io";
+import { initializeChatSockets } from "./src/sockets/chat.socket"; // Your chat socket file
+
+
 import { swaggerSpec } from "./src/config/swagger";
 
 dotenv.config();
@@ -47,6 +55,26 @@ app.use("/api/auth", authRoutes);
 app.use("/api/properties", propertyRoutes);
 app.use("/api/users", userRoutes);
 
+
+app.use("/api/admin", adminRoutes);
+
+// Create the HTTP server server container instance wrapping your express app
+const httpServer = createServer(app);
+
+// Configure Socket.io server layer rules
+const io = new Server(httpServer, {
+    cors: {
+        origin: "*", // Allows your test frontend interfaces to connect easily
+        methods: ["GET", "POST"]
+    }
+});
+
+// Bind your chat system's real-time events handling pipelines
+initializeChatSockets(io);
+
+
+
+
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     console.error("Unhandled error:", err);
 
@@ -71,7 +99,7 @@ mongoose
     .then(() => {
         console.log("MongoDB Connected");
 
-        app.listen(PORT, () => {
+        httpServer.listen(PORT, () => {
             console.log(`http://localhost:${PORT}`);
         });
     })

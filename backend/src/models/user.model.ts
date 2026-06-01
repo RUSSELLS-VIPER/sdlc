@@ -11,6 +11,10 @@ export interface IUser extends mongoose.Document {
     email: string;
     password: string;
     role: Role;
+    city: string;       // New field
+    district: string;   // New field
+    locality: string;   // New field
+    phoneNo:number;     // New field
     isVerified: boolean;
     otp?: string;
     otpExpiry?: Date;
@@ -30,6 +34,10 @@ const userSchema = new mongoose.Schema<IUser>(
             enum: Object.values(Role),
             default: Role.USER
         },
+        city: { type: String, default: "" },       // Default empty string
+        district: { type: String, default: "" },   // Default empty string
+        locality: { type: String, default: "" },   // Default empty string
+        phoneNo: { type: Number, default: 9999999999},   // Default empty string
         isVerified: {
             type: Boolean,
             default: false
