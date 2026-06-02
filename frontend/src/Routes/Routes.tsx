@@ -21,12 +21,19 @@ import NotFound from "../pages/NotFound";
 import OnGoingProject from "../pages/user/OnGoingProject";
 import PropertyById from "../pages/user/PropertyById";
 import AgentById from "../pages/user/AgentById";
+import UserDashboardWrapper from "../layout/userDashboard/UserDashboardWrapper";
+import MyBookings from "../pages/user/MyBookings";
+import MyInquiries from "../pages/user/MyInquiries";
+import SavedProperties from "../pages/user/SavedProperties";
+import Notification from "../pages/user/Notification";
+import UserProtectedRoute from "../components/UserProtectedRoute";
+import LogedInUserDashboard from "../pages/user/LogedInUserDashboard";
 
 const Routes = createBrowserRouter([
-    {
-        path: "/forgot-password",
-        element: <ForgotPassword />
-      },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
+  },
   {
     element: <PublicRoute />,
     children: [
@@ -76,26 +83,56 @@ const Routes = createBrowserRouter([
       },
       {
         path: "userDashboard",
-        element: <UserDashboard />
-
+        element: <UserDashboard />,
       },
       {
         path: "wishlist",
-        element: <Wishlist />
+        element: <Wishlist />,
       },
       {
         path: "ongoingProject",
-        element: <OnGoingProject />
+        element: <OnGoingProject />,
       },
       {
         path: "property/:id",
-        element: <PropertyById />
-
+        element: <PropertyById />,
       },
       {
         path: "agent",
-        element: <AgentById />
-      }
+        element: <AgentById />,
+      },
+    ],
+  },
+
+  {
+    path: "/dashboard",
+    element: <UserProtectedRoute />,
+    children: [
+      {
+        element: <UserDashboardWrapper />,
+        children: [
+          {
+            path: "",
+            element: <LogedInUserDashboard />,
+          },
+          {
+            path: "myBookings",
+            element: <MyBookings />,
+          },
+          {
+            path: "myInquiries",
+            element: <MyInquiries />,
+          },
+          {
+            path: "savedProperties",
+            element: <SavedProperties />,
+          },
+          {
+            path: "notifications",
+            element: <Notification />,
+          },
+        ],
+      },
     ],
   },
 
@@ -116,7 +153,7 @@ const Routes = createBrowserRouter([
   },
   {
     path: "*",
-    element: <NotFound />
-  }
+    element: <NotFound />,
+  },
 ]);
 export default Routes;

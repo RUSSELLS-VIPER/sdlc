@@ -215,7 +215,7 @@ const Navbar = () => {
                           <button
                             onClick={() => {
                               if (role === "user") {
-                                navigate("/userDashboard");
+                                navigate("/dashboard");
                               } else {
                                 navigate("/admin/dashboard");
                               }
