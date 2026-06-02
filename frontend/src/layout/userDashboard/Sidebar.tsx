@@ -65,7 +65,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     if (userId) {
       dispatch(getProfileById({ userId }));
     }
-  }, [dispatch, user]);
+  }, [dispatch]);
 
   useEffect(() => {
     if (user && isModalOpen) {
