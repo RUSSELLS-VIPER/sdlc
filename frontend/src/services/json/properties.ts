@@ -17,7 +17,7 @@ const properties: Property[] = [
       status: "Ready To Move",
       sqft: "800",
       bhk: "2BHK",
-     
+    // 
   },
    {id:2,
       title: "Apartments",
