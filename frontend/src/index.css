@@ -1,19 +1,49 @@
-/* PlayFair Font */
+/* ১. ফন্ট ইম্পোর্ট থাকবে সবার উপরে */
 @import url("https://fonts.googleapis.com/css2?family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap");
-/* Inter Font */
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
+/* ২. তারপর থাকবে Tailwind directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Inactive dot style matching your hidden comment block */
+/* ৩. সবশেষে আপনার কাস্টম CSS লেয়ার */
+@layer base {
+  /* Firefox-এর জন্য গ্লোবাল স্ক্রলবার */
+  html, body {
+    scrollbar-width: thin;
+    scrollbar-color: #999 #f1f1f1;
+  }
+
+  /* Chrome, Safari, Edge-এর জন্য গ্লোবাল স্ক্রলবার */
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  html::-webkit-scrollbar-track,
+  body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  html::-webkit-scrollbar-thumb,
+  body::-webkit-scrollbar-thumb {
+    background: #999;
+    border-radius: 20px;
+  }
+
+  html::-webkit-scrollbar-thumb:hover,
+  body::-webkit-scrollbar-thumb:hover {
+    background: #666;
+  }
+}
+
+/* Swiper Slider Dots Style */
 #sliderDots .swiper-pagination-bullet {
-  background-color: #e5e7eb !important; /* gray-200 */
+  background-color: #e5e7eb !important; 
   opacity: 1;
 }
 
-/* Active dot style matching your yellow design */
 #sliderDots .swiper-pagination-bullet-active {
-  background-color: #fcaa31 !important; /* Your signature yellow */
+  background-color: #fcaa31 !important; 
 }
