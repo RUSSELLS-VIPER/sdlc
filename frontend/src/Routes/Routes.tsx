@@ -14,7 +14,6 @@ import AdminWrapper from "../layout/admin/AdminWrapper";
 import Dashboard from "../pages/admin/Dashboard";
 import PublicRoute from "../components/PublicRoute";
 import AdminRoute from "../components/AdminRoute";
-import UserDashboard from "../pages/user/UserDashboard";
 import Wishlist from "../pages/user/Wishlist";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 import NotFound from "../pages/NotFound";
@@ -83,7 +82,7 @@ const Routes = createBrowserRouter([
       },
       {
         path: "userDashboard",
-        element: <UserDashboard />,
+        element: <LogedInUserDashboard />,
       },
       {
         path: "wishlist",

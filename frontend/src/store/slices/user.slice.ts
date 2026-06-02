@@ -39,6 +39,9 @@ export const getWishList = createAsyncThunk(
     }
   },
 );
+
+
+
 export const userSlice = createSlice({
   name: "user",
   initialState,
@@ -81,7 +84,8 @@ export const userSlice = createSlice({
         state.favouritesPropertyIds = favoritesArray.map((item:PropertyItem) =>
           String(item._id),
         );
-      });
+      })
+      
   },
 });
 

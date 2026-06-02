@@ -93,3 +93,20 @@ export interface NotificationsData {
 export interface UserNotificationProps{
   notification: NotificationsData
 }
+
+
+export interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+export interface ProfileFormData {
+  name: string;
+  email: string;
+  phoneNo: string;
+  city: string;
+  district: string;
+  locality: string;
+  profilePic?: File | null | undefined
+  
+
+}

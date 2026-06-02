@@ -50,7 +50,7 @@ const LogedInUserDashboard = () => {
       title: "Saved Properties",
       value: savedPropertiesLength,
       linkText: "View",
-      linkTo: "/dashboard/saved-properties",
+      linkTo: "/dashboard/savedProperties",
       imgSrc: userLikedProperties,
       imgAlt: "userLikedProperties",
     },

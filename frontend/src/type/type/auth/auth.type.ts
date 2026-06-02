@@ -3,6 +3,11 @@ export type AuthUser = {
     name: string;
     email: string;
     role: string;
+    profileImage?: string
+    phoneNo?: string
+    city?:string
+    locality?: string
+    district?: string
 };
 
 export type AuthInitialState = {

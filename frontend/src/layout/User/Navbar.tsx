@@ -20,8 +20,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-const isPropertyDetailsPage =
-  location.pathname.startsWith("/property/");
+  const isPropertyDetailsPage = location.pathname.startsWith("/property/");
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const { role, token, user } = useAppSeletor((state) => state.auth);
   const [desktopUserDropdown, setDesktopUserDropdown] = useState(false);
@@ -88,101 +87,103 @@ const isPropertyDetailsPage =
               </div>
 
               {/* Desktop Menu */}
-             
-<div
-  className={`hidden lg:flex flex-none items-center h-11 gap-6 backdrop-blur-xl border-2 rounded-full px-6 ${
-    isPropertyDetailsPage
-      ? "border-gray-300 bg-white/70"
-      : "border-white/50"
-  }`}
->
-   <NavLink
-    className={`nav-link text-sm font-semibold hover:text-[#facc15] transition-colors ${
-      isPropertyDetailsPage ? "text-black" : "text-white"
-    }`}
-    to="/"
-  >
-    Home
-  </NavLink>
 
-  <NavLink
-    className={`nav-link text-sm font-semibold hover:text-[#facc15] transition-colors ${
-      isPropertyDetailsPage ? "text-black" : "text-white"
-    }`}
-    to="/about"
-  >
-    About US
-  </NavLink>
+              <div
+                className={`hidden lg:flex flex-none items-center h-11 gap-6 backdrop-blur-xl border-2 rounded-full px-6 ${
+                  isPropertyDetailsPage
+                    ? "border-gray-300 bg-white/70"
+                    : "border-white/50"
+                }`}
+              >
+                <NavLink
+                  className={`nav-link text-sm font-semibold hover:text-[#facc15] transition-colors ${
+                    isPropertyDetailsPage ? "text-black" : "text-white"
+                  }`}
+                  to="/"
+                >
+                  Home
+                </NavLink>
 
-  <div className="relative" ref={desktopPropertyRef}>
-    <div className="inline-flex items-center gap-1">
-      <NavLink
-        to="/property"
-        className={`nav-link text-sm font-semibold hover:text-[#facc15] transition-colors pb-1 ${
-          isPropertyDetailsPage ? "text-black" : "text-white"
-        }`}
-        onClick={() => setDesktopPropertyDropdown(false)}
-      >
-        Properties
-      </NavLink>
+                <NavLink
+                  className={`nav-link text-sm font-semibold hover:text-[#facc15] transition-colors ${
+                    isPropertyDetailsPage ? "text-black" : "text-white"
+                  }`}
+                  to="/about"
+                >
+                  About US
+                </NavLink>
 
-      <button
-        type="button"
-        aria-label="Toggle properties menu"
-        aria-expanded={desktopPropertyDropdown}
-        onClick={() =>
-          setDesktopPropertyDropdown((currentValue) => !currentValue)
-        }
-        className={`inline-flex items-center justify-center pb-1 hover:text-[#facc15] transition-colors ${
-          isPropertyDetailsPage ? "text-black" : "text-white"
-        }`}
-      >
-        <ChevronDown
-          size={16}
-          strokeWidth={2.25}
-          className={`transition-transform duration-300 ${
-            desktopPropertyDropdown ? "rotate-180" : ""
-          }`}
-        />
-      </button>
-    </div>
+                <div className="relative" ref={desktopPropertyRef}>
+                  <div className="inline-flex items-center gap-1">
+                    <NavLink
+                      to="/property"
+                      className={`nav-link text-sm font-semibold hover:text-[#facc15] transition-colors pb-1 ${
+                        isPropertyDetailsPage ? "text-black" : "text-white"
+                      }`}
+                      onClick={() => setDesktopPropertyDropdown(false)}
+                    >
+                      Properties
+                    </NavLink>
 
-    {desktopPropertyDropdown && (
-      <div className="absolute left-1/2 top-full mt-4 w-[280px] -translate-x-1/2 rounded-3xl bg-white p-3 shadow-[0_20px_60px_rgba(15,23,42,0.18)]">
-        <div className="flex flex-col gap-1">
-          {propertyDropdownItems.map((item) => (
-            <Link
-              key={item.label}
-              to={item.to}
-              onClick={() => setDesktopPropertyDropdown(false)}
-              className="rounded-2xl px-5 py-3 text-[15px] text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-950"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      </div>
-    )}
-  </div>
+                    <button
+                      type="button"
+                      aria-label="Toggle properties menu"
+                      aria-expanded={desktopPropertyDropdown}
+                      onClick={() =>
+                        setDesktopPropertyDropdown(
+                          (currentValue) => !currentValue,
+                        )
+                      }
+                      className={`inline-flex items-center justify-center pb-1 hover:text-[#facc15] transition-colors ${
+                        isPropertyDetailsPage ? "text-black" : "text-white"
+                      }`}
+                    >
+                      <ChevronDown
+                        size={16}
+                        strokeWidth={2.25}
+                        className={`transition-transform duration-300 ${
+                          desktopPropertyDropdown ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                  </div>
 
-  <NavLink
-    className={`nav-link text-sm font-semibold hover:text-[#facc15] transition-colors ${
-      isPropertyDetailsPage ? "text-black" : "text-white"
-    }`}
-    to="/service"
-  >
-    Services
-  </NavLink>
+                  {desktopPropertyDropdown && (
+                    <div className="absolute left-1/2 top-full mt-4 w-[280px] -translate-x-1/2 rounded-3xl bg-white p-3 shadow-[0_20px_60px_rgba(15,23,42,0.18)]">
+                      <div className="flex flex-col gap-1">
+                        {propertyDropdownItems.map((item) => (
+                          <Link
+                            key={item.label}
+                            to={item.to}
+                            onClick={() => setDesktopPropertyDropdown(false)}
+                            className="rounded-2xl px-5 py-3 text-[15px] text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-950"
+                          >
+                            {item.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
 
-  <NavLink
-    className={`nav-link text-sm font-semibold hover:text-[#facc15] transition-colors ${
-      isPropertyDetailsPage ? "text-black" : "text-white"
-    }`}
-    to="/blog"
-  >
-    Blogs
-  </NavLink>
-</div>
+                <NavLink
+                  className={`nav-link text-sm font-semibold hover:text-[#facc15] transition-colors ${
+                    isPropertyDetailsPage ? "text-black" : "text-white"
+                  }`}
+                  to="/service"
+                >
+                  Services
+                </NavLink>
+
+                <NavLink
+                  className={`nav-link text-sm font-semibold hover:text-[#facc15] transition-colors ${
+                    isPropertyDetailsPage ? "text-black" : "text-white"
+                  }`}
+                  to="/blog"
+                >
+                  Blogs
+                </NavLink>
+              </div>
 
               {/* Right Side (Desktop) */}
 
@@ -200,7 +201,9 @@ const isPropertyDetailsPage =
                 {role && token ? (
                   <div className="relative" ref={desktopRef}>
                     <button
-                      onClick={() => setDesktopUserDropdown(!desktopUserDropdown)}
+                      onClick={() =>
+                        setDesktopUserDropdown(!desktopUserDropdown)
+                      }
                       aria-label="Account"
                       className="group inline-flex items-center justify-center w-11 h-11 rounded-full bg-slate-900 border-2 border-transparent transition-all duration-300 ease-in-out hover:border-[#0F172A] hover:bg-white"
                     >
@@ -222,7 +225,9 @@ const isPropertyDetailsPage =
                             </h3>
                             <button
                               className="text-black"
-                              onClick={() => setDesktopUserDropdown(!desktopUserDropdown)}
+                              onClick={() =>
+                                setDesktopUserDropdown(!desktopUserDropdown)
+                              }
                             >
                               {<X size={20} className="text-bold" />}
                             </button>
@@ -243,7 +248,6 @@ const isPropertyDetailsPage =
                                 navigate("/admin/dashboard");
                               }
                               setDesktopUserDropdown(false);
-                               
                             }}
                             className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-[#0F172A] hover:text-white transition"
                           >
@@ -287,7 +291,7 @@ const isPropertyDetailsPage =
                       strokeWidth={2.4}
                       className="text-slate-900 transition-transform duration-300 ease-in-out -rotate-45 group-hover:text-amber-400 group-hover:rotate-0"
                     /> */}
-                     <i className="fa-solid fa-arrow-right text-sm transition-transform duration-300 ease-in-out text-slate-900 -rotate-45 group-hover:text-amber-400 group-hover:rotate-0"></i>
+                    <i className="fa-solid fa-arrow-right text-sm transition-transform duration-300 ease-in-out text-slate-900 -rotate-45 group-hover:text-amber-400 group-hover:rotate-0"></i>
                   </div>
                 </button>
               </div>
@@ -442,7 +446,9 @@ const isPropertyDetailsPage =
                   {token && role ? (
                     <div className="relative" ref={mobileRef}>
                       <button
-                        onClick={() => setMobileUserDropdown(!mobileUserDropdown)}
+                        onClick={() =>
+                          setMobileUserDropdown(!mobileUserDropdown)
+                        }
                         className="group inline-flex items-center justify-center w-9 h-9 rounded-full bg-slate-900 border-2 border-white transition-all duration-300 ease-in-out hover:border-red-500 hover:bg-white"
                       >
                         <User
@@ -478,7 +484,7 @@ const isPropertyDetailsPage =
                             <button
                               onClick={() => {
                                 if (role === "user") {
-                                  navigate("/userDashboard");
+                                  navigate("/dashboard");
                                 } else {
                                   navigate("/admin/dashboard");
                                 }
