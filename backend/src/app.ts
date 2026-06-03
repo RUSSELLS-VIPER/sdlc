@@ -41,6 +41,7 @@ const assetsDir = resolveExistingPath([
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(process.cwd(), { extensions: ["html"] }));
 app.use("/assets", express.static(assetsDir));
 
 app.set("view engine", "ejs");
@@ -59,12 +60,20 @@ app.use(async (req, _res, next) => {
   next();
 });
 
-app.get("/", (_req, res) => {
-  res.render("api-tester");
+app.get("/", (_req, res, next) => {
+  res.sendFile(path.join(process.cwd(), "index.html"), (error) => {
+    if (error) {
+      next(error);
+    }
+  });
 });
 
-app.get("/tester", (_req, res) => {
-  res.render("api-tester2");
+app.get("/tester", (_req, res, next) => {
+  res.sendFile(path.join(process.cwd(), "index.html"), (error) => {
+    if (error) {
+      next(error);
+    }
+  });
 });
 
 app.get("/api-docs.json", (_req, res) => {
