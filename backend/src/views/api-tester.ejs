@@ -3,35 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Real Estate API Tester</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <title>API Tester</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-  <link href="/assets/css/api-tester.css?v=20260602" rel="stylesheet" />
+  <link href="/assets/css/api-tester.css?v=20260603" rel="stylesheet" />
 </head>
 <body>
-  <div class="topbar">
+  <header class="topbar">
     <div class="container-fluid px-3 px-lg-4">
-      <div class="d-flex align-items-center justify-content-between py-3 gap-3">
+      <div class="topbar-inner">
         <div class="d-flex align-items-center gap-3">
-          <button class="btn btn-api btn-outline-api mobile-sidebar-trigger" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">
+          <button class="btn btn-api btn-outline-api mobile-sidebar-trigger" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas" aria-label="Open navigation">
             <i class="bi bi-list"></i>
           </button>
-          <div class="brand-mark"><i class="bi bi-building-lock fs-5"></i></div>
           <div>
-            <h1 class="panel-title mb-0">Real Estate API Tester</h1>
-            <p class="panel-subtitle mb-0">Lazy-loaded, accordion-based request workspace.</p>
+            <h1 class="page-title mb-0">API Tester</h1>
+            <p class="page-subtitle mb-0">Lightweight request workspace for the local backend.</p>
           </div>
         </div>
         <div class="d-none d-md-flex align-items-center gap-2">
-          <span class="soft-badge method-get"><i class="bi bi-lightning-charge-fill"></i> Performance first</span>
-          <span class="soft-badge method-post"><i class="bi bi-box-seam"></i> Same endpoints</span>
+          <span class="soft-badge method-get"><i class="bi bi-lightning-charge"></i> Fast startup</span>
+          <span class="soft-badge method-post"><i class="bi bi-palette"></i> Light theme</span>
         </div>
       </div>
     </div>
-  </div>
+  </header>
 
   <div class="layout-shell">
     <aside class="sidebar-panel">
@@ -49,68 +45,66 @@
           </div>
 
           <div class="sidebar-group">
-            <button class="nav-section-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#navAuth" aria-expanded="true" aria-controls="navAuth">
+            <button class="nav-section-toggle collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navAuth" aria-expanded="false" aria-controls="navAuth">
               <span><i class="bi bi-shield-lock me-2"></i>Authentication</span><i class="bi bi-chevron-down"></i>
             </button>
-            <div class="collapse show mt-2" id="navAuth">
+            <div class="collapse mt-2" id="navAuth">
               <button class="nav-pill" type="button" data-section-target="section-auth"><span>Register</span><i class="bi bi-arrow-right-short"></i></button>
-              <button class="nav-pill" type="button" data-section-target="section-auth"><span>Verify Email</span><i class="bi bi-arrow-right-short"></i></button>
               <button class="nav-pill" type="button" data-section-target="section-auth"><span>Login</span><i class="bi bi-arrow-right-short"></i></button>
-              <button class="nav-pill" type="button" data-section-target="section-auth"><span>Forgot Password</span><i class="bi bi-arrow-right-short"></i></button>
               <button class="nav-pill" type="button" data-section-target="section-auth"><span>Reset Password</span><i class="bi bi-arrow-right-short"></i></button>
             </div>
           </div>
 
           <div class="sidebar-group">
-            <button class="nav-section-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#navProperties" aria-expanded="true" aria-controls="navProperties">
+            <button class="nav-section-toggle collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navProperties" aria-expanded="false" aria-controls="navProperties">
               <span><i class="bi bi-building me-2"></i>Properties</span><i class="bi bi-chevron-down"></i>
             </button>
-            <div class="collapse show mt-2" id="navProperties">
-              <button class="nav-pill" type="button" data-section-target="section-properties"><span>Create Property</span><i class="bi bi-arrow-right-short"></i></button>
-              <button class="nav-pill" type="button" data-section-target="section-properties"><span>Browse Properties</span><i class="bi bi-arrow-right-short"></i></button>
-              <button class="nav-pill" type="button" data-section-target="section-properties"><span>Update Property</span><i class="bi bi-arrow-right-short"></i></button>
+            <div class="collapse mt-2" id="navProperties">
+              <button class="nav-pill" type="button" data-section-target="section-properties"><span>Create</span><i class="bi bi-arrow-right-short"></i></button>
+              <button class="nav-pill" type="button" data-section-target="section-properties"><span>Browse</span><i class="bi bi-arrow-right-short"></i></button>
+              <button class="nav-pill" type="button" data-section-target="section-properties"><span>Update</span><i class="bi bi-arrow-right-short"></i></button>
               <button class="nav-pill" type="button" data-section-target="section-properties"><span>Delete / Like</span><i class="bi bi-arrow-right-short"></i></button>
             </div>
           </div>
 
           <div class="sidebar-group">
-            <button class="nav-section-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#navUsers" aria-expanded="true" aria-controls="navUsers">
+            <button class="nav-section-toggle collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navUsers" aria-expanded="false" aria-controls="navUsers">
               <span><i class="bi bi-person-vcard me-2"></i>User Management</span><i class="bi bi-chevron-down"></i>
             </button>
-            <div class="collapse show mt-2" id="navUsers">
+            <div class="collapse mt-2" id="navUsers">
               <button class="nav-pill" type="button" data-section-target="section-users"><span>Profile</span><i class="bi bi-arrow-right-short"></i></button>
               <button class="nav-pill" type="button" data-section-target="section-users"><span>Update Profile</span><i class="bi bi-arrow-right-short"></i></button>
             </div>
           </div>
 
           <div class="sidebar-group">
-            <button class="nav-section-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#navFavorites" aria-expanded="true" aria-controls="navFavorites">
+            <button class="nav-section-toggle collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navFavorites" aria-expanded="false" aria-controls="navFavorites">
               <span><i class="bi bi-heart me-2"></i>Favorites</span><i class="bi bi-chevron-down"></i>
             </button>
-            <div class="collapse show mt-2" id="navFavorites">
-              <button class="nav-pill" type="button" data-section-target="section-favorites"><span>Toggle Favorite</span><i class="bi bi-arrow-right-short"></i></button>
-              <button class="nav-pill" type="button" data-section-target="section-favorites"><span>My Favorites</span><i class="bi bi-arrow-right-short"></i></button>
+            <div class="collapse mt-2" id="navFavorites">
+              <button class="nav-pill" type="button" data-section-target="section-favorites"><span>Toggle</span><i class="bi bi-arrow-right-short"></i></button>
+              <button class="nav-pill" type="button" data-section-target="section-favorites"><span>My List</span><i class="bi bi-arrow-right-short"></i></button>
             </div>
           </div>
 
           <div class="sidebar-group">
-            <button class="nav-section-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#navChat" aria-expanded="true" aria-controls="navChat">
+            <button class="nav-section-toggle collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navChat" aria-expanded="false" aria-controls="navChat">
               <span><i class="bi bi-chat-dots me-2"></i>Chat</span><i class="bi bi-chevron-down"></i>
             </button>
-            <div class="collapse show mt-2" id="navChat">
-              <button class="nav-pill" type="button" data-section-target="section-chat"><span>Search Users</span><i class="bi bi-arrow-right-short"></i></button>
+            <div class="collapse mt-2" id="navChat">
+              <button class="nav-pill" type="button" data-section-target="section-chat"><span>Search</span><i class="bi bi-arrow-right-short"></i></button>
               <button class="nav-pill" type="button" data-section-target="section-chat"><span>History / Send</span><i class="bi bi-arrow-right-short"></i></button>
             </div>
           </div>
 
           <div class="sidebar-group mb-0">
-            <button class="nav-section-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#navAdmin" aria-expanded="true" aria-controls="navAdmin">
+            <button class="nav-section-toggle collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navAdmin" aria-expanded="false" aria-controls="navAdmin">
               <span><i class="bi bi-graph-up-arrow me-2"></i>Admin</span><i class="bi bi-chevron-down"></i>
             </button>
-            <div class="collapse show mt-2" id="navAdmin">
+            <div class="collapse mt-2" id="navAdmin">
               <button class="nav-pill" type="button" data-section-target="section-admin"><span>Dashboard</span><i class="bi bi-arrow-right-short"></i></button>
-              <button class="nav-pill" type="button" data-section-target="section-admin"><span>Customer List</span><i class="bi bi-arrow-right-short"></i></button>
-              <button class="nav-pill" type="button" data-section-target="section-admin"><span>Update User Role</span><i class="bi bi-arrow-right-short"></i></button>
+              <button class="nav-pill" type="button" data-section-target="section-admin"><span>Customers</span><i class="bi bi-arrow-right-short"></i></button>
+              <button class="nav-pill" type="button" data-section-target="section-admin"><span>Blogs</span><i class="bi bi-arrow-right-short"></i></button>
             </div>
           </div>
         </div>
@@ -121,19 +115,16 @@
       <section class="token-panel">
         <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
           <div>
-            <h2 class="panel-title">API management dashboard</h2>
-            <p class="panel-subtitle mb-0">Same endpoints, less initial DOM, and lazy-loaded sections.</p>
+            <h2 class="panel-title">Request settings</h2>
+            <p class="panel-subtitle mb-0">Set the base URL, token, and common IDs once, then reuse them across requests.</p>
           </div>
-          <div class="d-flex flex-wrap gap-2">
-            <span class="soft-badge method-get"><i class="bi bi-ui-checks"></i> Minimal shell</span>
-            <span class="soft-badge method-post"><i class="bi bi-speedometer2"></i> Module split</span>
-          </div>
+          <span class="soft-badge method-get"><i class="bi bi-window-stack"></i> Minimal layout</span>
         </div>
         <div class="row g-3">
           <div class="col-lg-3 col-md-6">
             <div class="form-floating">
               <input id="baseUrl" class="form-control" value="<%= typeof baseUrl !== 'undefined' ? baseUrl : '' %>" placeholder="http://localhost:8000" />
-              <label for="baseUrl">Base URL (without /api path)</label>
+              <label for="baseUrl">Base URL</label>
             </div>
           </div>
           <div class="col-lg-3 col-md-6">
@@ -150,7 +141,7 @@
           </div>
           <div class="col-lg-3 col-md-6">
             <div class="form-floating">
-              <input id="commonPropertyId" class="form-control" placeholder="Use for like/favorite/profile tests" />
+              <input id="commonPropertyId" class="form-control" placeholder="Useful for favorites and property tests" />
               <label for="commonPropertyId">Common Property ID</label>
             </div>
           </div>
@@ -241,17 +232,17 @@
         </div>
       </div>
 
-      <section class="response-panel mt-1">
+      <section class="response-panel">
         <div class="response-header">
           <div>
             <div class="d-flex align-items-center gap-2 flex-wrap">
-              <h2 class="panel-title mb-0">Response Viewer</h2>
-              <span id="responseStatusBadge" class="soft-badge method-get">Status —</span>
+              <h2 class="panel-title mb-0">Response</h2>
+              <span id="responseStatusBadge" class="soft-badge method-get">Status -</span>
             </div>
-            <p class="panel-subtitle mt-1 mb-0">Lightweight JSON renderer with clipboard actions.</p>
+            <p class="panel-subtitle mt-1 mb-0">Rendered JSON with copy and clear actions.</p>
           </div>
           <div class="d-flex gap-2 flex-wrap">
-            <button id="copyResponseBtn" class="btn btn-api btn-outline-api btn-sm" type="button" data-action="response.copy"><i class="bi bi-clipboard me-2"></i>Copy response</button>
+            <button id="copyResponseBtn" class="btn btn-api btn-outline-api btn-sm" type="button" data-action="response.copy"><i class="bi bi-clipboard me-2"></i>Copy</button>
             <button id="clearResponseBtn" class="btn btn-api btn-secondary-api btn-sm" type="button" data-action="response.clear"><i class="bi bi-x-circle me-2"></i>Clear</button>
           </div>
         </div>
@@ -262,10 +253,10 @@
     </main>
   </div>
 
-  <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
-    <div class="offcanvas-header border-bottom border-secondary">
+  <div class="offcanvas offcanvas-start offcanvas-light" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
+    <div class="offcanvas-header border-bottom">
       <h5 class="offcanvas-title" id="sidebarOffcanvasLabel">Navigation</h5>
-      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body p-3">
       <div id="mobileNavHost"></div>
@@ -273,6 +264,6 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script type="module" src="/assets/js/api-tester/main.js?v=20260602"></script>
+  <script type="module" src="/assets/js/api-tester/main.js?v=20260603"></script>
 </body>
 </html>
