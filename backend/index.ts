@@ -50,6 +50,10 @@ app.set("views", path.join(process.cwd(), "src", "views"));
 app.get("/", (_req, res) => {
     res.render("api-tester");
 });
+
+app.get("/tester", (_req, res) => {
+    res.render("api-tester2");
+});
 app.get("/api-docs.json", (_req, res) => {
     res.json(swaggerSpec);
 });
