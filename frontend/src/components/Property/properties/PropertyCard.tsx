@@ -15,7 +15,7 @@ type Props = {
 };
 
 const PropertyCard = ({ data }: Props) => {
-  console.log(data);
+  // console.log(data);
   const navigate = useNavigate();
   // const [Wishlist, setWishList] = useState(false);
   const dispatch = useAppDispatch();
@@ -40,6 +40,7 @@ const PropertyCard = ({ data }: Props) => {
    
     if (!user && !token) {
       toast.success("Please Login First to like a property");
+      navigate("/login")
       return;
     }
     try {
@@ -106,7 +107,13 @@ const PropertyCard = ({ data }: Props) => {
           </div>
 
           <button
-            onClick={() => navigate(`/property/${data.id}`)}
+            onClick={() => {
+              if(!token && !user){
+                toast.success("Please Login first to see property details page")
+                navigate("/login")
+                return
+              }
+              navigate(`/property/${data.id}`)}}
             className="bg-[#171e2e] text-white px-5 py-2.5 rounded-lg text-xs font-bold hover:bg-yellow-400 hover:text-[#171E2E] transform hover:-translate-x-2 shadow hover:shadow-md transition-all duration-200"
           >
             Get Quote

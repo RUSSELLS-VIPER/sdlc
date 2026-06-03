@@ -29,6 +29,7 @@ import type { ProfileFormData, SidebarProps } from "../../type/interface/userDas
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const dispatch = useAppDispatch();
   const { user } = useAppSeletor((state) => state.auth);
+  console.log("user", user)
 
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -52,12 +53,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     },
   });
 
-  // useEffect(() => {
-  //   if (user?.profileImage) {
-  //     setImagePreview(user.profileImage);
-  //   }
+  useEffect(() => {
+    if (user?.profileImage) {
+      setImagePreview(user.profileImage);
+    }
     
-  // }, [user?.profileImage]);
+  }, [user?.profileImage]);
 
   useEffect(() => {
     const userId = user?.id;
