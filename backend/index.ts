@@ -1,117 +1,47 @@
-import express from "express";
-import mongoose from "mongoose";
 import dotenv from "dotenv";
-import cors from "cors";
-import path from "path";
-import dns from "dns";
-import swaggerUi from "swagger-ui-express";
-import multer from "multer";
-import type { NextFunction, Request, Response } from "express";
-
-import authRoutes from "./src/routes/auth.routes";
-import propertyRoutes from "./src/routes/property.routes";
-import userRoutes from "./src/routes/user.routes";
-
-
-import adminRoutes from "./src/routes/admin.routes";
-import clientRoutes from "./src/routes/client.routes";
-import agentRoutes from "./src/routes/agent.routes";
-import { createServer } from "http"; // Native Node module
+import mongoose from "mongoose";
+import { createServer } from "http";
 import { Server } from "socket.io";
-import { initializeChatSockets } from "./src/sockets/chat.socket"; // Your chat socket file
 
-
-import { swaggerSpec } from "./src/config/swagger";
+import app from "./src/app";
+import { connectDatabase } from "./src/config/db";
+import { initializeChatSockets } from "./src/sockets/chat.socket";
 
 dotenv.config();
 
-if (process.env.DNS_SERVERS) {
-    dns.setServers(process.env.DNS_SERVERS.split(",").map((server) => server.trim()).filter(Boolean));
-}
-
 process.on("uncaughtException", (error) => {
-    console.error("[uncaughtException]", error);
+  console.error("[uncaughtException]", error);
 });
 
 process.on("unhandledRejection", (reason) => {
-    console.error("[unhandledRejection]", reason);
-});
-
-const app = express();
-
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use("/assets", express.static(path.join(process.cwd(), "public", "assets")));
-
-app.set("view engine", "ejs");
-app.set("views", path.join(process.cwd(), "src", "views"));
-
-app.get("/", (_req, res) => {
-    res.render("api-tester");
-});
-
-app.get("/tester", (_req, res) => {
-    res.render("api-tester2");
-});
-app.get("/api-docs.json", (_req, res) => {
-    res.json(swaggerSpec);
-});
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use("/api/auth", authRoutes);
-app.use("/api/properties", propertyRoutes);
-app.use("/api/users", userRoutes);
-
-
-app.use("/api/admin", adminRoutes);
-app.use("/api/client", clientRoutes);
-app.use("/api/agent", agentRoutes);
-
-// Create the HTTP server server container instance wrapping your express app
-const httpServer = createServer(app);
-
-// Configure Socket.io server layer rules
-const io = new Server(httpServer, {
-    cors: {
-        origin: "*", // Allows your test frontend interfaces to connect easily
-        methods: ["GET", "POST"]
-    }
-});
-
-// Bind your chat system's real-time events handling pipelines
-initializeChatSockets(io);
-
-
-
-
-app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
-    console.error("Unhandled error:", err);
-
-    if (err instanceof multer.MulterError) {
-        if (err.code === "LIMIT_FILE_SIZE") {
-            return res.status(400).json({ message: "Image too large. Max allowed size is 5MB." });
-        }
-        return res.status(400).json({ message: `Upload error: ${err.message}` });
-    }
-
-    if (err instanceof Error) {
-        return res.status(400).json({ message: err.message });
-    }
-
-    return res.status(500).json({ message: "Internal server error" });
+  console.error("[unhandledRejection]", reason);
 });
 
 const PORT = process.env.PORT || 8000;
 
-mongoose
-    .connect(process.env.MONGO_URI as string)
-    .then(() => {
-        console.log("MongoDB Connected");
+async function start() {
+  try {
+    await connectDatabase();
+    console.log("MongoDB Connected");
 
-        httpServer.listen(PORT, () => {
-            console.log(`http://localhost:${PORT}`);
-        });
-    })
-    .catch((err) => {
-        console.error("DB Connection Error:", err);
+    const httpServer = createServer(app);
+
+    const io = new Server(httpServer, {
+      cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+      }
     });
+
+    initializeChatSockets(io);
+
+    httpServer.listen(PORT, () => {
+      console.log(`http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("DB Connection Error:", error);
+    mongoose.connection.close().catch(() => undefined);
+  }
+}
+
+start();

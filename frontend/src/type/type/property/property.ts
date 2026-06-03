@@ -10,7 +10,7 @@ export type Property = {
   bhk: string;
   apartmentType?: string;
   propertyType?: string;
-  likesCount: number;
+  likesCount?: number;
 };
 
 export type PropertyItem = {

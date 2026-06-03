@@ -12,6 +12,7 @@ export const endPoint = {
         create: "/api/properties",
         update: (id: string) => `/api/properties/${id}`,
         remove: (id: string) => `/api/properties/${id}`,
+        toggleLike: (id: string) => `/api/properties/${id}/like`,
         
     },
     users: {
