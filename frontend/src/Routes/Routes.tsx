@@ -20,6 +20,7 @@ import NotFound from "../pages/NotFound";
 import OnGoingProject from "../pages/user/OnGoingProject";
 import PropertyById from "../pages/user/PropertyById";
 import AgentById from "../pages/user/AgentById";
+import PrivacyPolicy from "../pages/user/PrivacyPolicy";
 import UserDashboardWrapper from "../layout/userDashboard/UserDashboardWrapper";
 import MyBookings from "../pages/user/MyBookings";
 import MyInquiries from "../pages/user/MyInquiries";
@@ -27,6 +28,7 @@ import SavedProperties from "../pages/user/SavedProperties";
 import Notification from "../pages/user/Notification";
 import UserProtectedRoute from "../components/UserProtectedRoute";
 import LogedInUserDashboard from "../pages/user/LogedInUserDashboard";
+import Terms from "../pages/user/Terms";
 
 const Routes = createBrowserRouter([
   {
@@ -76,6 +78,8 @@ const Routes = createBrowserRouter([
       },
       { path: "service", element: <Services /> },
       { path: "blog", element: <Blogs /> },
+      { path: "privacy-policy", element: <PrivacyPolicy /> },
+      { path: "terms-condition", element: <Terms /> },
       {
         path: "contact",
         element: <Contact />,
