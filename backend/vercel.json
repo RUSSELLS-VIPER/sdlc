@@ -2,7 +2,7 @@
   "functions": {
     "api/index.ts": {
       "maxDuration": 300,
-      "includeFiles": "{public/index.html,public/assets/**}"
+      "includeFiles": "{src/views/**,public/assets/**}"
     }
   }
 }

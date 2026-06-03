@@ -31,17 +31,21 @@ if (process.env.DNS_SERVERS) {
 const app = express();
 const viewsDir = resolveExistingPath([
   path.join(process.cwd(), "src", "views"),
-  path.join(process.cwd(), "api", "src", "views")
+  path.join(process.cwd(), "api", "src", "views"),
+  path.join(__dirname, "views"),
+  path.join(__dirname, "..", "src", "views"),
+  path.join(__dirname, "..", "api", "src", "views")
 ]);
 const assetsDir = resolveExistingPath([
   path.join(process.cwd(), "public", "assets"),
-  path.join(process.cwd(), "api", "public", "assets")
+  path.join(process.cwd(), "api", "public", "assets"),
+  path.join(__dirname, "..", "public", "assets"),
+  path.join(__dirname, "..", "api", "public", "assets")
 ]);
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(process.cwd(), { extensions: ["html"] }));
 app.use("/assets", express.static(assetsDir));
 
 app.set("view engine", "ejs");
@@ -60,19 +64,15 @@ app.use(async (req, _res, next) => {
   next();
 });
 
-app.get("/", (_req, res, next) => {
-  res.sendFile(path.join(process.cwd(), "public", "index.html"), (error) => {
-    if (error) {
-      next(error);
-    }
+app.get("/", (req, res) => {
+  res.render("api-tester", {
+    baseUrl: `${req.protocol}://${req.get("host")}`
   });
 });
 
-app.get("/tester", (_req, res, next) => {
-  res.sendFile(path.join(process.cwd(), "public", "index.html"), (error) => {
-    if (error) {
-      next(error);
-    }
+app.get("/tester", (req, res) => {
+  res.render("api-tester2", {
+    baseUrl: `${req.protocol}://${req.get("host")}`
   });
 });
 
