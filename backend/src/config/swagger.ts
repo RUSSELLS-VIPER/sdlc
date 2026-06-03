@@ -1110,15 +1110,14 @@ export const swaggerSpec = {
 "/api/client/property/{propertyId}/inquiry": {
     post: {
         tags: ["Inquiries"],
-        summary: "Submit a property contact inquiry or proposal",
-        description: "Logs an inquiry request for a specified property and shifts its tracking status to pending. Authenticates the active buyer session, extracts name/email parameters automatically from the profile collection data, checks for duplicate active spams, and flashes dashboard notifications to the listing agent.",
+        summary: "Submit a property contact inquiry with custom contact overrides",
+        description: "Logs an inquiry request for a specified property. If name, email, or phone numbers are left empty in the body schema, fallback scripts auto-populate parameters using the buyer's session document profiles.",
         security: [{ bearerAuth: [] }],
         parameters: [
             {
                 in: "path",
                 name: "propertyId",
                 required: true,
-                description: "The unique MongoDB Object ID of the target property listing.",
                 schema: { type: "string" },
                 example: "6a1c92a17801aa3029a15b01"
             }
@@ -1131,33 +1130,19 @@ export const swaggerSpec = {
                         type: "object",
                         required: ["messageText"],
                         properties: {
-                            messageText: { 
-                                type: "string", 
-                                example: "Hi, I am looking to schedule a site inspection this upcoming weekend. Is the price negotiable?" 
-                            }
+                            messageText: { type: "string", example: "I would love to set up a walkthrough visit." },
+                            name: { type: "string", description: "Optional override for contact name", example: "Ankit Shaw" },
+                            email: { type: "string", description: "Optional override for contact email", example: "ankit@example.com" },
+                            phoneNo: { type: "string", description: "Optional contact phone number", example: "+919876543210" }
                         }
                     }
                 }
             }
         },
         responses: {
-            "201": {
-                description: "Inquiry proposal recorded and dispatched successfully.",
-                content: {
-                    "application/json": {
-                        schema: {
-                            type: "object",
-                            properties: {
-                                message: { type: "string", example: "Inquiry submitted successfully to the property agent." },
-                                inquiry: { type: "object" }
-                            }
-                        }
-                    }
-                }
-            },
-            "400": { description: "Bad Request: Invalid buyer profile session, missing message payload parameters, or duplicate pending inquiry spam detected." },
-            "404": { description: "Not Found: Targeted property document reference index mismatch." },
-            "500": { description: "Internal Server Error: Execution data channel pipeline exceptions encountered." }
+            "201": { description: "Inquiry dispatched successfully." },
+            "400": { description: "Bad Request validation errors or active spam loops encountered." },
+            "404": { description: "Property document reference index not found." }
         }
     }
 },

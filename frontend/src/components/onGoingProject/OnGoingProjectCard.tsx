@@ -37,6 +37,7 @@ const OnGoingProjectCard = ({ project }: OnGoingProjectCardType) => {
   const handleWishList = async (id: string) => {
     if (!user && !token) {
       toast.success("Please Login First to like a property");
+      navigate("/login")
       return;
     }
     try {
@@ -127,7 +128,14 @@ const OnGoingProjectCard = ({ project }: OnGoingProjectCardType) => {
           </div>
 
           <button
-            onClick={() => navigate(`/property/${project._id}`)}
+            onClick={() => {
+              if(!token && !user){
+                toast.success("Please Login first to see property details")
+                navigate("/login")
+                return
+              }
+              navigate(`/property/${project._id}`)}
+            }
             className="bg-[#171e2e] text-white px-5 py-2.5 rounded-lg text-xs font-semibold hover:bg-yellow-400 hover:text-[#171E2E] transform hover:-translate-x-2 shadow hover:shadow-md transition-all duration-200"
           >
             View Details

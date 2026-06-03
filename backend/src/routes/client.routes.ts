@@ -12,6 +12,6 @@ const router = express.Router();
 
 
 // 1. User Action: Submit inquiry contact form for a specific property
-router.post("/property/:propertyId/inquiry", authenticate, authorize(Role.USER), submitPropertyInquiry);
+router.post("/property/:propertyId/inquiry", authenticate, authorize(Role.ADMIN, Role.USER, Role.AGENT), submitPropertyInquiry);
 
 export default router;
