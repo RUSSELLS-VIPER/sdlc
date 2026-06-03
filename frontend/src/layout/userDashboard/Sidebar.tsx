@@ -24,7 +24,11 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import TextField from "@mui/material/TextField";
 import { toast } from "sonner";
-import type { ProfileFormData, SidebarProps } from "../../type/interface/userDashboard/userDashboard.interface";
+import type {
+  MongoBinaryData,
+  ProfileFormData,
+  SidebarProps,
+} from "../../type/interface/userDashboard/userDashboard.interface";
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const dispatch = useAppDispatch();
@@ -59,7 +63,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       const imageData = user.profilePic.data;
 
       if (imageData && typeof imageData === "object" && "$binary" in imageData) {
-        const embeddedBase64 = (imageData).$binary?.base64;
+        const binaryImageData = imageData as MongoBinaryData;
+        const embeddedBase64 = binaryImageData.$binary?.base64;
         if (embeddedBase64) {
           return `data:${contentType};base64,${embeddedBase64}`;
         }
