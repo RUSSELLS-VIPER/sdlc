@@ -1,11 +1,11 @@
 import type { Property } from "../../type/type/property/property";
 
-import propertyimg1 from "../../assets/images/Properties/property-box-img-1.png";
-import propertyimg2 from "../../assets/images/Properties/property-box-img-2.png";
-import propertyimg3 from "../../assets/images/Properties/property-box-img-3.png";
-import propertyimg4 from "../../assets/images/Properties/property-box-img-4.png";
-import propertyimg5 from "../../assets/images/Properties/property-box-img-5.png";
-import propertyimg6 from "../../assets/images/Properties/property-box-img-6.png";
+import propertyimg1 from "../../assets/images/properties/property-box-img-1.png";
+import propertyimg2 from "../../assets/images/properties/property-box-img-2.png";
+import propertyimg3 from "../../assets/images/properties/property-box-img-3.png";
+import propertyimg4 from "../../assets/images/properties/property-box-img-4.png";
+import propertyimg5 from "../../assets/images/properties/property-box-img-5.png";
+import propertyimg6 from "../../assets/images/properties/property-box-img-6.png";
 
 const properties: Property[] = [
   {

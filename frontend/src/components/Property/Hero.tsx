@@ -1,6 +1,6 @@
 
 import { NavLink } from "react-router-dom";
-import heroimg from "../../assets/images/Properties/prpperty-bg.png";
+import heroimg from "../../assets/images/properties/prpperty-bg.png";
 
 type HeroProps = {
   title?: string;

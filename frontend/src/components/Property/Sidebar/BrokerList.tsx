@@ -1,6 +1,6 @@
-import broker1 from "../../../assets/images/Properties/chandana.png"
-import broker2 from "../../../assets/images/Properties/akshay.png"
-import broker3 from "../../../assets/images/Properties/ankita.png"
+import broker1 from "../../../assets/images/properties/chandana.png"
+import broker2 from "../../../assets/images/properties/akshay.png"
+import broker3 from "../../../assets/images/properties/ankita.png"
 import { MoveRight } from "lucide-react"
 
 const BrokerList = () => {
