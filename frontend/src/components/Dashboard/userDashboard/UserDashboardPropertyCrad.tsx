@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import mapPin from "../../../assets/images/userDashboardImages/map-pin.svg";
 import type { UserDashboardPropertyCardProps } from "../../../type/interface/userDashboard/userDashboard.interface";
 
@@ -6,6 +6,7 @@ import type { UserDashboardPropertyCardProps } from "../../../type/interface/use
 const UserDashboardPropertyCrad: React.FC<UserDashboardPropertyCardProps> = ({
   item,
 }) => {
+  const navigate = useNavigate()
 
 
   
@@ -108,12 +109,12 @@ if (item?.image) {
               <span className="font-semibold">Sq.FT -</span>{" "}
               <span className="font-normal text-[#1E1E1E]/90">{item.sqft}</span>
             </p>
-            <NavLink
-              to="/get-quote"
+            <button
+             onClick={() => navigate(`/property/${item._id}`)}
               className="bg-[#171e2e] text-white px-5 py-2.5 rounded-lg text-xs font-bold hover:bg-yellow-400 hover:text-[#171E2E] transform hover:-translate-x-2 shadow hover:shadow-md transition-all duration-200"
             >
               Get Quote
-            </NavLink>
+            </button>
           </div>
         </div>
       </div>

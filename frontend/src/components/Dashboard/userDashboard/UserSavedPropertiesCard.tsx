@@ -1,9 +1,10 @@
-import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import mapPin from '../../../assets/images/userDashboardImages/map-pin.svg'
 import type { UserDashboardPropertyCardProps } from "../../../type/interface/userDashboard/userDashboard.interface";
 
 
 const UserSavedPropertiesCard:React.FC<UserDashboardPropertyCardProps> = ({ item }) => {
+  const navigate = useNavigate()
    let processedImgSrc = "https://placehold.co/600x400?text=No+Image";
 
 if (item?.image) {
@@ -103,12 +104,12 @@ if (item?.image) {
               <span className="font-semibold text-slate-400">Sq.FT -</span>{" "}
               {item.sqft}
             </p>
-            <NavLink
-              to="#"
+            <button
+               onClick={() => navigate(`/property/${item._id}`)}
               className="bg-[#171e2e] text-white px-5 py-2.5 rounded-lg text-xs font-bold hover:bg-yellow-400 hover:text-[#171E2E] transform hover:-translate-x-2 shadow hover:shadow-md transition-all duration-200"
             >
               Get Quote
-            </NavLink>
+            </button>
           </div>
         </div>
       </div>

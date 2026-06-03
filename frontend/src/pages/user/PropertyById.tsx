@@ -1,4 +1,3 @@
-
 import Breadcrumb from '../../components/Property/BreadCrumb';
 import LeftContent from '../../components/Property/LeftContent';
 import HeroGalary from '../../components/Property/HeroGalary';
@@ -11,40 +10,35 @@ import CaedSection from '../../components/Property/CaedSection';
 
 const PropertyById = () => {
   return (
-  
-<main className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-10">
+    <main className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-10">
+      
+      <section className="text-sm font-semibold text-gray-700 mb-8">
+        <Breadcrumb />
+      </section>
 
-     <section className="text-sm font-semibold text-gray-700 mb-8">
-      <Breadcrumb />
-    </section>
+      <HeroGalary />
 
-    <HeroGalary />
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+        <div className="lg:col-span-4 order-2 lg:order-1 lg:sticky lg:top-24 h-fit">
+          <div className="space-y-6">
+            <LeftContent />
+          </div>
+        </div>
 
-   <section
-        className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
-      >
+        <div className="lg:col-span-8 space-y-8 order-1 lg:order-2">
+          <PropertyInfo />
+          <RoomDetails />
+          <Amenities />
+          <ImageGallery />
+          <LocationMap />
+          <CaedSection />
+        </div>
 
-      <div className="lg:col-span-4 order-2 lg:order-1">
-    
-    <div className="sticky top-24 space-y-6">
-      <LeftContent />
-    </div>
-    </div>
+      </section>
 
-      <div className="lg:col-span-8 space-y-8 order-1 lg:order-2">
-        <PropertyInfo />
-        <RoomDetails />
-        <Amenities />
-        <ImageGallery />
-        <LocationMap />
-        <CaedSection />
-      </div>
-
-    </section>
-
-  </main>
-);
-  
+    </main>
+  );
 }
 
-export default PropertyById
+export default PropertyById;

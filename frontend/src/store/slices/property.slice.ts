@@ -22,6 +22,7 @@ const initialState: PropertyState = {
   loading: false,
   error: null,
   items: [],
+  itemById: null
 };
 
 export const getProperties = createAsyncThunk(
@@ -80,6 +81,26 @@ export const createProperties = createAsyncThunk(
     }
   },
 );
+
+
+export const getPropertyById = createAsyncThunk(
+  "propertyById",
+  async({id}: {id: string | undefined}, {rejectWithValue})=>{
+    if(!id){
+      return rejectWithValue("Profile id is required")
+    }
+    try {
+
+      const response = await axiosInstance.get(endPoint.properties.propertyById(id))
+      return response.data
+      
+    } catch (error) {
+      return rejectWithValue(error)
+      
+    }
+
+  }
+)
 
 
 
@@ -144,7 +165,21 @@ const propertySlice = createSlice({
       })
       .addCase(toggleLikeUnlike.rejected, (state, action) => {
         state.error = (action.error as string) ?? "Failed to toggle like";
-      });
+      })
+      .addCase(getPropertyById.pending, (state)=>{
+        state.loading = true;
+        state.error = null
+
+      })
+      .addCase(getPropertyById.fulfilled, (state, action)=>{
+        state.loading = false;
+        state.error = null;
+        state.itemById = action.payload
+      })
+      .addCase(getPropertyById.rejected, (state, action)=>{
+        state.loading = false;
+        state.error = action.error as string || "Failed to fetch PropertyById"
+      })
   },
 });
 

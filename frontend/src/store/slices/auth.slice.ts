@@ -227,7 +227,7 @@ const authSlice = createSlice({
         state.error = (action.payload as string) || "Failed to update profile";
       })
       .addCase(getProfileById.fulfilled, (state, action) => {
-        const structuralUser = action.payload.user || action.payload;
+        const structuralUser = action.payload.user;
         const fullyHydratedUser = { ...state.user, ...structuralUser };
         state.user = fullyHydratedUser;
         localStorage.setItem("user", JSON.stringify(fullyHydratedUser));

@@ -15,7 +15,7 @@ import {
   useAppDispatch,
   useAppSeletor,
 } from "../../services/helper/reduxstore";
-import { logout } from "../../store/slices/auth.slice";
+import { getProfileById, logout } from "../../store/slices/auth.slice";
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -68,6 +68,13 @@ const Navbar = () => {
     };
   }, []);
 
+
+  useEffect(() => {
+      const userId = user?.id;
+      if (userId) {
+        dispatch(getProfileById({ userId }));
+      }
+    }, [dispatch]);
   return (
     <div className="relative z-50">
       <header className="absolute top-0 left-0 w-full z-50 pt-4 md:pt-6 pb-2">

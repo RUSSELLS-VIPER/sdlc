@@ -1,6 +1,19 @@
-import React from 'react'
+import { useParams } from "react-router-dom"
+import { useAppDispatch, useAppSeletor } from "../../services/helper/reduxstore"
+import { useEffect } from "react"
+import { getPropertyById } from "../../store/slices/property.slice"
+
 
 const LocationMap = () => {
+  const {id} = useParams()
+  // console.log("id", id)
+  const {itemById} = useAppSeletor((state)=> state.property)
+  const dispatch = useAppDispatch()
+  console.log("itemById", itemById)
+
+    useEffect(()=> {
+      dispatch(getPropertyById({id: id}))
+    }, [id, dispatch])
   return (
      <section>
             <h2 className="text-xl font-bold text-gray-900 mb-6">Location</h2>
@@ -23,7 +36,7 @@ const LocationMap = () => {
 
             <div className="flex items-center gap-2 text-gray-600 mb-2 mt-4">
               <i className="fa-solid fa-location-dot text-gray-400"></i>
-              <span className="text-sm font-medium">Barasat, Chapadali More</span>
+              <span className="text-sm font-medium">{itemById?.address}</span>
             </div>
             <p className="text-sm text-gray-800 font-semibold mt-1">
               Well connected to market,school,hospital,and transport.

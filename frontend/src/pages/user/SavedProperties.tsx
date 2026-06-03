@@ -82,7 +82,7 @@ const SavedProperties = () => {
             <div className="lg:col-span-2 space-y-4 max-h-[780px] overflow-y-auto pr-2 custom-scroll-area overflow-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 {wishList?.map((property) => (
-                  <UserSavedPropertiesCard item={property} />
+                  <UserSavedPropertiesCard item={property} key={property._id}/>
                 ))}
               </div>
             </div>

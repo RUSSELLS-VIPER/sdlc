@@ -1,6 +1,19 @@
-import React from 'react'
+import { useEffect } from "react"
+import { useAppDispatch, useAppSeletor } from "../../services/helper/reduxstore"
+import { getPropertyById } from "../../store/slices/property.slice"
+import { useParams } from "react-router-dom"
+
 
 const PropertyInfo = () => {
+  const {id} = useParams()
+  console.log("id", id)
+  const {itemById} = useAppSeletor((state)=> state.property)
+  const dispatch = useAppDispatch()
+  console.log("itemById", itemById)
+
+  useEffect(()=> {
+    dispatch(getPropertyById({id: id}))
+  }, [id, dispatch])
   return (
     <>
     <div
@@ -8,16 +21,16 @@ const PropertyInfo = () => {
           >
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Barasat Duplex Luxury Villa
+                {itemById?.title}
               </h1>
               <p className="text-gray-500 text-sm flex items-center gap-1.5">
                 <i className="fa-solid fa-location-dot text-gray-400"></i>
-                Barasat, Chapadali More
+                {itemById?.address}
               </p>
             </div>
             <div className="text-left md:text-right">
               <span className="text-2xl font-bold text-gray-900 whitespace-nowrap"
-                >Price ₹ 38 L</span>
+                >Price ₹ {itemById?.price}</span>
               
             </div>
           </div>
@@ -69,13 +82,14 @@ const PropertyInfo = () => {
             </div>
           </div>
            <p className="text-gray-600 text-sm leading-relaxed">
-            "This stunning modern home offers a perfect blend of luxury and
+            {/* "This stunning modern home offers a perfect blend of luxury and
             comfort. Featuring spacious rooms, large windows for natural light,
             and a beautifully designed interior, this property is ideal for
             families looking for a peaceful yet stylish living experience. A
             well-designed property located in a prime area, offering comfortable
             living spaces, modern amenities, and easy access to nearby schools,
-            markets, and transportation."
+            markets, and transportation." */}
+            {itemById?.description}
           </p>
           </>
   )

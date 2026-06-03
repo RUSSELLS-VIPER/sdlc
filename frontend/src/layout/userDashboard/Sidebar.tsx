@@ -55,10 +55,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   // useEffect(() => {
   //   if (user?.profileImage) {
   //     setImagePreview(user.profileImage);
-  //   } else if (user?.image) {
-  //     setImagePreview(user.image);
   //   }
-  // }, [user?.profileImage, user?.image]);
+    
+  // }, [user?.profileImage]);
 
   useEffect(() => {
     const userId = user?.id;
@@ -220,7 +219,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           <ul className="relative space-y-4 font-medium border-t border-slate-700/40 pt-4 mt-4">
             <li>
               <div className="w-full flex justify-evenly items-center p-2 bg-[#EEEEEE] text-[#1E1E1E] rounded-xl">
-                <img src={imagePreview} alt="userImage" className="w-8 h-8 rounded-full object-cover" />
+                <img src={user?.profileImage || imagePreview} alt="userImage" className="w-8 h-8 rounded-full object-cover" />
                 <span className="truncate max-w-[110px]">{user?.name || "User"}</span>
                 <button
                   type="button"

@@ -33,4 +33,5 @@ export type PropertyState = {
     loading: boolean;
     error: string | null;
     items: PropertyItem[];
+    itemById: PropertyItem | null
 };

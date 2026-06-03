@@ -1,21 +1,49 @@
-/* ১. ফন্ট ইম্পোর্ট থাকবে সবার উপরে */
+
 @import url("https://fonts.googleapis.com/css2?family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
-/* ২. তারপর থাকবে Tailwind directives */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ৩. সবশেষে আপনার কাস্টম CSS লেয়ার */
+/* Paste it inside the utilities layer */
+@layer utilities {
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #facc15 #1e293b;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #1e293b;
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #facc15;
+    border-radius: 10px;
+    border: 2px solid #1e293b;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #e5930f;
+  }
+}
+
+
 @layer base {
-  /* Firefox-এর জন্য গ্লোবাল স্ক্রলবার */
+
   html, body {
     scrollbar-width: thin;
     scrollbar-color: #999 #f1f1f1;
   }
 
-  /* Chrome, Safari, Edge-এর জন্য গ্লোবাল স্ক্রলবার */
+ 
   html::-webkit-scrollbar,
   body::-webkit-scrollbar {
     width: 10px;
@@ -38,7 +66,7 @@
   }
 }
 
-/* Swiper Slider Dots Style */
+
 #sliderDots .swiper-pagination-bullet {
   background-color: #e5e7eb !important; 
   opacity: 1;
