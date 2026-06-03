@@ -120,7 +120,7 @@ export function renderAdminSection() {
   return `
     ${createSectionHeader({
       title: "Admin",
-      subtitle: "Dashboard and customer tools stay hidden until the admin section is opened.",
+      subtitle: "Dashboard and customer tools stay hidden until the admin section is opened. , customer listings, and user role management setups.",
       badge: "Admin APIs",
       icon: "shield-lock",
       badgeClass: "method-post"

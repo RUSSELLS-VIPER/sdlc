@@ -1,7 +1,8 @@
 import express from "express";
 import {
    getAdminDashboard,
-   getAdminCustomerList
+   getAdminCustomerList,
+   adminUpgradeRole
 } from "../controllers/admin.controller";
 import {
    createBlogPost,
@@ -34,5 +35,6 @@ router.get("/blogs/:id", authenticate, authorize(Role.ADMIN), getBlogPostById);
 router.post("/blogs", authenticate, authorize(Role.ADMIN), uploadCheck.single("image"), createBlogPost);
 router.put("/blogs/:id", authenticate, authorize(Role.ADMIN), uploadCheck.single("image"), updateBlogPost);
 router.delete("/blogs/:id", authenticate, authorize(Role.ADMIN), deleteBlogPost);
+router.patch("/admin-update-role/:userId", authenticate, authorize(Role.ADMIN), adminUpgradeRole);
 
 export default router;

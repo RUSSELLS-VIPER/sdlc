@@ -2,6 +2,7 @@ import { Response } from "express";
 import mongoose from "mongoose";
 import User, { Role } from "../models/user.model";
 import Property from "../models/property.model";
+import Notification, { NotificationType } from "../models/notification.model";
 import { AuthenticatedRequest } from "../middleware/auth.middleware";
 import { logError, toErrorResponse } from "../utils/error";
 
@@ -253,6 +254,98 @@ export const getAdminCustomerList = async (req: AuthenticatedRequest, res: Respo
 
     } catch (error) {
         logError("getAdminCustomerList", error);
+        return res.status(500).json(toErrorResponse(error));
+    }
+};
+
+
+export const adminUpgradeRole = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+
+
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+
+        const adminId = req.user?.id;
+
+        const { userId } = req.params;
+        const {
+            //comment if need 
+            name, email, city, district, locality, phoneNo,
+            role } = req.body; // Expects "agent" or "user"
+
+        if (!role || !Object.values(Role).includes(role)) {
+            return res.status(400).json({ message: "Invalid role type supplied" });
+        }
+
+        const targetUser = await User.findById(userId);
+        if (!targetUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        
+        //comment if need 
+        if (name) targetUser.name = name;
+        if (email) targetUser.email = email;
+        if (city) targetUser.city = city;
+        if (district) targetUser.district = district;
+        if (locality) targetUser.locality = locality;
+        if (phoneNo) targetUser.phoneNo = phoneNo;
+        // If a file was uploaded via uploadCheck middleware
+        if (req.file) {
+            targetUser.profilePic = {
+                data: req.file.buffer,
+                contentType: req.file.mimetype
+            };
+        }
+
+
+        const oldRole = targetUser.role;
+
+        targetUser.role = role as Role;
+
+        if (oldRole === role) {
+            return res.status(400).json({ message: `Already role - ${oldRole} can't upgrade`});
+        }
+        await targetUser.save();
+
+        // Trigger Notification Type 1: Role Upgraded/Changed
+        if (oldRole !== role) {
+            
+            await Notification.create({
+                recipientId: targetUser._id,
+                senderId: req.user?.id, // The Admin's User ID from auth middleware
+                type: NotificationType.ROLE_CHANGED,
+                title: "💼 Account Role Updated",
+                messageText: `An administrator has updated your profile role authorization to: ${role.toUpperCase()}.`
+            });
+           
+        }
+
+         await Notification.create({
+            recipientId: adminId,
+            senderId: adminId,
+            type: NotificationType.USER_ROLE_CHANGED,
+            title: `Success admin converted the role`,
+            messageText: `${targetUser.name} ( ${oldRole} ) ,Role is updated to ${targetUser.role}`,
+        });
+
+        return res.status(200).json({
+            message: "User role updated successfully by admin",
+            user: {
+                id: targetUser._id,
+                name: targetUser.name,
+                 email: targetUser.email,
+                city: targetUser.city,
+                district: targetUser.district,
+                locality: targetUser.locality,
+                phoneNo: targetUser.phoneNo,
+                role: targetUser.role
+            }
+        });
+    } catch (error) {
+        logError("adminUpgradeRole", error);
         return res.status(500).json(toErrorResponse(error));
     }
 };

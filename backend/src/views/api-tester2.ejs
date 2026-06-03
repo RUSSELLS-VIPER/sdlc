@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Real Estate API Tester</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #1f2937;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+    }
+
+    .hint {
+      margin-bottom: 16px;
+      color: #4b5563;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #dbe2ea;
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .card h3 {
+      margin: 0 0 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 5px;
+      color: #4b5563;
+    }
+
+    input,
+    select,
+    button,
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      background: #0f766e;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    button:hover {
+      background: #115e59;
+    }
+
+    .response {
+      margin-top: 16px;
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 10px;
+      padding: 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 220px;
+    }
+
+    .token-box {
+      background: #fff;
+      border: 1px solid #dbe2ea;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .small {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: -4px;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Real Estate API Tester</h1>
+    <h2>
+      Swagger Documentation <a href="http://localhost:8000/api-docs/">link</a>
+    </h2>
+
+    <div class="token-box">
+      <div class="row">
+        <div>
+          <label for="baseUrl">Base URL (without /api path)</label>
+          <input id="baseUrl" value="<%= typeof baseUrl !== 'undefined' ? baseUrl : '' %>"
+            placeholder="http://localhost:8000" />
+        </div>
+        <div>
+          <label for="token">JWT Token</label>
+          <input id="token" placeholder="Paste token or login to auto-fill" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="currentUserId">Current User ID</label>
+          <input id="currentUserId" placeholder="Auto-filled after login" />
+        </div>
+        <div>
+          <label for="commonPropertyId">Common Property ID</label>
+          <input id="commonPropertyId" placeholder="Use for like/favorite/profile tests" />
+        </div>
+      </div>
+      <button id="saveToken">Save Token</button>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Register</h3>
+        <label>Name</label>
+        <input id="regName" value="Test User" />
+        <label>Email</label>
+        <input id="regEmail" value="test@example.com" />
+        <label>Password</label>
+        <input id="regPassword" type="password" value="123456" />
+        <label>Role</label>
+        <select id="regRole">
+          <option value="user">user</option>
+          <option value="agent">agent</option>
+          <option value="admin">admin</option>
+        </select>
+        <button onclick="register()">POST /api/auth/register</button>
+      </div>
+
+      <div class="card">
+        <h3>Verify Email</h3>
+        <label>Email</label>
+        <input id="verifyEmail" value="test@example.com" />
+        <label>OTP</label>
+        <input id="verifyOtp" placeholder="Enter OTP from email" />
+        <button onclick="verifyEmail()">POST /api/auth/verify-email</button>
+      </div>
+
+      <div class="card">
+        <h3>Login</h3>
+        <label>Email</label>
+        <input id="loginEmail" value="test@example.com" />
+        <label>Password</label>
+        <input id="loginPassword" type="password" value="123456" />
+        <button onclick="login()">POST /api/auth/login</button>
+      </div>
+
+      <div class="card">
+        <h3>Create Property</h3>
+        <label>Title</label>
+        <input id="createTitle" value="2BHK Apartment" />
+        <label>Description</label>
+        <textarea id="createDescription">
+Near metro station, ready to move.</textarea>
+        <label>Price</label>
+        <input id="createPrice" value="7800000" />
+        <label>Address</label>
+        <input id="createAddress" value="Kolkata, India" />
+        <label>BHK Type</label>
+        <input id="createBhkType" value="2BHK" />
+        <label>Sq.FT</label>
+        <input id="createSqFt" value="1200" />
+        <label>Apartment Type</label>
+        <input id="createApartmentType" value="Apartment" />
+        <label>Property Type</label>
+        <select id="createPropertyType">
+          <option value="apartment">apartment</option>
+          <option value="home">home</option>
+          <option value="office">office</option>
+          <option value="villa">villa</option>
+          <option value="rental">rental</option>
+        </select>
+        <label>Project Status</label>
+        <select id="createProjectStatus">
+          <option value="Completed">Completed</option>
+          <option value="Ongoing">Ongoing</option>
+        </select>
+        <label>Image (optional)</label>
+        <input id="createImage" type="file" accept="image/*" />
+        <button onclick="createProperty()">POST /api/properties</button>
+      </div>
+
+      <div class="card">
+        <h3>Get Properties</h3>
+        <button onclick="getProperties()">GET /api/properties</button>
+        <label>Property ID</label>
+        <input id="propertyId" placeholder="Property id for get/update/delete" />
+        <div class="small">Tip: you can reuse Common Property ID above</div>
+        <button onclick="getPropertyById()">GET /api/properties/:id</button>
+      </div>
+
+      <div class="card">
+        <h3>Update Property</h3>
+        <label>Property ID</label>
+        <input id="updateId" placeholder="Property id" />
+        <label>Title (optional)</label>
+        <input id="updateTitle" />
+        <label>Description (optional)</label>
+        <textarea id="updateDescription"></textarea>
+        <label>Price (optional)</label>
+        <input id="updatePrice" />
+        <label>Address (optional)</label>
+        <input id="updateAddress" />
+        <label>BHK Type (optional)</label>
+        <input id="updateBhkType" />
+        <label>Sq.FT (optional)</label>
+        <input id="updateSqFt" />
+        <label>Apartment Type (optional)</label>
+        <input id="updateApartmentType" />
+        <label>Property Type (optional)</label>
+        <select id="updatePropertyType">
+          <option value="">-- Select --</option>
+          <option value="apartment">apartment</option>
+          <option value="home">home</option>
+          <option value="office">office</option>
+          <option value="villa">villa</option>
+          <option value="rental">rental</option>
+        </select>
+        <label>Project Status (optional)</label>
+        <select id="updateProjectStatus">
+          <option value="">-- Select --</option>
+          <option value="Completed">Completed</option>
+          <option value="Ongoing">Ongoing</option>
+        </select>
+        <label>Image (optional)</label>
+        <input id="updateImage" type="file" accept="image/*" />
+        <button onclick="updateProperty()">PUT /api/properties/:id</button>
+      </div>
+
+      <div class="card">
+        <h3>Delete Property</h3>
+        <label>Property ID</label>
+        <input id="deleteId" placeholder="Property id" />
+        <button onclick="deleteProperty()">DELETE /api/properties/:id</button>
+      </div>
+
+      <div class="card">
+        <h3>Like / Unlike Property</h3>
+        <label>Property ID</label>
+        <input id="likeId" placeholder="Property id" />
+        <button onclick="toggleLike()">POST /api/properties/:id/like</button>
+      </div>
+
+      <div class="card">
+        <h3>Get User Profile</h3>
+        <label>User ID</label>
+        <input id="profileUserId" placeholder="User id (or Current User ID)" />
+        <button onclick="getUserProfile()">GET /api/users/profile/:id</button>
+      </div>
+
+      <div class="card">
+        <h3>Update Profile</h3>
+        <label>Name (optional)</label>
+        <input id="profileName" placeholder="New name" />
+        <label>Email (optional)</label>
+        <input id="profileEmail" placeholder="New email" />
+
+
+        <label>City (optional)</label>
+        <input id="profileCity" placeholder="City" />
+        <label>District (optional)</label>
+        <input id="profileDistrict" placeholder="District" />
+        <label>Locality (optional)</label>
+        <input id="profileLocality" placeholder="Locality" />
+        <label>Phone No. (optional)</label>
+        <input id="profilePhoneNo" placeholder="Phone No." />
+
+
+        <label>Profile Image (optional)</label>
+        <input id="profileImage" type="file" accept="image/*" />
+        <button onclick="updateUserProfile()">
+          PUT /api/users/profile/update
+        </button>
+      </div>
+
+      <div class="card">
+        <h3>Toggle Favorite Property</h3>
+        <label>Property ID</label>
+        <input id="favoritePropertyId" placeholder="Property id" />
+        <button onclick="toggleFavorite()">
+          POST /api/users/favorites/:propertyId
+        </button>
+      </div>
+
+      <div class="card">
+        <h3>Get My Favorites</h3>
+        <button onclick="getMyFavorites()">
+          GET /api/users/favorites/my-list
+        </button>
+      </div>
+
+
+
+
+      <div class="card" style="border-left: 4px solid #0f766e;">
+        <h3>Search Chat Contacts</h3>
+        <div class="small">Performs real-time role-based filtering using your session token.</div>
+
+        <label for="chatSearchInput">Search by Name (Filters instantly)</label>
+        <input id="chatSearchInput" placeholder="Type a username..." oninput="searchUsersToChat()" />
+
+        <button onclick="searchUsersToChat()">GET /api/users/search-user-to-chat</button>
+
+        <div id="chatSearchOutputContainer"
+          style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;">
+          <p style="font-size: 13px; color: #6b7280; text-align: center; margin: 10px 0;">Start typing above to retrieve
+            real-time data matches...</p>
+        </div>
+      </div>
+
+      <div class="card" style="border-left: 4px solid #14b8a6; grid-column: span 1;">
+        <h3>Chat History Log</h3>
+        <div class="small">Renders a chronological bidirectional conversation thread between you and the target user.
+        </div>
+
+        <label for="chatHistoryUserId">Target User ID</label>
+        <input id="chatHistoryUserId" placeholder="Click a user from search results or paste an explicit MongoDB ID" />
+
+        <button onclick="loadChatHistory()">GET /api/users/history/:userId</button>
+
+        <div id="chatHistoryWindow"
+          style="margin-top: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; display: flex; flex-direction: column; min-height: 280px; max-height: 350px;">
+
+          <div id="chatParticipantBanner"
+            style="background: #f1f5f9; border-bottom: 1px solid #e2e8f0; padding: 10px 14px; border-top-left-radius: 9px; border-top-right-radius: 9px; display: none; align-items: center; gap: 10px;">
+          </div>
+
+          <div id="chatMessageStream"
+            style="flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 12px;">
+            <p style="font-size: 13px; color: #6b7280; text-align: center; margin: auto;">Select an active user contact
+              or provide an operational ID to trace timelines...</p>
+          </div>
+
+          <!-- Scrollable Message Stream Container -->
+          <div id="chatMessageStream"
+            style="flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 12px;">
+            <p style="font-size: 13px; color: #6b7280; text-align: center; margin: auto;">Select an active user contact
+              or provide an operational ID to trace timelines...</p>
+          </div>
+
+          <!-- Integrated Direct Message Despatcher Row Node -->
+          <div id="chatInputBarArea"
+            style="display: flex; gap: 8px; padding: 10px; background: #f1f5f9; border-top: 1px solid #e2e8f0; border-bottom-left-radius: 9px; border-bottom-right-radius: 9px;">
+            <input id="chatOutgoingTextMessage" placeholder="Type your message text here..."
+              style="margin-bottom: 0; flex: 1;" onkeydown="if(event.key === 'Enter') executeSendMessage()" />
+            <button onclick="executeSendMessage()" style="margin-bottom: 0; width: auto; padding: 0 16px;">Send</button>
+          </div>
+
+        </div>
+      </div>
+
+
+
+      <!-- User Notifications Timeline API Block -->
+      <div class="card" style="border-left: 4px solid #3b82f6;">
+        <h3 style="margin: 0;">GET /api/users/my-notifications</h3>
+        <div class="small" style="margin-bottom: 12px;">Fetch all status updates, buy requests, and role changes explicitly targeted to your current profile session.</div>
+        
+        <button onclick="testUserNotificationsAPI()">Fetch My Notifications</button>
+      </div>
+
+
+      <div class="card" style="border-left: 4px solid #0f766e;">
+        <h3>Admin Dashboard</h3>
+        <div class="small">Requires authorization token with an 'admin' role.</div>
+
+        <label>Timeframe (Part 3 Wave Graph)</label>
+        <select id="adminTimeframe">
+          <option value="month">Month (Default)</option>
+          <option value="week">Week</option>
+          <option value="year">Year</option>
+        </select>
+
+        <button onclick="getAdminDashboard()">GET /api/admin/dashboard</button>
+      </div>
+
+      <div class="card" style="border-left: 4px solid #0f766e;">
+        <h3 style="margin: 0;">GET /api/admin/customers-list</h3>
+        <div class="small" style="margin-bottom: 12px;">Fetch regular customer directory profile records with a limit
+          index of 16 records per page slice.</div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 120px;">
+            <label style="font-size: 11px;">Query Page Index</label>
+            <input id="adminCustomerPageNum" type="number" value="1" min="1" style="margin-bottom: 0;" />
+          </div>
+          <div style="flex: 2; min-width: 200px;">
+            <label style="font-size: 11px;">Search Parameter Text (Optional)</label>
+            <input id="adminCustomerSearchText" placeholder="Filter by Name / Email fragment string..."
+              style="margin-bottom: 0;" />
+          </div>
+        </div>
+
+        <button onclick="testAdminCustomerListAPI()">Execute API Request Context</button>
+      </div>
+
+
+
+
+      <div class="card" style="border-left: 4px solid #b91c1c;">
+        <h3 style="margin: 0;">PATCH /api/admin/admin-update-role/:userId</h3>
+        <div class="small" style="margin-bottom: 12px;">Modify a user's role (e.g., upgrading to an Agent) and update their optional profile fields by database ID.</div>
+        
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+          <div>
+            <label style="font-size: 11px;">Target User ID (Required)</label>
+            <input id="adminUpdateTargetUserId" placeholder="e.g., 6a1c688f7801aa3029a13ac0" />
+          </div>
+          
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 120px;">
+              <label style="font-size: 11px;">Account Role Assignment</label>
+              <select id="adminUpdateTargetRole" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
+                <option value="user">User (Regular Customer)</option>
+                <option value="agent">Agent (Real Estate Broker)</option>
+                <option value="admin">Admin (System Controller)</option>
+              </select>
+            </div>
+            <div style="flex: 1; min-width: 150px;">
+              <label style="font-size: 11px;">Full Name (Optional)</label>
+              <input id="adminUpdateTargetName" placeholder="Update Name..." style="margin-bottom: 0;" />
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 120px;">
+              <label style="font-size: 11px;">City</label>
+              <input id="adminUpdateTargetCity" placeholder="Kolkata" style="margin-bottom: 0;" />
+            </div>
+            <div style="flex: 1; min-width: 120px;">
+              <label style="font-size: 11px;">District</label>
+              <input id="adminUpdateTargetDistrict" placeholder="Howrah" style="margin-bottom: 0;" />
+            </div>
+            <div style="flex: 1; min-width: 120px;">
+              <label style="font-size: 11px;">Locality</label>
+              <input id="adminUpdateTargetLocality" placeholder="Liluah" style="margin-bottom: 0;" />
+            </div>
+            <div style="flex: 1; min-width: 140px;">
+              <label style="font-size: 11px;">Phone No</label>
+              <input id="adminUpdateTargetPhone" type="number" placeholder="9830012345" style="margin-bottom: 0;" />
+            </div>
+          </div>
+        </div>
+
+        <button onclick="testAdminUpdateRoleAPI()">Execute Role Upgrade & Patch</button>
+      </div>
+
+
+
+
+<!-- Property Inquiry Test Module Frame -->
+      <div class="card" style="border-left: 4px solid #f59e0b;">
+        <h3 style="margin: 0;">POST /api/client/property/:propertyId/inquiry</h3>
+        <div class="small" style="margin-bottom: 12px;">Submit a contact inquiry or proposal notes to an agent. (Your authenticated profile name and email are pulled automatically on the server side).</div>
+        
+        <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px;">
+          <div>
+            <label style="font-size: 11px;">Target Property ID (Required)</label>
+            <input id="inquiryPropertyTargetId" placeholder="e.g., 6a1c92a17801aa3029a15b01" />
+          </div>
+          <div>
+            <label style="font-size: 11px;">Inquiry / Proposal Message (Required)</label>
+            <textarea id="inquiryMessageText" placeholder="Write your property questions or offer parameters context here..." style="width: 100%; height: 75px; padding: 6px; border-radius: 4px; border: 1px solid #ccc; font-family: inherit; font-size: 13px; box-sizing: border-box;"></textarea>
+          </div>
+        </div>
+
+        <button onclick="testPropertyInquirySubmission()">Submit Inquiry Message</button>
+      </div>
+
+
+
+
+
+
+      <!-- Agent Analytical Dashboard View Block -->
+      <div class="card" style="border-left: 4px solid #ec4899;">
+        <h3 style="margin: 0;">GET /api/agent/dashboard-summary</h3>
+        <div class="small" style="margin-bottom: 12px;">Pull critical real estate operational KPIs, active inventory properties listings arrays, and pie chart distribution datasets.</div>
+        
+        <button onclick="loadAgentDashboardOverviewData()" style="margin-bottom: 15px;">Run Dashboard Analytics</button>
+
+        <!-- Dynamic KPI Panels Workspace Block -->
+        <div id="agentKpiRow" style="display:none; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 15px;">
+            <div style="background: #f8fafc; padding: 12px; border: 1px solid #e2e8f0; border-radius: 6px; text-align: center;">
+                <div style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase;">Total Inquiries</div>
+                <div id="kpiTotalInquiries" style="font-size: 20px; font-weight: bold; color: #0f172a; margin-top: 4px;">0</div>
+            </div>
+            <div style="background: #f0fdf4; padding: 12px; border: 1px solid #bbf7d0; border-radius: 6px; text-align: center;">
+                <div style="font-size: 11px; color: #166534; font-weight: 600; text-transform: uppercase;">Properties Sold</div>
+                <div id="kpiPropertiesSold" style="font-size: 20px; font-weight: bold; color: #15803d; margin-top: 4px;">0</div>
+            </div>
+            <div style="background: #eff6ff; padding: 12px; border: 1px solid #bfdbfe; border-radius: 6px; text-align: center;">
+                <div style="font-size: 11px; color: #1e40af; font-weight: 600; text-transform: uppercase;">Available Listings</div>
+                <div id="kpiPropertiesAvailable" style="font-size: 20px; font-weight: bold; color: #1d4ed8; margin-top: 4px;">0</div>
+            </div>
+        </div>
+
+        <!-- Simulated Pie Chart Graph Output Map Block -->
+        <div id="agentPieChartVisual" style="display:none; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; margin-bottom: 15px; font-size: 12px;">
+            <div style="font-weight: 600; color: #475569; margin-bottom: 8px;">📊 Pie Chart Breakdown Data:</div>
+            <div style="display: flex; gap: 20px; align-items: center;">
+                <div>🟢 Available Ratio Count: <strong id="pieAvailableValue">0</strong></div>
+                <div>🔴 Sold Ratio Count: <strong id="pieSoldValue">0</strong></div>
+            </div>
+        </div>
+
+        <!-- Inventory Database Records Table Frame -->
+        <div id="agentPropertiesGridFrame" style="display: none; width: 100%; overflow-x: auto; border-radius: 6px; border: 1px solid #e2e8f0;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; background: #fff;">
+            <thead>
+              <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; color: #475569;">
+                <th style="padding: 8px;">Property Title</th>
+                <th style="padding: 8px;">Location</th>
+                <th style="padding: 8px;">Price</th>
+                <th style="padding: 8px;">Status</th>
+              </tr>
+            </thead>
+            <tbody id="agentPropertiesTableBody" style="color: #334155;">
+              <!-- Item rows append here dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+
+
+      <div class="card" style="border-left: 4px solid #10b981;">
+        <h3 style="margin: 0;">PATCH /api/agent/inquiry/:inquiryId/action</h3>
+        <div class="small" style="margin-bottom: 12px;">Approve or disapprove a pending user property inquiry. (Approving automatically flips the listing status to 'Sold').</div>
+        
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+          <div>
+            <label style="font-size: 11px;">Target Inquiry ID (Required)</label>
+            <input id="agentInquiryTargetId" placeholder="e.g., 6a1c9df87801aa3029a15f88" />
+          </div>
+          
+          <div>
+            <label style="font-size: 11px;">Select Decision Action</label>
+            <select id="agentInquiryActionValue" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
+              <option value="approved">Approve Inquiry (Mark Property as Sold)</option>
+              <option value="disapproved">Disapprove Inquiry (Keep Property Available)</option>
+            </select>
+          </div>
+        </div>
+
+        <button onclick="testAgentInquiryActionAPI()">Process Inquiry Decision</button>
+      </div>
+
+
+
+
+
+<!-- Agent Leads Grid Viewer Table Block -->
+     <!-- Paginated Agent Leads Grid Viewer Table Block -->
+      <div class="card" style="border-left: 4px solid #8b5cf6;">
+        <h3 style="margin: 0;">GET /api/agent/agent/leads?page=:pageNum</h3>
+        <div class="small" style="margin-bottom: 12px;">Fetch incoming property inquiry sheets (16 records max per page slice) and display elements inside a table matrix grid.</div>
+        
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+          <div style="width: 120px;">
+            <label style="font-size: 11px;">Target Page Index</label>
+            <input id="agentLeadsTargetPage" type="number" value="1" min="1" style="margin-bottom: 0; padding: 5px;" />
+          </div>
+          <button onclick="fetchAndDisplayAgentLeadsTable()" style="align-self: flex-end; height: 36px;">Load Leads Table Page</button>
+        </div>
+
+        <!-- Response Output Table Container Workspace -->
+        <div id="leadsTableContainer" style="display: none; width: 100%; overflow-x: auto; margin-top: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+          <div id="leadsPaginationMeta" style="background: #f1f5f9; padding: 8px 12px; font-size: 11px; color: #475569; font-weight: 500; border-bottom: 1px solid #e2e8f0;">
+            <!-- Pagination tracking parameters will inject here -->
+          </div>
+          <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; background: #fff;">
+            <thead>
+              <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; color: #475569;">
+                <th style="padding: 10px; font-weight: 600;">Name</th>
+                <th style="padding: 10px; font-weight: 600;">Email</th>
+                <th style="padding: 10px; font-weight: 600;">Message Text</th>
+                <th style="padding: 10px; font-weight: 600;">Property Name</th>
+              </tr>
+            </thead>
+            <tbody id="leadsTableBody" style="color: #334155;">
+              <!-- Dynamic Rows inject asynchronously -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+
+
+      <!-- Searchable & Paginated Agent Leads Table Block -->
+      <div class="card" style="border-left: 4px solid #8b5cf6;">
+        <h3 style="margin: 0;">GET /api/agent/agent/leads</h3>
+        <div class="small" style="margin-bottom: 12px;">Query incoming property inquiry sheets filtered dynamically by sender name criteria and paginated offsets.</div>
+        
+        <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+          <div style="flex: 2; min-width: 180px;">
+            <label style="font-size: 11px;">Search by Name (Optional)</label>
+            <input id="agentLeadsSearchName" type="text" placeholder="e.g., Ankit" style="margin-bottom: 0; padding: 5px;" />
+          </div>
+          <div style="width: 100px;">
+            <label style="font-size: 11px;">Page Index</label>
+            <input id="agentLeadsTargetPage" type="number" value="1" min="1" style="margin-bottom: 0; padding: 5px;" />
+          </div>
+          <button onclick="fetchAndDisplayAgentLeadsTable()" style="align-self: flex-end; height: 36px;">Search & Load Table</button>
+        </div>
+
+        <!-- Response Output Table Container Workspace -->
+        <div id="leadsTableContainer" style="display: none; width: 100%; overflow-x: auto; margin-top: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+          <div id="leadsPaginationMeta" style="background: #f1f5f9; padding: 8px 12px; font-size: 11px; color: #475569; font-weight: 500; border-bottom: 1px solid #e2e8f0;">
+            <!-- Pagination data logs inject here -->
+          </div>
+          <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; background: #fff;">
+            <thead>
+              <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; color: #475569;">
+                <th style="padding: 10px; font-weight: 600;">Name</th>
+                <th style="padding: 10px; font-weight: 600;">Email</th>
+                <th style="padding: 10px; font-weight: 600;">Message Text</th>
+                <th style="padding: 10px; font-weight: 600;">Property Name</th>
+              </tr>
+            </thead>
+            <tbody id="leadsTableBody" style="color: #334155;">
+              <!-- Rows inject asynchronously -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      
+
+
+
+      <!-- Soft Delete Inquiry Testing Block -->
+      <div class="card" style="border-left: 4px solid #ef4444;">
+        <h3 style="margin: 0;">DELETE /api/agent/inquiry/:inquiryId</h3>
+        <div class="small" style="margin-bottom: 12px;">Soft delete a property inquiry recording row. The user token session executing this must belong to either the buyer or the managing agent.</div>
+        
+        <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px;">
+          <label style="font-size: 11px;">Target Inquiry ID (Required)</label>
+          <input id="deleteInquiryTargetId" placeholder="e.g., 6a1c9df87801aa3029a15f88" style="margin-bottom: 0;" />
+        </div>
+
+        <button onclick="testSoftDeleteInquiryAPI()" style="background-color: #ef4444; color: #fff; border: none;">Execute Soft Delete</button>
+      </div>
+
+
+    </div>
+
+    <pre id="response" class="response">Response will appear here...</pre>
+  </div>
+
+  <script>
+    const tokenInput = document.getElementById("token");
+    const baseUrlInput = document.getElementById("baseUrl");
+    const responseBox = document.getElementById("response");
+    const currentUserIdInput = document.getElementById("currentUserId");
+    const commonPropertyIdInput = document.getElementById("commonPropertyId");
+
+    if (!baseUrlInput.value) {
+      baseUrlInput.value = window.location.origin;
+    }
+
+    tokenInput.value = localStorage.getItem("api_tester_token") || "";
+    currentUserIdInput.value =
+      localStorage.getItem("api_tester_user_id") || "";
+
+    document.getElementById("saveToken").addEventListener("click", () => {
+      localStorage.setItem("api_tester_token", tokenInput.value.trim());
+      localStorage.setItem(
+        "api_tester_user_id",
+        currentUserIdInput.value.trim(),
+      );
+      writeResponse({ message: "Token saved in localStorage" }, 200);
+    });
+
+    function apiUrl(path) {
+      return baseUrlInput.value.replace(/\/$/, "") + path;
+    }
+
+    function headers(authRequired = false, isFormData = false) {
+      const h = {};
+      if (!isFormData) {
+        h["Content-Type"] = "application/json";
+      }
+      if (authRequired && tokenInput.value.trim()) {
+        h.Authorization = "Bearer " + tokenInput.value.trim();
+      }
+      return h;
+    }
+
+    async function sendRequest(
+      path,
+      method,
+      body,
+      authRequired = false,
+      isFormData = false,
+    ) {
+      const options = {
+        method,
+        headers: headers(authRequired, isFormData),
+      };
+      if (body) {
+        options.body = isFormData ? body : JSON.stringify(body);
+      }
+
+      const res = await fetch(apiUrl(path), options);
+      let data;
+      try {
+        data = await res.json();
+      } catch (_e) {
+        data = { raw: await res.text() };
+      }
+      writeResponse(data, res.status);
+      return { status: res.status, data };
+    }
+
+    function writeResponse(data, status) {
+      responseBox.textContent =
+        "Status: " + status + "\n\n" + JSON.stringify(data, null, 2);
+    }
+
+    async function register() {
+      await sendRequest("/api/auth/register", "POST", {
+        name: document.getElementById("regName").value,
+        email: document.getElementById("regEmail").value,
+        password: document.getElementById("regPassword").value,
+        role: document.getElementById("regRole").value,
+      });
+    }
+
+    async function verifyEmail() {
+      await sendRequest("/api/auth/verify-email", "POST", {
+        email: document.getElementById("verifyEmail").value,
+        otp: document.getElementById("verifyOtp").value,
+      });
+    }
+
+    async function login() {
+      const result = await sendRequest("/api/auth/login", "POST", {
+        email: document.getElementById("loginEmail").value,
+        password: document.getElementById("loginPassword").value,
+      });
+      if (result.status === 200 && result.data && result.data.token) {
+        tokenInput.value = result.data.token;
+        localStorage.setItem("api_tester_token", result.data.token);
+        if (result.data.user && result.data.user.id) {
+          currentUserIdInput.value = result.data.user.id;
+          localStorage.setItem("api_tester_user_id", result.data.user.id);
+        }
+      }
+    }
+
+    async function createProperty() {
+      const formData = new FormData();
+      formData.append("title", document.getElementById("createTitle").value);
+      formData.append(
+        "description",
+        document.getElementById("createDescription").value,
+      );
+      formData.append(
+        "price",
+        String(Number(document.getElementById("createPrice").value)),
+      );
+      formData.append(
+        "address",
+        document.getElementById("createAddress").value,
+      );
+      formData.append(
+        "bhkType",
+        document.getElementById("createBhkType").value,
+      );
+      formData.append("sqFt", document.getElementById("createSqFt").value);
+      formData.append(
+        "apartmentType",
+        document.getElementById("createApartmentType").value,
+      );
+      formData.append(
+        "propertyType",
+        document.getElementById("createPropertyType").value,
+      );
+      formData.append(
+        "projectStatus",
+        document.getElementById("createProjectStatus").value,
+      );
+
+      const file = document.getElementById("createImage").files[0];
+      if (file) formData.append("image", file);
+
+      await sendRequest("/api/properties", "POST", formData, true, true);
+    }
+
+    async function getProperties() {
+      await sendRequest("/api/properties", "GET");
+    }
+
+    async function getPropertyById() {
+      const id = document.getElementById("propertyId").value;
+      await sendRequest("/api/properties/" + id, "GET");
+    }
+
+    async function updateProperty() {
+      const formData = new FormData();
+      let hasPayload = false;
+      const title = document.getElementById("updateTitle").value;
+      const description = document.getElementById("updateDescription").value;
+      const price = document.getElementById("updatePrice").value;
+      const address = document.getElementById("updateAddress").value;
+      const bhkType = document.getElementById("updateBhkType").value;
+      const sqFt = document.getElementById("updateSqFt").value;
+      const apartmentType = document.getElementById(
+        "updateApartmentType",
+      ).value;
+      const propertyType =
+        document.getElementById("updatePropertyType").value;
+      const projectStatus = document.getElementById(
+        "updateProjectStatus",
+      ).value;
+      const file = document.getElementById("updateImage").files[0];
+
+      if (title) {
+        formData.append("title", title);
+        hasPayload = true;
+      }
+      if (description) {
+        formData.append("description", description);
+        hasPayload = true;
+      }
+      if (price) {
+        formData.append("price", String(Number(price)));
+        hasPayload = true;
+      }
+      if (address) {
+        formData.append("address", address);
+        hasPayload = true;
+      }
+      if (bhkType) {
+        formData.append("bhkType", bhkType);
+        hasPayload = true;
+      }
+      if (sqFt) {
+        formData.append("sqFt", sqFt);
+        hasPayload = true;
+      }
+      if (apartmentType) {
+        formData.append("apartmentType", apartmentType);
+        hasPayload = true;
+      }
+      if (propertyType) {
+        formData.append("propertyType", propertyType);
+        hasPayload = true;
+      }
+      if (projectStatus) {
+        formData.append("projectStatus", projectStatus);
+        hasPayload = true;
+      }
+      if (file) {
+        formData.append("image", file);
+        hasPayload = true;
+      }
+
+      const id = document.getElementById("updateId").value;
+      if (!hasPayload) {
+        writeResponse(
+          { message: "Add at least one field or image to update" },
+          400,
+        );
+        return;
+      }
+
+      await sendRequest("/api/properties/" + id, "PUT", formData, true, true);
+    }
+
+    async function deleteProperty() {
+      const id = document.getElementById("deleteId").value;
+      await sendRequest("/api/properties/" + id, "DELETE", null, true);
+    }
+
+    async function toggleLike() {
+      const id =
+        document.getElementById("likeId").value ||
+        commonPropertyIdInput.value;
+      await sendRequest(
+        "/api/properties/" + id + "/like",
+        "POST",
+        null,
+        true,
+      );
+    }
+
+    async function getUserProfile() {
+      const id =
+        document.getElementById("profileUserId").value ||
+        currentUserIdInput.value;
+      await sendRequest("/api/users/profile/" + id, "GET", null, true);
+    }
+
+    async function updateUserProfile() {
+      const formData = new FormData();
+      let hasPayload = false;
+
+      const name = document.getElementById("profileName").value;
+      const email = document.getElementById("profileEmail").value;
+
+      const city = document.getElementById("profileCity").value;
+      const district = document.getElementById("profileDistrict").value;
+      const locality = document.getElementById("profileLocality").value;
+      const phoneNo = document.getElementById("profilephoneNo").value;
+
+      const file = document.getElementById("profileImage").files[0];
+
+      if (name) {
+        formData.append("name", name);
+        hasPayload = true;
+      }
+      if (email) {
+        formData.append("email", email);
+        hasPayload = true;
+      }
+
+
+      if (city) {
+        formData.append("city", city);
+        hasPayload = true;
+      }
+
+      if (district) {
+        formData.append("district", district);
+        hasPayload = true;
+      }
+      if (locality) {
+        formData.append("locality", locality);
+        hasPayload = true;
+      }
+
+      if (phoneNo) {
+        formData.append("phoneNo", phoneNo);
+        hasPayload = true;
+      }
+
+      if (file) {
+        formData.append("image", file);
+        hasPayload = true;
+      }
+
+      if (!hasPayload) {
+        writeResponse(
+          { message: "Add at least one field or profile image to update" },
+          400,
+        );
+        return;
+      }
+
+      await sendRequest(
+        "/api/users/profile/update",
+        "PUT",
+        formData,
+        true,
+        true,
+      );
+    }
+
+    async function toggleFavorite() {
+      const propertyId =
+        document.getElementById("favoritePropertyId").value ||
+        commonPropertyIdInput.value;
+      await sendRequest(
+        "/api/users/favorites/" + propertyId,
+        "POST",
+        null,
+        true,
+      );
+    }
+
+    async function getMyFavorites() {
+      await sendRequest("/api/users/favorites/my-list", "GET", null, true);
+    }
+
+
+
+
+
+
+
+
+    async function getAdminDashboard() {
+      const timeframe = document.getElementById("adminTimeframe").value;
+      await sendRequest("/api/admin/dashboard?timeframe=" + timeframe, "GET", null, true);
+    }
+
+    // Automatically fetch fresh chart data when changing the dropdown option
+    document.getElementById("adminTimeframe").addEventListener("change", () => {
+      getAdminDashboard();
+    });
+
+
+    async function testAdminCustomerListAPI() {
+      const pageIndex = document.getElementById("adminCustomerPageNum").value || 1;
+      const searchString = document.getElementById("adminCustomerSearchText").value.trim();
+
+      // Build path query parameters dynamically matching backend constraints structure
+      let requestUrlPath = `/api/admin/customers-list?page=${pageIndex}`;
+      if (searchString) {
+        requestUrlPath += `&search=${encodeURIComponent(searchString)}`;
+      }
+
+      // Fire request directly through your base application handler sequence wrapper
+      // Assumes your global base utility is named sendRequest(url, method, body, hasToken)
+      const apiResponsePayload = await sendRequest(requestUrlPath, "GET", null, true);
+
+      // Map data directly into your terminal screen logging element block window interface
+      if (typeof writeResponse === "function") {
+        writeResponse(apiResponsePayload.data, apiResponsePayload.status);
+      } else {
+        console.log(`API Output Matrix Frame (${apiResponsePayload.status}):`, apiResponsePayload.data);
+      }
+    }
+
+
+
+
+
+    //chat system script code for all users
+    async function searchUsersToChat() {
+      const query = document.getElementById("chatSearchInput").value.trim();
+      const container = document.getElementById("chatSearchOutputContainer");
+
+      // Re-use your existing sendRequest utility pipeline
+      // passes 'true' for authRequired since this API requires route authentication
+      const result = await sendRequest(`/api/users/search-user-to-chat?search=${encodeURIComponent(query)}`, "GET", null, true);
+
+      // If the request fails or is empty, provide a clean fallback state
+      if (result.status !== 200 || !Array.isArray(result.data)) {
+        container.innerHTML = `<p style="font-size: 13px; color: #ef4444; text-align: center; margin: 10px 0;">Failed to fetch records or unauthorized access.</p>`;
+        return;
+      }
+
+      const usersList = result.data;
+      container.innerHTML = "";
+
+      if (usersList.length === 0) {
+        container.innerHTML = `<p style="font-size: 13px; color: #6b7280; text-align: center; margin: 10px 0;">No matching users found.</p>`;
+        return;
+      }
+
+      // Programmatically render items as per your specific aggregation pipeline keys
+      usersList.forEach(user => {
+        const userRow = document.createElement("div");
+        userRow.style = "display: flex; align-items: center; gap: 10px; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);";
+
+        // Image Fallback Handling if binary objects/URLs are missing or unconfigured
+        const imageSrc = (user.profilePic && typeof user.profilePic === 'string')
+          ? user.profilePic
+          : "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
+        // Format sub-text elements nicely using locality indicators
+        const locationText = (user.locality || user.district)
+          ? `(${user.locality || ''} ${user.district || ''})`
+          : '';
+
+        userRow.innerHTML = `
+            <img src="${imageSrc}" alt="Avatar" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; background: #cbd5e1;" />
+            <div style="flex: 1; min-width: 0;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                <strong style="font-size: 14px; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${user.name}</strong>
+                <span style="font-size: 10px; font-weight: bold; background: #e2e8f0; color: #475569; padding: 2px 6px; border-radius: 4px;">${user.role || 'USER'}</span>
+              </div>
+              <div style="font-size: 11px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-style: italic;">
+                💬 ${user.latestMessageText}
+              </div>
+              <div style="font-size: 9px; color: #94a3b8; margin-top: 2px;">
+                ${locationText}
+              </div>
+            </div>
+          `;
+        container.appendChild(userRow);
+      });
+    }
+
+
+
+    // UPDATED: Now supports click targeting events on contact rows
+    async function searchUsersToChat() {
+      const query = document.getElementById("chatSearchInput").value.trim();
+      const container = document.getElementById("chatSearchOutputContainer");
+
+      const result = await sendRequest(`/api/users/search-user-to-chat?search=${encodeURIComponent(query)}`, "GET", null, true);
+
+      if (result.status !== 200 || !Array.isArray(result.data)) {
+        container.innerHTML = `<p style="font-size: 13px; color: #ef4444; text-align: center; margin: 10px 0;">Failed to fetch records or unauthorized access.</p>`;
+        return;
+      }
+
+      const usersList = result.data;
+      container.innerHTML = "";
+
+      if (usersList.length === 0) {
+        container.innerHTML = `<p style="font-size: 13px; color: #6b7280; text-align: center; margin: 10px 0;">No matching users found.</p>`;
+        return;
+      }
+
+      usersList.forEach(user => {
+        const userRow = document.createElement("div");
+        // Added pointer mouse effects and operational click handler attributes
+        userRow.style = "display: flex; align-items: center; gap: 10px; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); cursor: pointer; transition: background 0.2s;";
+        userRow.setAttribute("onclick", `selectUserForChat('${user._id}')`);
+
+        // Hover states simulation logic updates
+        userRow.onmouseenter = () => userRow.style.background = "#f1f5f9";
+        userRow.onmouseleave = () => userRow.style.background = "#f8fafc";
+
+        const imageSrc = (user.profilePic && typeof user.profilePic === 'string')
+          ? user.profilePic
+          : "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
+        const locationText = (user.locality || user.district) ? `(${user.locality || ''} ${user.district || ''})` : '';
+
+        userRow.innerHTML = `
+            <img src="${imageSrc}" alt="Avatar" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;" />
+            <div style="flex: 1; min-width: 0;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                <strong style="font-size: 13px; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${user.name}</strong>
+                <span style="font-size: 9px; font-weight: bold; background: #cbd5e1; color: #334155; padding: 1px 5px; border-radius: 4px;">${user.role || 'USER'}</span>
+              </div>
+              <div style="font-size: 11px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                💬 ${user.latestMessageText}
+              </div>
+            </div>
+          `;
+        container.appendChild(userRow);
+      });
+    }
+
+    // Helper function to shift focused context to history tracking panel cards
+    function selectUserForChat(userId) {
+      document.getElementById("chatHistoryUserId").value = userId;
+      loadChatHistory();
+    }
+
+    // Main chat records loader function sequence
+    async function loadChatHistory() {
+      const targetUserId = document.getElementById("chatHistoryUserId").value.trim();
+      const banner = document.getElementById("chatParticipantBanner");
+      const stream = document.getElementById("chatMessageStream");
+      const currentUserId = document.getElementById("currentUserId").value.trim();
+
+      if (!targetUserId) {
+        alert("Please enter or pick an explicit target User ID context path parameter first.");
+        return;
+      }
+
+      // Fire standard GET stream request
+      const result = await sendRequest(`/api/users/history/${targetUserId}`, "GET", null, true);
+
+      if (result.status !== 200 || !result.data) {
+        banner.style.display = "none";
+        stream.innerHTML = `<p style="font-size: 13px; color: #ef4444; text-align: center; margin: auto;">Failed to compile conversation log details error matrix.</p>`;
+        return;
+      }
+
+      const { userContext, timeline } = result.data;
+
+      // 1. Render banner layout information fields cleanly
+      const bannerImg = userContext.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+      banner.style.display = "flex";
+      banner.innerHTML = `
+          <img src="${bannerImg}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;" />
+          <div>
+            <div style="font-size: 13px; font-weight: bold; color: #1e293b;">${userContext.name} <span style="font-size: 10px; color: #64748b; font-weight: normal;">(${userContext.role})</span></div>
+            <div style="font-size: 10px; color: #94a3b8;">Locality: ${userContext.locality} | District: ${userContext.district}</div>
+          </div>
+        `;
+
+      // 2. Clear stream canvas and loop chronological timeline groupings
+      stream.innerHTML = "";
+      const timelineKeys = Object.keys(timeline);
+
+      if (timelineKeys.length === 0) {
+        stream.innerHTML = `<p style="font-size: 12px; color: #94a3b8; text-align: center; margin: auto;">Conversation initialized. No textual records found.</p>`;
+        return;
+      }
+
+      timelineKeys.forEach(dateHeader => {
+        // Date Separation bubble block rendering element creation
+        const separator = document.createElement("div");
+        separator.style = "text-align: center; margin: 6px 0; font-size: 10px; font-weight: bold; background: #e2e8f0; color: #475569; padding: 2px 8px; border-radius: 20px; align-self: center; text-transform: uppercase; letter-spacing: 0.5px;";
+        separator.textContent = dateHeader;
+        stream.appendChild(separator);
+
+        // Loop message arrays grouped within this timeline index
+        timeline[dateHeader].forEach(msg => {
+          const bubbleRow = document.createElement("div");
+          const isMe = msg.senderId === currentUserId;
+
+          // Flex line assignments separating incoming vs outgoing bubbles
+          bubbleRow.style = `display: flex; flex-direction: column; width: 100%; align-items: ${isMe ? 'flex-end' : 'flex-start'};`;
+
+          const messageBubble = document.createElement("div");
+          messageBubble.style = `
+              max-width: 75%; 
+              padding: 8px 12px; 
+              border-radius: 12px; 
+              font-size: 13px; 
+              line-height: 1.4;
+              word-break: break-word;
+              box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+              background: ${isMe ? '#0f766e' : '#ffffff'}; 
+              color: ${isMe ? '#ffffff' : '#1e293b'};
+              border: ${isMe ? 'none' : '1px solid #e2e8f0'};
+              border-bottom-${isMe ? 'right' : 'left'}-radius: 2px;
+            `;
+
+          messageBubble.innerHTML = `
+              <div>${msg.messageText}</div>
+              <div style="text-align: right; font-size: 9px; margin-top: 4px; color: ${isMe ? '#99f6e4' : '#94a3b8'}; font-weight: 500;">
+                ${msg.timeLabel} ${isMe ? (msg.isRead ? '✓✓' : '✓') : ''}
+              </div>
+            `;
+
+          bubbleRow.appendChild(messageBubble);
+          stream.appendChild(bubbleRow);
+        });
+      });
+
+      // Autoscroll to base node to show recent texts smoothly
+      stream.scrollTop = stream.scrollHeight;
+    }
+
+
+
+    async function executeSendMessage() {
+      const receiverId = document.getElementById("chatHistoryUserId").value.trim();
+      const textInput = document.getElementById("chatOutgoingTextMessage");
+      const messageText = textInput.value.trim();
+
+      if (!receiverId) {
+        alert("A valid recipient focus targets mapping ID must be selected to transmit messages.");
+        return;
+      }
+
+      if (!messageText) {
+        alert("Cannot send an empty message text canvas framework body.");
+        return;
+      }
+
+      // Build object properties mapping for JSON consumption body array parsing pipelines
+      const requestPayload = {
+        receiverId: receiverId,
+        messageText: messageText
+      };
+
+      // Fire request to your brand-new POST /api/users/chat/send route structure setup
+      const result = await sendRequest("/api/users/chat/send", "POST", requestPayload, true);
+
+      if (result.status === 201) {
+        textInput.value = ""; // Clean input workspace canvas instantly
+
+        // Smooth structural refresh - re-pull timeline frames so your text maps instantly onto the window UI
+        await loadChatHistory();
+      } else {
+        alert("Failed to deliver payload transmission context framework layer rules. Check response details box logs.");
+      }
+    }
+
+
+    async function testAdminUpdateRoleAPI() {
+        const userId = document.getElementById("adminUpdateTargetUserId").value.trim();
+        
+        if (!userId) {
+          alert("Please enter a valid target User ID to modify.");
+          return;
+        }
+
+        // Gather updated input properties from input boxes
+        const roleValue = document.getElementById("adminUpdateTargetRole").value;
+        const nameValue = document.getElementById("adminUpdateTargetName").value.trim();
+        const cityValue = document.getElementById("adminUpdateTargetCity").value.trim();
+        const districtValue = document.getElementById("adminUpdateTargetDistrict").value.trim();
+        const localityValue = document.getElementById("adminUpdateTargetLocality").value.trim();
+        const phoneValue = document.getElementById("adminUpdateTargetPhone").value.trim();
+
+        // Build request data payload object dynamically
+        const requestPayload = {
+          role: roleValue
+        };
+
+        // Only append optional profile keys if values are explicitly provided
+        if (nameValue) requestPayload.name = nameValue;
+        if (cityValue) requestPayload.city = cityValue;
+        if (districtValue) requestPayload.district = districtValue;
+        if (localityValue) requestPayload.locality = localityValue;
+        if (phoneValue) requestPayload.phoneNo = Number(phoneValue);
+
+        const requestUrlPath = `/api/admin/admin-update-role/${userId}`;
+
+        // Fire request payload through your base application handler wrapper 
+        // Using "PATCH" method with active authorization token headers enabled
+        const apiResponsePayload = await sendRequest(requestUrlPath, "PATCH", requestPayload, true);
+
+        // Print returned execution payload directly inside your dark text-area terminal view
+        if (typeof writeResponse === "function") {
+            writeResponse(apiResponsePayload.data, apiResponsePayload.status);
+        } else {
+            console.log(`Admin Role Modification Output Frame (${apiResponsePayload.status}):`, apiResponsePayload.data);
+        }
+      }
+
+
+      async function testUserNotificationsAPI() {
+        const requestUrlPath = "/api/users/my-notifications";
+
+        // Dispatch the GET request through your base application handler sequence
+        // It passes 'true' as the last argument to ensure your Bearer auth token is attached
+        const apiResponsePayload = await sendRequest(requestUrlPath, "GET", null, true);
+
+        // Map data directly into your terminal dark-screen logging component interface
+        if (typeof writeResponse === "function") {
+            writeResponse(apiResponsePayload.data, apiResponsePayload.status);
+        } else {
+            console.log(`Notifications API Matrix Frame (${apiResponsePayload.status}):`, apiResponsePayload.data);
+        }
+      }
+
+
+
+
+
+      async function testPropertyInquirySubmission() {
+        const propId = document.getElementById("inquiryPropertyTargetId").value.trim();
+        const messageTextVal = document.getElementById("inquiryMessageText").value.trim();
+
+        if (!propId) {
+          alert("Please enter a valid target Property ID.");
+          return;
+        }
+
+        if (!messageTextVal) {
+          alert("Please enter your inquiry/proposal message content.");
+          return;
+        }
+
+        // Build request body payload matching your strict req.body requirements
+        const payloadData = {
+          messageText: messageTextVal
+        };
+
+        const requestUrlPath = `/api/client/property/${propId}/inquiry`;
+
+        // Send request payload through your base handler function config array wrappers
+        // Passing 'true' guarantees active header attachment validation hooks run smoothly
+        const resultResponse = await sendRequest(requestUrlPath, "POST", payloadData, true);
+
+        // Map data arrays straight inside your dark theme logger engine workspace
+        if (typeof writeResponse === "function") {
+          writeResponse(resultResponse.data, resultResponse.status);
+        } else {
+          console.log("Inquiry Action Log Response Payload:", resultResponse.data);
+        }
+
+        // Clear your input message field block cleanly if transaction wraps error-free
+        if (resultResponse.status === 201) {
+          document.getElementById("inquiryMessageText").value = "";
+        }
+      }
+
+
+
+
+
+
+      async function loadAgentDashboardOverviewData() {
+        const kpiRow = document.getElementById("agentKpiRow");
+        const pieChartFrame = document.getElementById("agentPieChartVisual");
+        const tableFrame = document.getElementById("agentPropertiesGridFrame");
+        const tableBody = document.getElementById("agentPropertiesTableBody");
+
+        // Clear layout state flags
+        tableBody.innerHTML = "";
+        kpiRow.style.display = "none";
+        pieChartFrame.style.display = "none";
+        tableFrame.style.display = "none";
+
+        const responsePayload = await sendRequest("/api/agent/dashboard-summary", "GET", null, true);
+
+        if (typeof writeResponse === "function") {
+            writeResponse(responsePayload.data, responsePayload.status);
+        }
+
+        if (responsePayload.status === 200 && responsePayload.data) {
+            const data = responsePayload.data;
+
+            // 1. Map KPI Counts
+            document.getElementById("kpiTotalInquiries").innerText = data.dashboardKPIs.totalInquiries;
+            document.getElementById("kpiPropertiesSold").innerText = data.dashboardKPIs.propertiesSold;
+            document.getElementById("kpiPropertiesAvailable").innerText = data.dashboardKPIs.propertiesAvailable;
+
+            // 2. Map Pie Chart Simulation Metrics
+            document.getElementById("pieAvailableValue").innerText = data.pieChartData.datasets[0];
+            document.getElementById("pieSoldValue").innerText = data.pieChartData.datasets[1];
+
+            // 3. Populate Asset Inventory Table Grid
+            const properties = data.propertiesList || [];
+            if (properties.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="4" style="padding: 12px; text-align: center; color: #94a3b8; font-style: italic;">No listings linked to this agent account profiles.</td></tr>`;
+            } else {
+                properties.forEach(item => {
+                    const tr = document.createElement("tr");
+                    tr.style.borderBottom = "1px solid #f1f5f9";
+                    
+                    const badgeColor = item.status === "Available" ? "#1d4ed8" : "#15803d";
+                    const badgeBg = item.status === "Available" ? "#eff6ff" : "#f0fdf4";
+
+                    tr.innerHTML = `
+                        <td style="padding: 8px; font-weight: 500; color:#0f172a;">${item.title}</td>
+                        <td style="padding: 8px; color: #64748b;">${item.locality || "--"}, ${item.city || ""}</td>
+                        <td style="padding: 8px; font-weight:600;">₹${item.price.toLocaleString("en-IN")}</td>
+                        <td style="padding: 8px;">
+                            <span style="padding: 2px 6px; font-size:10px; font-weight:700; border-radius:4px; color:${badgeColor}; background:${badgeBg};">${item.status}</span>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            }
+
+            // Reveal organized dashboard components cleanly
+            kpiRow.style.display = "grid";
+            pieChartFrame.style.display = "block";
+            tableFrame.style.display = "block";
+        } else {
+            alert(`Dashboard Sync Failure (${responsePayload.status}). Verify active Agent account tokens parameters.`);
+        }
+      }
+
+
+
+
+
+      async function testAgentInquiryActionAPI() {
+        const inquiryId = document.getElementById("agentInquiryTargetId").value.trim();
+        
+        if (!inquiryId) {
+          alert("Please specify a valid Target Inquiry ID to process.");
+          return;
+        }
+
+        const actionValue = document.getElementById("agentInquiryActionValue").value;
+
+        // Build the request body payload matching your handleInquiryAction controller logic
+        const requestPayload = {
+          action: actionValue
+        };
+
+        const requestUrlPath = `/api/agent/inquiry/${inquiryId}/action`;
+
+        // Dispatch the PATCH request through your base application handler wrapper
+        // Passing 'true' triggers the secure inclusion of your Agent's JWT token
+        const apiResponsePayload = await sendRequest(requestUrlPath, "PATCH", requestPayload, true);
+
+        // Print returned execution payload directly inside your dark text-area terminal view
+        if (typeof writeResponse === "function") {
+            writeResponse(apiResponsePayload.data, apiResponsePayload.status);
+        } else {
+            console.log(`Agent Action Output Frame (${apiResponsePayload.status}):`, apiResponsePayload.data);
+        }
+      }
+
+
+
+
+      async function fetchAndDisplayAgentLeadsTable() {
+        const tableContainer = document.getElementById("leadsTableContainer");
+        const tableBody = document.getElementById("leadsTableBody");
+        const metaContainer = document.getElementById("leadsPaginationMeta");
+        
+        const searchName = document.getElementById("agentLeadsSearchName").value.trim();
+        const pageNum = document.getElementById("agentLeadsTargetPage").value.trim() || 1;
+        
+        tableBody.innerHTML = "";
+        metaContainer.innerHTML = "";
+        tableContainer.style.display = "none";
+
+        // Construct the query string paths smoothly
+        let requestUrlPath = `/api/agent/agent/leads?page=${pageNum}`;
+        if (searchName) {
+            requestUrlPath += `&search=${encodeURIComponent(searchName)}`;
+        }
+
+        const responseDataBlock = await sendRequest(requestUrlPath, "GET", null, true);
+
+        if (typeof writeResponse === "function") {
+            writeResponse(responseDataBlock.data, responseDataBlock.status);
+        }
+
+        if (responseDataBlock.status === 200 && responseDataBlock.data && responseDataBlock.data.leads) {
+          const leadsList = responseDataBlock.data.leads;
+          const pagination = responseDataBlock.data.pagination;
+
+          if (pagination) {
+            metaContainer.innerHTML = `Showing page ${pagination.currentPage} of ${pagination.totalPages} — Total filtered leads: ${pagination.totalLeads}`;
+          }
+
+          if (leadsList.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #64748b; font-style: italic;">No active inquiry leads located matching query filters.</td></tr>`;
+          } else {
+            leadsList.forEach(leadItem => {
+              const rowElement = document.createElement("tr");
+              rowElement.style.borderBottom = "1px solid #f1f5f9";
+
+              const buyerName = leadItem.name || "--";
+              const buyerEmail = leadItem.email || "--";
+              const buyerMessage = leadItem.messageText || "--";
+              const propertyTitle = leadItem.propertyId ? leadItem.propertyId.title : `<span style="color: #ef4444;">[Property Deleted]</span>`;
+
+              rowElement.innerHTML = `
+                <td style="padding: 10px; font-weight: 500;">${buyerName}</td>
+                <td style="padding: 10px; color: #64748b;">${buyerEmail}</td>
+                <td style="padding: 10px; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${buyerMessage}">${buyerMessage}</td>
+                <td style="padding: 10px; color: #0f172a; font-weight: 500;">${propertyTitle}</td>
+              `;
+              tableBody.appendChild(rowElement);
+            });
+          }
+          tableContainer.style.display = "block";
+        } else {
+          const errorMsg = responseDataBlock.data && responseDataBlock.data.message ? responseDataBlock.data.message : "Could not complete text matching filter loop query.";
+          alert(`Error (${responseDataBlock.status}): ${errorMsg}`);
+        }
+      }
+
+
+
+
+      async function testSoftDeleteInquiryAPI() {
+        const inquiryId = document.getElementById("deleteInquiryTargetId").value.trim();
+        
+        if (!inquiryId) {
+          alert("Please enter a valid Target Inquiry ID to delete.");
+          return;
+        }
+
+        // Confirm the intent before running a destructive delete call
+        if (!confirm("Are you sure you want to remove this inquiry from view panels?")) {
+          return;
+        }
+
+        const requestUrlPath = `/api/agent/inquiry/${inquiryId}`;
+
+        // Fire request payload through your base application handler wrapper 
+        // Using "DELETE" method with active user/agent auth headers enabled
+        const responseDataBlock = await sendRequest(requestUrlPath, "DELETE", null, true);
+
+        // Print returned execution payload directly inside your dark text-area terminal view
+        if (typeof writeResponse === "function") {
+            writeResponse(responseDataBlock.data, responseDataBlock.status);
+        } else {
+            console.log(`Soft Delete Output Frame (${responseDataBlock.status}):`, responseDataBlock.data);
+        }
+
+        // Optional UX: Alert success or clear input context if request passes clean
+        if (responseDataBlock.status === 200) {
+            document.getElementById("deleteInquiryTargetId").value = "";
+        }
+      }
+      
+
+  </script>
+</body>
+
+</html>

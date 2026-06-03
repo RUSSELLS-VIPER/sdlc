@@ -765,7 +765,49 @@ export const swaggerSpec = {
           "500": { description: "Internal Server Error: Database write failure exception intercept occurred" }
         }
       }
+    },
+
+
+
+    "/api/users/my-notifications": {
+    get: {
+        tags: ["Notifications"],
+        summary: "Retrieve logged-in user notifications",
+        description: "Returns a personalized list of alerts (Role changes, Purchase status, Approvals) for the current session.",
+        security: [{ bearerAuth: [] }],
+        responses: {
+            "200": {
+                description: "List of notifications retrieved successfully",
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: "object",
+                            properties: {
+                                success: { type: "boolean", example: true },
+                                count: { type: "integer", example: 1 },
+                                notifications: {
+                                    type: "array",
+                                    items: {
+                                        type: "object",
+                                        properties: {
+                                            _id: { type: "string", example: "6a1c99f47801aa3029a16f01" },
+                                            recipientId: { type: "string", example: "6a1c81117801aa3029a14a01" },
+                                            type: { type: "string", example: "ROLE_CHANGED" },
+                                            title: { type: "string", example: "💼 Account Role Updated" },
+                                            messageText: { type: "string", example: "An administrator has updated your profile role authorization to: AGENT." },
+                                            isRead: { type: "boolean", example: false },
+                                            createdAt: { type: "string", example: "2026-06-01T16:59:00.069Z" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
+}
 
 
 
@@ -938,7 +980,411 @@ export const swaggerSpec = {
         "500": { description: "Internal Server Error: Grouping lookup extraction query calculations exception tracking database operations" }
       }
     }
-  }
+  },
+
+
+
+  "/api/admin/admin-update-role/{userId}": {
+    patch: {
+        tags: ["Admin"],
+        summary: "Update user profile details and role configurations by admin",
+        description: "Allows an administrator to modify a specific user's personal details, upload/overwrite a profile picture, and change their account role (e.g., upgrading a normal user to an agent). Generates a dynamic notification for the target user if their role is modified.",
+        security: [{ bearerAuth: [] }],
+        parameters: [
+            {
+                in: "path",
+                name: "userId",
+                required: true,
+                schema: { type: "string" },
+                description: "The unique MongoDB Object ID of the target user whose profile/role needs alteration"
+            }
+        ],
+        requestBody: {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        required: ["role"],
+                        properties: {
+                            role: { 
+                                type: "string", 
+                                enum: ["user", "agent", "admin"],
+                                example: "agent",
+                                description: "The authorization level assignment for the target user account"
+                            },
+                            name: { type: "string", example: "Ankit Shaw" },
+                            email: { type: "string", example: "ankit@example.com" },
+                            city: { type: "string", example: "Howrah" },
+                            district: { type: "string", example: "Howrah" },
+                            locality: { type: "string", example: "Liluah" },
+                            phoneNo: { type: "number", example: 9876543210 }
+                        }
+                    }
+                },
+                "multipart/form-data": {
+                    schema: {
+                        type: "object",
+                        required: ["role"],
+                        properties: {
+                            role: { type: "string", enum: ["user", "agent", "admin"], example: "agent" },
+                            name: { type: "string", example: "Ankit Shaw" },
+                            email: { type: "string", example: "ankit@example.com" },
+                            city: { type: "string", example: "Howrah" },
+                            district: { type: "string", example: "Howrah" },
+                            locality: { type: "string", example: "Liluah" },
+                            phoneNo: { type: "number", example: 9876543210 },
+                            file: { 
+                                type: "string", 
+                                format: "binary",
+                                description: "Optional image file binary buffer to update the user profile picture" 
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        responses: {
+            "200": {
+                description: "User profile parameters and role states updated smoothly by admin",
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: "object",
+                            properties: {
+                                message: { type: "string", example: "User role updated successfully by admin" },
+                                user: {
+                                    type: "object",
+                                    properties: {
+                                        id: { type: "string", example: "6a1c688f7801aa3029a13ac0" },
+                                        name: { type: "string", example: "Ankit Shaw" },
+                                        email: { type: "string", example: "ankit@example.com" },
+                                        city: { type: "string", example: "Howrah" },
+                                        district: { type: "string", example: "Howrah" },
+                                        locality: { type: "string", example: "Liluah" },
+                                        phoneNo: { type: "number", example: 9876543210 },
+                                        role: { type: "string", example: "agent" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "400": { 
+                description: "Bad Request: Missing required role parameter or invalid role enum values supplied" 
+            },
+            "401": { 
+                description: "Unauthorized: Missing authentication token header elements" 
+            },
+            "403": { 
+                description: "Forbidden: Client account lacks administrative privilege signatures" 
+            },
+            "404": { 
+                description: "Not Found: Target user account index reference not verified in records database space" 
+            },
+            "500": { 
+                description: "Internal Server Error: Execution exception tracking database file writes operations output map",
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: "object",
+                            properties: {
+                                success: { type: "boolean", example: false },
+                                message: { type: "string", example: "Internal server error occurred" }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+},
+
+
+
+
+
+
+
+"/api/client/property/{propertyId}/inquiry": {
+    post: {
+        tags: ["Inquiries"],
+        summary: "Submit a property contact inquiry or proposal",
+        description: "Logs an inquiry request for a specified property and shifts its tracking status to pending. Authenticates the active buyer session, extracts name/email parameters automatically from the profile collection data, checks for duplicate active spams, and flashes dashboard notifications to the listing agent.",
+        security: [{ bearerAuth: [] }],
+        parameters: [
+            {
+                in: "path",
+                name: "propertyId",
+                required: true,
+                description: "The unique MongoDB Object ID of the target property listing.",
+                schema: { type: "string" },
+                example: "6a1c92a17801aa3029a15b01"
+            }
+        ],
+        requestBody: {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        required: ["messageText"],
+                        properties: {
+                            messageText: { 
+                                type: "string", 
+                                example: "Hi, I am looking to schedule a site inspection this upcoming weekend. Is the price negotiable?" 
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        responses: {
+            "201": {
+                description: "Inquiry proposal recorded and dispatched successfully.",
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: "object",
+                            properties: {
+                                message: { type: "string", example: "Inquiry submitted successfully to the property agent." },
+                                inquiry: { type: "object" }
+                            }
+                        }
+                    }
+                }
+            },
+            "400": { description: "Bad Request: Invalid buyer profile session, missing message payload parameters, or duplicate pending inquiry spam detected." },
+            "404": { description: "Not Found: Targeted property document reference index mismatch." },
+            "500": { description: "Internal Server Error: Execution data channel pipeline exceptions encountered." }
+        }
+    }
+},
+
+
+
+
+
+"/api/agent/dashboard-summary": {
+    get: {
+        tags: ["Agent"],
+        summary: "Retrieve key operational KPIs and data listings for the Agent Dashboard",
+        description: "Returns aggregated metrics including total inquiries received, active available property counts, finalized sale assets, a structural dataset for chart rendering, and an array log containing all listings owned by the logged-in agent profile.",
+        security: [{ bearerAuth: [] }],
+        responses: {
+            "200": {
+                description: "Dashboard metrics aggregation matrix compiled successfully.",
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: "object",
+                            properties: {
+                                success: { type: "boolean", example: true },
+                                dashboardKPIs: {
+                                    type: "object",
+                                    properties: {
+                                        totalInquiries: { type: "integer", example: 42 },
+                                        propertiesSold: { type: "integer", example: 12 },
+                                        propertiesAvailable: { type: "integer", example: 8 },
+                                        totalInventoryCount: { type: "integer", example: 20 }
+                                    }
+                                },
+                                pieChartData: {
+                                    type: "object",
+                                    properties: {
+                                        labels: { 
+                                            type: "array", 
+                                            items: { type: "string" }, 
+                                            example: ["Available Properties", "Sold Properties"] 
+                                        },
+                                        datasets: { 
+                                            type: "array", 
+                                            items: { type: "integer" }, 
+                                            example: [8, 12] 
+                                        }
+                                    }
+                                },
+                                propertiesList: {
+                                    type: "array",
+                                    items: {
+                                        type: "object",
+                                        properties: {
+                                            _id: { type: "string", example: "6a1c92a17801aa3029a15b01" },
+                                            title: { type: "string", example: "Merlin Residentia 2BHK" },
+                                            price: { type: "number", example: 6200000 },
+                                            status: { type: "string", example: "Available" },
+                                            propertyType: { type: "string", example: "apartment" },
+                                            city: { type: "string", example: "Howrah" },
+                                            locality: { type: "string", example: "Liluah" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "401": { description: "Unauthorized: Missing session context token signatures" },
+            "403": { description: "Forbidden: Logged-in profile does not hold active AGENT credentials" },
+            "500": { description: "Internal Server Error: Execution data engine pipeline matching exception" }
+        }
+    }
+},
+
+
+
+"/api/agent/inquiry/{inquiryId}/action": {
+    patch: {
+        tags: ["Inquiries"],
+        summary: "Approve or disapprove an incoming inquiry lead",
+        description: "Allows the assigned agent to process an inquiry. Approving an inquiry flips the corresponding property's status to 'Sold'.",
+        security: [{ bearerAuth: [] }],
+        parameters: [
+            { in: "path", name: "inquiryId", required: true, schema: { type: "string" } }
+        ],
+        requestBody: {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        required: ["action"],
+                        properties: {
+                            action: { type: "string", enum: ["approved", "disapproved"], example: "approved" }
+                        }
+                    }
+                }
+            }
+        },
+        responses: {
+            "200": { description: "Inquiry processed and property ownership state modified smoothly." },
+            "404": { description: "Inquiry row reference index mismatch." }
+        }
+    }
+},
+
+
+
+
+
+"/api/agent/agent/leads": {
+    get: {
+        tags: ["Agent"],
+        summary: "Fetch paginated and searchable incoming property inquiry leads for the authenticated agent",
+        description: "Retrieves active user inquiry form submissions linked to properties managed by the logged-in agent. Excludes soft-deleted records, supports optional case-insensitive name filtering, and limits results to 16 rows per page slice.",
+        security: [{ bearerAuth: [] }],
+        parameters: [
+            {
+                in: "query",
+                name: "search",
+                required: false,
+                description: "An optional keyword string to filter incoming inquiries by the sender's name (case-insensitive regex search).",
+                schema: { type: "string", example: "Ankit" }
+            },
+            {
+                in: "query",
+                name: "page",
+                required: false,
+                description: "The targeted page index number to fetch. Defaults to 1 if left unspecified.",
+                schema: { type: "integer", default: 1, example: 1 }
+            }
+        ],
+        responses: {
+            "200": {
+                description: "A split data slice of active filtered inquiry leads alongside pagination metrics.",
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: "object",
+                            properties: {
+                                success: { type: "boolean", example: true },
+                                pagination: {
+                                    type: "object",
+                                    properties: {
+                                        totalLeads: { type: "integer", example: 3 },
+                                        totalPages: { type: "integer", example: 1 },
+                                        currentPage: { type: "integer", example: 1 },
+                                        limit: { type: "integer", example: 16 }
+                                    }
+                                },
+                                count: { type: "integer", example: 3 },
+                                leads: {
+                                    type: "array",
+                                    items: {
+                                        type: "object",
+                                        properties: {
+                                            _id: { type: "string", example: "6a1c9df87801aa3029a15f88" },
+                                            name: { type: "string", example: "Ankit Shaw" },
+                                            email: { type: "string", example: "ankit@example.com" },
+                                            messageText: { type: "string", example: "I am interested in this apartment." },
+                                            requestAction: { type: "string", example: "pending" },
+                                            isDeleted: { type: "boolean", example: false },
+                                            propertyId: {
+                                                type: "object",
+                                                properties: {
+                                                    _id: { type: "string", example: "6a1c92a17801aa3029a15b01" },
+                                                    title: { type: "string", example: "Merlin Residentia 2BHK" }
+                                                }
+                                            },
+                                            createdAt: { type: "string", example: "2026-06-02T10:15:30.120Z" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "401": { description: "Unauthorized: Missing or invalid authentication token signatures." },
+            "404": { description: "Not Found: No active inquiry records found matching specified parameters." },
+            "500": { description: "Internal Server Error." }
+        }
+    }
+},
+
+
+
+
+"/api/agent/inquiry/{inquiryId}": {
+    delete: {
+        tags: ["Inquiries"],
+        summary: "Soft delete a property inquiry tracking record",
+        description: "Allows either the participating buyer (sender) or the property agent (recipient) to flag an inquiry record as deleted. This marks `isDeleted` as true, filtering it out from active application dash screens.",
+        security: [{ bearerAuth: [] }],
+        parameters: [
+            {
+                in: "path",
+                name: "inquiryId",
+                required: true,
+                description: "The unique MongoDB Object ID of the contact submission to soft delete.",
+                schema: { type: "string" },
+                example: "6a1c9df87801aa3029a15f88"
+            }
+        ],
+        responses: {
+            "200": {
+                description: "Inquiry record flagged as soft-deleted successfully.",
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: "object",
+                            properties: {
+                                message: { type: "string", example: "Inquiry row removed from view frames successfully." }
+                            }
+                        }
+                    }
+                }
+            },
+            "401": { description: "Unauthorized: Invalid or missing session context tokens." },
+            "404": { description: "Not Found: Inquiry tracking record reference not found or user lacks ownership to delete it." },
+            "500": { description: "Internal Server Error: Database write pipeline exception encountered." }
+        }
+    }
+}
+
+
+
 
 
 };

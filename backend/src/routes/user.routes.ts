@@ -6,7 +6,8 @@ import {
     getUserFavorites,
      searchChatContacts,
     getChatHistory,
-    userSendMessage
+    userSendMessage,
+    getMyNotifications
 } from "../controllers/user.controller";
 
 
@@ -47,6 +48,8 @@ router.get("/search-user-to-chat", authenticate, authorize(Role.ADMIN, Role.USER
 router.get("/history/:userId", authenticate, authorize(Role.ADMIN, Role.USER, Role.AGENT), getChatHistory);
 
 router.post("/chat/send", authenticate, authorize(Role.ADMIN, Role.USER, Role.AGENT),userSendMessage);
+
+router.get("/my-notifications", authenticate,authorize(Role.ADMIN, Role.USER, Role.AGENT), getMyNotifications);
 
 
 export default router;

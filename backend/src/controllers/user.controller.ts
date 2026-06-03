@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import User, { Role } from "../models/user.model";
 import Property from "../models/property.model";
 import Message from "../models/message.model";
+import Notification from "../models/notification.model";
 import { AuthenticatedRequest } from "../middleware/auth.middleware";
 import { logError, toErrorResponse } from "../utils/error";
 // Helper to transform raw Mongoose image buffers into web-safe base64 data URLs
@@ -56,7 +57,6 @@ export const updateUserProfile = async (req: AuthenticatedRequest, res: Response
         if (district) user.district = district;
         if (locality) user.locality = locality;
         if (phoneNo) user.phoneNo = phoneNo;
-
         // If a file was uploaded via uploadCheck middleware
         if (req.file) {
             user.profilePic = {
@@ -164,7 +164,7 @@ export const searchChatContacts = async (req: AuthenticatedRequest, res: Respons
             targetRoles = [Role.ADMIN, Role.AGENT];
         } else {
             // Admins and Agents need to see regular customers/users
-            targetRoles = [Role.USER, Role.ADMIN,];
+            targetRoles = [Role.USER, Role.ADMIN, Role.AGENT];
         }
 
         // Dynamic filtering match stage
@@ -398,5 +398,30 @@ export const userSendMessage = async (req: AuthenticatedRequest, res: Response) 
     } catch (error) {
         logError("userSendMessage", error);
        return res.status(500).json(toErrorResponse(error));
+    }
+};
+
+
+
+export const getMyNotifications = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized: Missing session context" });
+        }
+
+        // Fetch user notifications using high-performance indexed compound boundary rules
+        const alertCollectionLogs = await Notification.find({ recipientId: req.user.id })
+            .populate("senderId", "name email role") // Optional join utility metadata mapping
+            .sort({ createdAt: -1 }) // Newest alerts show up first
+            .limit(50); // Sensible query ceiling to maximize responsive feedback
+
+        return res.status(200).json({
+            success: true,
+            count: alertCollectionLogs.length,
+            notifications: alertCollectionLogs
+        });
+    } catch (error) {
+        logError("getMyNotifications", error);
+        return res.status(500).json(toErrorResponse(error));
     }
 };
