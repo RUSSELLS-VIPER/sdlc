@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import fs from "fs";
 import path from "path";
 import dns from "dns";
 import swaggerUi from "swagger-ui-express";
@@ -15,6 +16,10 @@ import agentRoutes from "./routes/agent.routes";
 import { swaggerSpec } from "./config/swagger";
 import { connectDatabase } from "./config/db";
 
+function resolveExistingPath(candidates: string[]) {
+  return candidates.find((candidate) => fs.existsSync(candidate)) ?? candidates[0];
+}
+
 if (process.env.DNS_SERVERS) {
   dns.setServers(
     process.env.DNS_SERVERS.split(",")
@@ -24,14 +29,22 @@ if (process.env.DNS_SERVERS) {
 }
 
 const app = express();
+const viewsDir = resolveExistingPath([
+  path.join(process.cwd(), "src", "views"),
+  path.join(process.cwd(), "api", "src", "views")
+]);
+const assetsDir = resolveExistingPath([
+  path.join(process.cwd(), "public", "assets"),
+  path.join(process.cwd(), "api", "public", "assets")
+]);
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/assets", express.static(path.join(process.cwd(), "public", "assets")));
+app.use("/assets", express.static(assetsDir));
 
 app.set("view engine", "ejs");
-app.set("views", path.join(process.cwd(), "src", "views"));
+app.set("views", viewsDir);
 
 app.use(async (req, _res, next) => {
   if (req.path.startsWith("/api")) {

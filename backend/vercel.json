@@ -8,7 +8,7 @@
   "functions": {
     "api/index.ts": {
       "maxDuration": 300,
-      "includeFiles": "{src/views/**,public/assets/**}"
+      "includeFiles": "{src/views/**,public/assets/**,api/src/views/**,api/public/assets/**}"
     }
   }
 }
