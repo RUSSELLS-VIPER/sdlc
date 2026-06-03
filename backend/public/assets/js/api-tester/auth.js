@@ -64,11 +64,41 @@ function loginBody() {
   });
 }
 
+function forgotPasswordBody() {
+  return createEndpointCard({
+    method: "POST",
+    path: "POST /api/auth/forgot-password",
+    description: "Request a password reset OTP.",
+    bodyHtml: `
+      <div class="input-stack">
+        ${createField({ id: "forgotPasswordEmail", label: "Email", value: "test@example.com", type: "email" })}
+        ${createActionButton({ action: "auth.forgot-password", label: "Execute Request", variant: "primary" })}
+      </div>
+    `
+  });
+}
+
+function resetPasswordBody() {
+  return createEndpointCard({
+    method: "POST",
+    path: "POST /api/auth/reset-password",
+    description: "Reset a password using email, OTP, and a new password.",
+    bodyHtml: `
+      <div class="input-stack">
+        ${createField({ id: "resetPasswordEmail", label: "Email", value: "test@example.com", type: "email" })}
+        ${createField({ id: "resetPasswordOtp", label: "OTP", placeholder: "Enter OTP from email" })}
+        ${createField({ id: "resetPasswordNewPassword", label: "New Password", value: "123456", type: "password" })}
+        ${createActionButton({ action: "auth.reset-password", label: "Execute Request", variant: "primary" })}
+      </div>
+    `
+  });
+}
+
 export function renderAuthSection() {
   return `
     ${createSectionHeader({
       title: "Authentication",
-      subtitle: "Register, verify, and login flows are kept intact but loaded only when needed.",
+      subtitle: "Register, verify, login, and password recovery flows are kept intact but loaded only when needed.",
       badge: "Auth endpoints",
       icon: "shield-check"
     })}
@@ -94,6 +124,20 @@ export function renderAuthSection() {
         title: "POST /api/auth/login",
         description: "Authenticate and persist the token."
       })}
+      ${createLazyAccordionItem({
+        itemId: "auth-forgot-password",
+        bodyId: "auth-forgot-password-body",
+        method: "POST",
+        title: "POST /api/auth/forgot-password",
+        description: "Request a password reset OTP."
+      })}
+      ${createLazyAccordionItem({
+        itemId: "auth-reset-password",
+        bodyId: "auth-reset-password-body",
+        method: "POST",
+        title: "POST /api/auth/reset-password",
+        description: "Reset a password using email, OTP, and a new password."
+      })}
     </div>
   `;
 }
@@ -102,7 +146,9 @@ export function getAuthLazyBodies() {
   return {
     "auth-register-body": registerBody,
     "auth-verify-body": verifyBody,
-    "auth-login-body": loginBody
+    "auth-login-body": loginBody,
+    "auth-forgot-password-body": forgotPasswordBody,
+    "auth-reset-password-body": resetPasswordBody
   };
 }
 
@@ -151,6 +197,18 @@ export function getAuthActions(state, api) {
           localStorage.setItem("api_tester_user_id", result.data.user.id);
         }
       }
+    },
+    "auth.forgot-password": async () => {
+      await api.sendRequest("/api/auth/forgot-password", "POST", readPayloadFromMap(state.dom, [
+        { key: "email", id: "forgotPasswordEmail" }
+      ]));
+    },
+    "auth.reset-password": async () => {
+      await api.sendRequest("/api/auth/reset-password", "POST", readPayloadFromMap(state.dom, [
+        { key: "email", id: "resetPasswordEmail" },
+        { key: "otp", id: "resetPasswordOtp" },
+        { key: "newPassword", id: "resetPasswordNewPassword" }
+      ]));
     }
   };
 }
