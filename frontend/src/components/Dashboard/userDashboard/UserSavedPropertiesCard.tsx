@@ -1,11 +1,21 @@
 import { useNavigate } from "react-router-dom";
-import mapPin from '../../../assets/images/userDashboardImages/map-pin.svg'
+import { Heart } from "lucide-react";
+import mapPin from "../../../assets/images/userDashboardImages/map-pin.svg";
+import { useAppDispatch, useAppSeletor } from "../../../services/helper/reduxstore";
+import { getWishList, toggleLikeUnlike } from "../../../store/slices/user.slice";
+import { toast } from "sonner";
 import type { UserDashboardPropertyCardProps } from "../../../type/interface/userDashboard/userDashboard.interface";
 
 
 const UserSavedPropertiesCard:React.FC<UserDashboardPropertyCardProps> = ({ item }) => {
-  const navigate = useNavigate()
-   let processedImgSrc = "https://placehold.co/600x400?text=No+Image";
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { token, user } = useAppSeletor((state) => state.auth);
+
+  const propertyId = typeof item?._id === "string" ? item._id : item?._id?.$oid ?? "";
+  const isLikedByMe = useAppSeletor((state) => state.users.favouritesPropertyIds).includes(propertyId);
+
+  let processedImgSrc = "https://placehold.co/600x400?text=No+Image";
 
 if (item?.image) {
   if (typeof item.image === "string") {
@@ -45,6 +55,27 @@ if (item?.image) {
     }
   }
 }
+
+  const handleLikeToggle = async () => {
+    if (!token && !user) {
+      toast.error("Please login first to update saved properties");
+      return;
+    }
+
+    if (!propertyId) {
+      toast.error("Property id is missing");
+      return;
+    }
+
+    try {
+      const response = await dispatch(toggleLikeUnlike(propertyId)).unwrap();
+      toast.success(response?.data?.message || "Property updated");
+      await dispatch(getWishList());
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong");
+    }
+  };
   return (
     <>
       <div
@@ -58,8 +89,16 @@ if (item?.image) {
             className="w-full h-full object-cover rounded-2xl transition-transform duration-300 group-hover:scale-105"
           />
 
-          <button className="absolute top-3 right-3 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-[#FCA311] bg-white rounded-full shadow-sm hover:bg-[#FCA311] hover:text-white transition-colors z-10">
-            <i className="fa-solid fa-heart text-xs sm:text-sm"></i>
+          <button
+            type="button"
+            onClick={handleLikeToggle}
+            aria-label="Remove from saved properties"
+            className="absolute top-3 right-3 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-[#FCA311] bg-white rounded-full shadow-sm hover:bg-[#FCA311] hover:text-white transition-colors z-10"
+          >
+            <Heart
+              className="text-xs sm:text-sm"
+              fill={isLikedByMe ? "currentColor" : "none"}
+            />
           </button>
         </div>
 

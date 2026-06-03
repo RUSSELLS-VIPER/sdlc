@@ -116,11 +116,36 @@ function blogDeleteBody() {
   });
 }
 
+function roleChangeBody() {
+  return createEndpointCard({
+    method: "PATCH",
+    path: "PATCH /api/admin/admin-update-role/:userId",
+    description: "Update a user's role from the admin console.",
+    bodyHtml: `
+      <div class="input-stack">
+        ${createField({ id: "adminRoleUserId", label: "User ID", placeholder: "Target user id" })}
+        ${createField({
+          id: "adminRoleValue",
+          label: "New Role",
+          control: "select",
+          value: "agent",
+          options: [
+            { value: "user", label: "user" },
+            { value: "agent", label: "agent" },
+            { value: "admin", label: "admin" }
+          ]
+        })}
+        ${createActionButton({ action: "admin.role.change", label: "Update Role", variant: "primary" })}
+      </div>
+    `
+  });
+}
+
 export function renderAdminSection() {
   return `
     ${createSectionHeader({
       title: "Admin",
-      subtitle: "Dashboard and customer tools stay hidden until the admin section is opened. , customer listings, and user role management setups.",
+      subtitle: "Dashboard, customer tools, blog tools, and role updates are loaded only when needed.",
       badge: "Admin APIs",
       icon: "shield-lock",
       badgeClass: "method-post"
@@ -174,6 +199,13 @@ export function renderAdminSection() {
         title: "DELETE /api/admin/blogs/:id",
         description: "Remove a blog post."
       })}
+      ${createLazyAccordionItem({
+        itemId: "admin-role-change",
+        bodyId: "admin-role-change-body",
+        method: "PATCH",
+        title: "PATCH /api/admin/admin-update-role/:userId",
+        description: "Update a user's role from the admin console."
+      })}
     </div>
   `;
 }
@@ -185,7 +217,8 @@ export function getAdminLazyBodies() {
     "admin-blogs-create-body": blogCreateBody,
     "admin-blogs-lookup-body": blogLookupBody,
     "admin-blogs-update-body": blogUpdateBody,
-    "admin-blogs-delete-body": blogDeleteBody
+    "admin-blogs-delete-body": blogDeleteBody,
+    "admin-role-change-body": roleChangeBody
   };
 }
 
@@ -245,6 +278,11 @@ export function getAdminActions(state, api) {
     "admin.blog.delete": async () => {
       const blogId = String(state.dom.blogDeleteId?.value ?? "").trim();
       await api.sendRequest(`/api/admin/blogs/${encodeURIComponent(blogId)}`, "DELETE", null, { authRequired: true });
+    },
+    "admin.role.change": async () => {
+      const userId = String(state.dom.adminRoleUserId?.value ?? "").trim();
+      const role = String(state.dom.adminRoleValue?.value ?? "").trim();
+      await api.sendRequest(`/api/admin/admin-update-role/${encodeURIComponent(userId)}`, "PATCH", { role }, { authRequired: true });
     }
   };
 }
