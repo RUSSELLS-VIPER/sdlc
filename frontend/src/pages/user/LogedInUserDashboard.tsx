@@ -5,28 +5,29 @@ import userLikedProperties from "../../assets/images/userDashboardImages/userLik
 import userHouse from "../../assets/images/userDashboardImages/userHouse.svg";
 import userImage from "../../assets/images/userDashboardImages/userImage-1.png";
 import UserDashboardPropertyCrad from "../../components/Dashboard/userDashboard/UserDashboardPropertyCrad";
-import { useAppDispatch, useAppSeletor } from "../../services/helper/reduxstore";
+import {
+  useAppDispatch,
+  useAppSeletor,
+} from "../../services/helper/reduxstore";
 import { useEffect } from "react";
 import { getWishList } from "../../store/slices/user.slice";
 import UserDashboardStatCard from "../../components/Dashboard/userDashboard/UserDashboardStatCard";
 import type { StatType } from "../../type/interface/userDashboard/userDashboard.interface";
+import { Box, Skeleton } from "@mui/material";
 
 const LogedInUserDashboard = () => {
-  const {wishList} = useAppSeletor((state)=> state.users)
-  const {token, role} = useAppSeletor((state)=> state.auth)
-  const dispatch = useAppDispatch()
+  const { wishList, loading, error } = useAppSeletor((state) => state.users);
+  const { token, role } = useAppSeletor((state) => state.auth);
+  const dispatch = useAppDispatch();
 
-  const savedPropertiesLength = wishList?.length || 0
+  const savedPropertiesLength = wishList?.length || 0;
 
-  useEffect(()=> {
-    if(token && role === "user"){
-      dispatch(getWishList())
-
+  useEffect(() => {
+    if (token && role === "user") {
+      dispatch(getWishList());
     }
-    
-
-  }, [dispatch, token, role])
-  const statsData:StatType[] = [
+  }, [dispatch, token, role]);
+  const statsData: StatType[] = [
     {
       id: 1,
       title: "Upcoming Visits",
@@ -55,6 +56,7 @@ const LogedInUserDashboard = () => {
       imgAlt: "userLikedProperties",
     },
   ];
+
   return (
     <>
       {/* section 2 start */}
@@ -90,7 +92,7 @@ const LogedInUserDashboard = () => {
             {/* Render Stat Cards Array dynamically */}
             <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-4">
               {statsData.map((stat) => (
-               <UserDashboardStatCard stat={stat} key={stat.id} />
+                <UserDashboardStatCard stat={stat} key={stat.id} />
               ))}
             </div>
           </div>
@@ -204,8 +206,17 @@ const LogedInUserDashboard = () => {
               {/* Dynamic Property Listing Container */}
               <div className="w-full overflow-x-auto scrollbar-hide py-2">
                 <div className="flex flex-row gap-4 sm:gap-6 min-w-full pb-2 overflow-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                  {loading && (
+                    <Box sx={{ width: 400,marginLeft: '150px' }}>
+                      <Skeleton className="p-2" />
+                      <Skeleton animation="wave" className="p-16" />
+                      <Skeleton className="p-2" animation={false} />
+                    </Box>
+                  )}
+                  {error && <p>{error}</p>}
+
                   {wishList?.map((item) => (
-                    <UserDashboardPropertyCrad item={item}  key={item._id} />
+                    <UserDashboardPropertyCrad item={item} key={item._id} />
                   ))}
                 </div>
               </div>
@@ -312,7 +323,10 @@ const LogedInUserDashboard = () => {
                   </div>
                   <div
                     className="rounded-xl p-3 flex items-center space-x-4"
-                    style={{background: "linear-gradient(90deg, #FCA311 0%, #fae6bd 60%, #fff 100%)"}}
+                    style={{
+                      background:
+                        "linear-gradient(90deg, #FCA311 0%, #fae6bd 60%, #fff 100%)",
+                    }}
                   >
                     <img
                       src={userImage}

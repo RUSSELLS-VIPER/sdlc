@@ -13,7 +13,6 @@ import type {
   AuthUser,
 } from "../../type/type/auth/auth.type";
 
-
 const token = localStorage.getItem("token") ?? null;
 const role = localStorage.getItem("role") ?? null;
 const user = localStorage.getItem("user")
@@ -57,7 +56,10 @@ export const verifyEmail = createAsyncThunk(
   "auth/verifyEmail",
   async (data: { email: string; otp: string }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(endPoint.auth.verifyEmail, data);
+      const response = await axiosInstance.post(
+        endPoint.auth.verifyEmail,
+        data,
+      );
       return response.data as { message: string };
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
@@ -69,7 +71,10 @@ export const forgotPassword = createAsyncThunk(
   "auth/forgotPassword",
   async (data: ForgotPasswordValue, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(endPoint.auth.forgotPassword, data);
+      const response = await axiosInstance.post(
+        endPoint.auth.forgotPassword,
+        data,
+      );
       return response.data as {
         message: string;
         email?: string;
@@ -86,7 +91,10 @@ export const resetPassword = createAsyncThunk(
   "auth/resetPassword",
   async (data: ResetPasswordValue, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(endPoint.auth.resetPassword, data);
+      const response = await axiosInstance.post(
+        endPoint.auth.resetPassword,
+        data,
+      );
       return response.data as { message: string };
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
@@ -98,7 +106,10 @@ export const updateProfile = createAsyncThunk(
   "profile/update",
   async ({ data }: { data: FormData }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.put(endPoint.users.updateProfile, data);
+      const response = await axiosInstance.put(
+        endPoint.users.updateProfile,
+        data,
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
@@ -108,14 +119,16 @@ export const updateProfile = createAsyncThunk(
 
 export const getProfileById = createAsyncThunk(
   "profile/get",
-  async ({userId}: {userId: string | undefined}, { rejectWithValue }) => {
+  async ({ userId }: { userId: string | undefined }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`${endPoint.users.profileById(userId)}`);
+      const response = await axiosInstance.get(
+        `${endPoint.users.profileById(userId)}`,
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
     }
-  }
+  },
 );
 
 const authSlice = createSlice({
@@ -217,8 +230,16 @@ const authSlice = createSlice({
       .addCase(updateProfile.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        // console.log("action user", action.payload)
-        const updatedUser = { ...state.user, ...action.payload.user };
+        
+        const updatedFields = action.payload?.user ?? action.payload;
+        const profilePicData = action.payload?.profilePic ?? updatedFields?.profilePic;
+        
+        const updatedUser = {
+          ...state.user,
+          ...updatedFields,
+          ...(profilePicData ? { profilePic: profilePicData } : {}),
+        };
+
         state.user = updatedUser;
         state.message = "Profile Updated Successfully!";
         localStorage.setItem("user", JSON.stringify(updatedUser));
@@ -228,12 +249,19 @@ const authSlice = createSlice({
         state.error = (action.payload as string) || "Failed to update profile";
       })
       .addCase(getProfileById.fulfilled, (state, action) => {
-        // console.log("structuredUser", action.payload)
-        const structuralUser = action.payload;
-        const fullyHydratedUser = { ...state.user, ...structuralUser };
+        const structuralUser = action.payload?.user ?? action.payload;
+        const profilePicData = action.payload?.profilePic ?? structuralUser?.profilePic;
+
+        const fullyHydratedUser = {
+          ...state.user,
+          ...structuralUser,
+          ...(profilePicData ? { profilePic: profilePicData } : {}),
+        };
+
         state.user = fullyHydratedUser;
         localStorage.setItem("user", JSON.stringify(fullyHydratedUser));
       });
+      // Duplicate .rejected and .fulfilled cases completely removed from here
   },
 });
 

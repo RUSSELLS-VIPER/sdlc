@@ -5,15 +5,16 @@ import {
   useAppSeletor,
 } from "../../services/helper/reduxstore";
 import { getWishList } from "../../store/slices/user.slice";
-import pv1i1 from "../../assets/images/userDashboardImages/pvi1.png"
-import pv1i2 from "../../assets/images/userDashboardImages/pvi2.png"
-import pv1i3 from "../../assets/images/userDashboardImages/pvi3.png"
-import pv1i4 from "../../assets/images/userDashboardImages/pvi4.png"
-import pv1i5 from "../../assets/images/userDashboardImages/pvi5.png"
-import mapPin from '../../assets/images/userDashboardImages/map-pin.svg'
+import pv1i1 from "../../assets/images/userDashboardImages/pvi1.png";
+import pv1i2 from "../../assets/images/userDashboardImages/pvi2.png";
+import pv1i3 from "../../assets/images/userDashboardImages/pvi3.png";
+import pv1i4 from "../../assets/images/userDashboardImages/pvi4.png";
+import pv1i5 from "../../assets/images/userDashboardImages/pvi5.png";
+import mapPin from "../../assets/images/userDashboardImages/map-pin.svg";
+import { Skeleton, Box } from "@mui/material";
 
 const SavedProperties = () => {
-  const { wishList } = useAppSeletor((state) => state.users);
+  const { wishList, loading, error } = useAppSeletor((state) => state.users);
   const { token, role } = useAppSeletor((state) => state.auth);
   const dispatch = useAppDispatch();
 
@@ -30,7 +31,7 @@ const SavedProperties = () => {
       bhk: "2BHK",
       address: "Sodepur, H.B Town",
       imageSrc: pv1i1,
-      status: "done", 
+      status: "done",
     },
     {
       id: 2,
@@ -73,6 +74,7 @@ const SavedProperties = () => {
       status: "upcoming",
     },
   ];
+
   return (
     <>
       <section>
@@ -80,9 +82,19 @@ const SavedProperties = () => {
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
             {/* Properties List Column */}
             <div className="lg:col-span-2 space-y-4 max-h-[780px] overflow-y-auto pr-2 custom-scroll-area overflow-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              {error && <p className="text-sm text-red-500">{error}</p>}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                {loading && (
+                  <Box
+                    sx={{ width: 400, marginTop: "200px", marginLeft: "200px" }}
+                  >
+                    <Skeleton className="p-2" />
+                    <Skeleton animation="wave" className="p-16" />
+                    <Skeleton className="p-2" animation={false} />
+                  </Box>
+                )}
                 {wishList?.map((property) => (
-                  <UserSavedPropertiesCard item={property} key={property._id}/>
+                  <UserSavedPropertiesCard item={property} key={property._id} />
                 ))}
               </div>
             </div>

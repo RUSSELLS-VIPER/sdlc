@@ -28,13 +28,12 @@ import type { ProfileFormData, SidebarProps } from "../../type/interface/userDas
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const dispatch = useAppDispatch();
-  const { user } = useAppSeletor((state) => state.auth);
-  console.log("user", user)
+  const { user, loading } = useAppSeletor((state) => state.auth);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   
-  const [imagePreview, setImagePreview] = useState<string>(userImage);
+  const [imagePreview, setImagePreview] = useState<string>("");
   const [profileFile, setProfileFile] = useState<File | null>(null);
 
   const {
@@ -53,19 +52,55 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     },
   });
 
-  useEffect(() => {
-    if (user?.profileImage) {
-      setImagePreview(user.profileImage);
+  // Safe converter logic parsing database buffers into viewable components
+  const getAvatarSource = (): string => {
+    if (user?.profilePic) {
+      const contentType = user.profilePic.contentType;
+      const imageData = user.profilePic.data;
+
+      if (imageData && typeof imageData === "object" && "$binary" in imageData) {
+        const embeddedBase64 = (imageData).$binary?.base64;
+        if (embeddedBase64) {
+          return `data:${contentType};base64,${embeddedBase64}`;
+        }
+      } else if (Array.isArray(imageData)) {
+        try {
+          const base64String = btoa(
+            String.fromCharCode(...new Uint8Array(imageData))
+          );
+          return `data:${contentType};base64,${base64String}`;
+        } catch (error) {
+          console.error("Error processing profile picture buffer:", error);
+        }
+      }
     }
-    
-  }, [user?.profileImage]);
+    return userImage;
+  };
+
+  // Synchronize avatar preview properly on state load and updates
+  useEffect(() => {
+    // Only parse background image buffer streams if the user hasn't explicitly staged a new file upload locally
+    if (!profileFile) {
+      setImagePreview(getAvatarSource());
+    }
+  }, [user, profileFile]);
+
+  // Handle garbage collection cleanups for local blob URL memory leak prevention
+  useEffect(() => {
+    return () => {
+      if (imagePreview && imagePreview.startsWith("blob:")) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
 
   useEffect(() => {
-    const userId = user?.id;
+    const userId = user?.id // Cover both id field architectures safely
     if (userId) {
       dispatch(getProfileById({ userId }));
     }
   }, [dispatch]);
+  
 
   useEffect(() => {
     if (user && isModalOpen) {
@@ -77,6 +112,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         district: user.district || "",
         locality: user.locality || "",
       });
+      // Reset local file changes when modal opens fresh
+      setProfileFile(null);
+      setImagePreview(getAvatarSource());
     }
   }, [user, isModalOpen, reset]);
 
@@ -84,6 +122,11 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setProfileFile(file);
+      
+      // Revoke older local preview links to free browser memory pipeline allocations
+      if (imagePreview.startsWith("blob:")) {
+        URL.revokeObjectURL(imagePreview);
+      }
       setImagePreview(URL.createObjectURL(file));
     }
   };
@@ -98,13 +141,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     formData.append("locality", data.locality || "");
 
     if (profileFile) {
-      formData.append("profilePic", profileFile);
+      formData.append("image", profileFile);
     }
     
     try {
       const response = await dispatch(updateProfile({data: formData})).unwrap();
       if (response) {
         toast.success(response.message || "Profile updated successfully!");
+        setProfileFile(null); // Clear active selected file state reference
         setIsModalOpen(false);
       }
     } catch (error) {
@@ -220,7 +264,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           <ul className="relative space-y-4 font-medium border-t border-slate-700/40 pt-4 mt-4">
             <li>
               <div className="w-full flex justify-evenly items-center p-2 bg-[#EEEEEE] text-[#1E1E1E] rounded-xl">
-                <img src={user?.profileImage || imagePreview} alt="userImage" className="w-8 h-8 rounded-full object-cover" />
+                <img src={getAvatarSource()} alt="userImage" className="w-8 h-8 rounded-full object-cover" />
                 <span className="truncate max-w-[110px]">{user?.name || "User"}</span>
                 <button
                   type="button"
@@ -291,7 +335,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               <div className="flex flex-col items-center justify-center mb-4 relative group">
                 <div className="relative w-24 h-24 rounded-full border-2 border-[#14213D] overflow-hidden">
                   <img 
-                    src={imagePreview} 
+                    src={imagePreview || userImage} 
                     alt="Avatar Preview" 
                     className="w-full h-full object-cover"
                   />
@@ -308,6 +352,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                   accept="image/*"
                   className="hidden"
                   onChange={handleImageChange}
+                  disabled={loading}
                 />
                 <span className="text-xs text-[#14213D]/60 mt-1">Click image to change profile photo</span>
               </div>
@@ -323,6 +368,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                       label="Full Name"
                       fullWidth
                       variant="outlined"
+                      disabled={loading}
                       error={!!errors.name}
                       helperText={errors.name?.message}
                       slotProps={{ inputLabel: { shrink: true } }}
@@ -341,6 +387,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                       type="email"
                       fullWidth
                       variant="outlined"
+                      disabled={loading}
                       error={!!errors.email}
                       helperText={errors.email?.message}
                       slotProps={{ inputLabel: { shrink: true } }}
@@ -356,6 +403,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                       {...field}
                       label="Phone Number"
                       fullWidth
+                      disabled={loading}
                       variant="outlined"
                       slotProps={{ inputLabel: { shrink: true } }}
                     />
@@ -369,6 +417,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     <TextField
                       {...field}
                       label="City"
+                      disabled={loading}
                       fullWidth
                       variant="outlined"
                       slotProps={{ inputLabel: { shrink: true } }}
@@ -384,6 +433,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                       {...field}
                       label="District"
                       fullWidth
+                      disabled={loading}
                       variant="outlined"
                       slotProps={{ inputLabel: { shrink: true } }}
                     />
@@ -398,6 +448,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                       {...field}
                       label="Locality"
                       fullWidth
+                      disabled={loading}
                       variant="outlined"
                       slotProps={{ inputLabel: { shrink: true } }}
                     />
@@ -418,7 +469,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 type="submit"
                 className="px-6 py-2.5 rounded-xl bg-[#14213D] text-white font-semibold text-sm hover:bg-[#FCA311] hover:text-[#1E1E1E] transition-all duration-200 shadow"
               >
-                Save Changes
+                {loading ? "updating..." : "Save Changes"}
               </button>
             </DialogActions>
           </form>

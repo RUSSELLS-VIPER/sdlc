@@ -157,3 +157,5 @@ if (item?.image) {
 };
 
 export default UserSavedPropertiesCard;
+
+
