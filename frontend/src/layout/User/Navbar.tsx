@@ -196,6 +196,7 @@ const Navbar = () => {
 
               <div className="hidden lg:flex flex-1 items-center justify-end gap-3">
                 <button
+                onClick={()=> navigate("/dashboard/savedProperties")} 
                   aria-label="Favorite"
                   className="group inline-flex items-center justify-center w-11 h-11 rounded-full bg-slate-900 border-2 border-transparent transition-all duration-300 ease-in-out hover:border-red-500 hover:bg-white"
                 >
@@ -443,7 +444,7 @@ const Navbar = () => {
               {/* Icons */}
               <div className="flex flex-col gap-4 mt-4">
                 <div className="flex gap-4">
-                  <button className="group inline-flex items-center justify-center w-9 h-9 rounded-full bg-slate-900 border-2 border-white transition-all duration-300 ease-in-out hover:border-red-500 hover:bg-white">
+                  <button onClick={()=> navigate("/dashboard/savedProperties")} className="group inline-flex items-center justify-center w-9 h-9 rounded-full bg-slate-900 border-2 border-white transition-all duration-300 ease-in-out hover:border-red-500 hover:bg-white">
                     <Heart
                       size={20}
                       className="text-amber-500 group-hover:text-red-500"
