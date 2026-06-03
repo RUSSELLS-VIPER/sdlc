@@ -12,6 +12,7 @@ export interface IContactSubmission extends Document {
     agentId: mongoose.Types.ObjectId;
     name: string;
     email: string;
+    phoneNo: string;
     messageText: string;
     requestAction: RequestAction;
     isDeleted: boolean;
@@ -24,8 +25,9 @@ const contactSubmissionSchema = new Schema<IContactSubmission>(
         propertyId: { type: mongoose.Schema.Types.ObjectId, ref: "Property", required: true },
         buyerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
         agentId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-        name: { type: String, required: true },
-        email: { type: String, required: true },
+        name: { type: String },
+        email: { type: String },
+        phoneNo: { type: String },
         messageText: { type: String, required: true },
         requestAction: {
             type: String,
