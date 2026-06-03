@@ -61,7 +61,7 @@ app.use(async (req, _res, next) => {
 });
 
 app.get("/", (_req, res, next) => {
-  res.sendFile(path.join(process.cwd(), "index.html"), (error) => {
+  res.sendFile(path.join(process.cwd(), "public", "index.html"), (error) => {
     if (error) {
       next(error);
     }
@@ -69,7 +69,7 @@ app.get("/", (_req, res, next) => {
 });
 
 app.get("/tester", (_req, res, next) => {
-  res.sendFile(path.join(process.cwd(), "index.html"), (error) => {
+  res.sendFile(path.join(process.cwd(), "public", "index.html"), (error) => {
     if (error) {
       next(error);
     }
