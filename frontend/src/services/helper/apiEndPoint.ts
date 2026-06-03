@@ -16,7 +16,7 @@ export const endPoint = {
     },
     users: {
         toggleFavorite: (propertyId: string) => `/api/users/favorites/${propertyId}`,
-        profileById: (id: string) => `/api/users/profile/${id}`,
+        profileById: (id: string | undefined) => `/api/users/profile/${id}`,
         updateProfile: "/api/users/profile/update",
         favorites: "/api/users/favorites/my-list"
     }

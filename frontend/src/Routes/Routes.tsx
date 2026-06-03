@@ -14,19 +14,27 @@ import AdminWrapper from "../layout/admin/AdminWrapper";
 import Dashboard from "../pages/admin/Dashboard";
 import PublicRoute from "../components/PublicRoute";
 import AdminRoute from "../components/AdminRoute";
-import UserDashboard from "../pages/user/UserDashboard";
 import Wishlist from "../pages/user/Wishlist";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 import NotFound from "../pages/NotFound";
 import OnGoingProject from "../pages/user/OnGoingProject";
 import PropertyById from "../pages/user/PropertyById";
 import AgentById from "../pages/user/AgentById";
+import PrivacyPolicy from "../pages/user/PrivacyPolicy";
+import UserDashboardWrapper from "../layout/userDashboard/UserDashboardWrapper";
+import MyBookings from "../pages/user/MyBookings";
+import MyInquiries from "../pages/user/MyInquiries";
+import SavedProperties from "../pages/user/SavedProperties";
+import Notification from "../pages/user/Notification";
+import UserProtectedRoute from "../components/UserProtectedRoute";
+import LogedInUserDashboard from "../pages/user/LogedInUserDashboard";
+import Terms from "../pages/user/Terms";
 
 const Routes = createBrowserRouter([
-    {
-        path: "/forgot-password",
-        element: <ForgotPassword />
-      },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
+  },
   {
     element: <PublicRoute />,
     children: [
@@ -70,32 +78,64 @@ const Routes = createBrowserRouter([
       },
       { path: "service", element: <Services /> },
       { path: "blog", element: <Blogs /> },
+      { path: "privacy-policy", element: <PrivacyPolicy /> },
+      { path: "terms-condition", element: <Terms /> },
       {
         path: "contact",
         element: <Contact />,
       },
       {
         path: "userDashboard",
-        element: <UserDashboard />
-
+        element: <LogedInUserDashboard />,
       },
       {
         path: "wishlist",
-        element: <Wishlist />
+        element: <Wishlist />,
       },
       {
         path: "ongoingProject",
-        element: <OnGoingProject />
+        element: <OnGoingProject />,
       },
       {
         path: "property/:id",
-        element: <PropertyById />
-
+        element: <PropertyById />,
       },
       {
         path: "agent",
-        element: <AgentById />
-      }
+        element: <AgentById />,
+      },
+    ],
+  },
+
+  {
+    path: "/dashboard",
+    element: <UserProtectedRoute />,
+    children: [
+      {
+        element: <UserDashboardWrapper />,
+        children: [
+          {
+            path: "",
+            element: <LogedInUserDashboard />,
+          },
+          {
+            path: "myBookings",
+            element: <MyBookings />,
+          },
+          {
+            path: "myInquiries",
+            element: <MyInquiries />,
+          },
+          {
+            path: "savedProperties",
+            element: <SavedProperties />,
+          },
+          {
+            path: "notifications",
+            element: <Notification />,
+          },
+        ],
+      },
     ],
   },
 
@@ -116,7 +156,7 @@ const Routes = createBrowserRouter([
   },
   {
     path: "*",
-    element: <NotFound />
-  }
+    element: <NotFound />,
+  },
 ]);
 export default Routes;

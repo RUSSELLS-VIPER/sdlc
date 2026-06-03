@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Logo from "../../assets/images/services/logo.png";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   ArrowUpRight,
   ChevronDown,
@@ -15,9 +15,12 @@ import {
   useAppDispatch,
   useAppSeletor,
 } from "../../services/helper/reduxstore";
-import { logout } from "../../store/slices/auth.slice";
+import { getProfileById, logout } from "../../store/slices/auth.slice";
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isPropertyDetailsPage = location.pathname.startsWith("/property/");
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const { role, token, user } = useAppSeletor((state) => state.auth);
   const [desktopUserDropdown, setDesktopUserDropdown] = useState(false);
@@ -65,6 +68,13 @@ const Navbar = () => {
     };
   }, []);
 
+
+  useEffect(() => {
+      const userId = user?.id;
+      if (userId) {
+        dispatch(getProfileById({ userId }));
+      }
+    }, [dispatch]);
   return (
     <div className="relative z-50">
       <header className="absolute top-0 left-0 w-full z-50 pt-4 md:pt-6 pb-2">
@@ -84,16 +94,27 @@ const Navbar = () => {
               </div>
 
               {/* Desktop Menu */}
-              <div className="hidden lg:flex flex-none items-center h-11 gap-6 backdrop-blur-xl border-2 border-white/50 rounded-full px-6">
+
+              <div
+                className={`hidden lg:flex flex-none items-center h-11 gap-6 backdrop-blur-xl border-2 rounded-full px-6 ${
+                  isPropertyDetailsPage
+                    ? "border-gray-300 bg-white/70"
+                    : "border-white/50"
+                }`}
+              >
                 <NavLink
-                  className="nav-link text-white text-sm font-semibold hover:text-[#facc15] transition-colors"
+                  className={`nav-link text-sm font-semibold hover:text-[#facc15] transition-colors ${
+                    isPropertyDetailsPage ? "text-black" : "text-white"
+                  }`}
                   to="/"
                 >
                   Home
                 </NavLink>
 
                 <NavLink
-                  className="nav-link text-white text-sm font-semibold hover:text-[#facc15] transition-colors"
+                  className={`nav-link text-sm font-semibold hover:text-[#facc15] transition-colors ${
+                    isPropertyDetailsPage ? "text-black" : "text-white"
+                  }`}
                   to="/about"
                 >
                   About US
@@ -103,7 +124,9 @@ const Navbar = () => {
                   <div className="inline-flex items-center gap-1">
                     <NavLink
                       to="/property"
-                      className="nav-link text-white text-sm font-semibold hover:text-[#facc15] transition-colors pb-1"
+                      className={`nav-link text-sm font-semibold hover:text-[#facc15] transition-colors pb-1 ${
+                        isPropertyDetailsPage ? "text-black" : "text-white"
+                      }`}
                       onClick={() => setDesktopPropertyDropdown(false)}
                     >
                       Properties
@@ -114,9 +137,13 @@ const Navbar = () => {
                       aria-label="Toggle properties menu"
                       aria-expanded={desktopPropertyDropdown}
                       onClick={() =>
-                        setDesktopPropertyDropdown((currentValue) => !currentValue)
+                        setDesktopPropertyDropdown(
+                          (currentValue) => !currentValue,
+                        )
                       }
-                      className="inline-flex items-center justify-center pb-1 text-white hover:text-[#facc15] transition-colors"
+                      className={`inline-flex items-center justify-center pb-1 hover:text-[#facc15] transition-colors ${
+                        isPropertyDetailsPage ? "text-black" : "text-white"
+                      }`}
                     >
                       <ChevronDown
                         size={16}
@@ -147,14 +174,18 @@ const Navbar = () => {
                 </div>
 
                 <NavLink
-                  className="nav-link text-white text-sm font-semibold hover:text-[#facc15] transition-colors"
+                  className={`nav-link text-sm font-semibold hover:text-[#facc15] transition-colors ${
+                    isPropertyDetailsPage ? "text-black" : "text-white"
+                  }`}
                   to="/service"
                 >
                   Services
                 </NavLink>
 
                 <NavLink
-                  className="nav-link text-white text-sm font-semibold hover:text-[#facc15] transition-colors"
+                  className={`nav-link text-sm font-semibold hover:text-[#facc15] transition-colors ${
+                    isPropertyDetailsPage ? "text-black" : "text-white"
+                  }`}
                   to="/blog"
                 >
                   Blogs
@@ -177,7 +208,9 @@ const Navbar = () => {
                 {role && token ? (
                   <div className="relative" ref={desktopRef}>
                     <button
-                      onClick={() => setDesktopUserDropdown(!desktopUserDropdown)}
+                      onClick={() =>
+                        setDesktopUserDropdown(!desktopUserDropdown)
+                      }
                       aria-label="Account"
                       className="group inline-flex items-center justify-center w-11 h-11 rounded-full bg-slate-900 border-2 border-transparent transition-all duration-300 ease-in-out hover:border-[#0F172A] hover:bg-white"
                     >
@@ -199,7 +232,9 @@ const Navbar = () => {
                             </h3>
                             <button
                               className="text-black"
-                              onClick={() => setDesktopUserDropdown(!desktopUserDropdown)}
+                              onClick={() =>
+                                setDesktopUserDropdown(!desktopUserDropdown)
+                              }
                             >
                               {<X size={20} className="text-bold" />}
                             </button>
@@ -215,12 +250,11 @@ const Navbar = () => {
                           <button
                             onClick={() => {
                               if (role === "user") {
-                                navigate("/userDashboard");
+                                navigate("/dashboard");
                               } else {
                                 navigate("/admin/dashboard");
                               }
                               setDesktopUserDropdown(false);
-                               
                             }}
                             className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-[#0F172A] hover:text-white transition"
                           >
@@ -264,7 +298,7 @@ const Navbar = () => {
                       strokeWidth={2.4}
                       className="text-slate-900 transition-transform duration-300 ease-in-out -rotate-45 group-hover:text-amber-400 group-hover:rotate-0"
                     /> */}
-                     <i className="fa-solid fa-arrow-right text-sm transition-transform duration-300 ease-in-out text-slate-900 -rotate-45 group-hover:text-amber-400 group-hover:rotate-0"></i>
+                    <i className="fa-solid fa-arrow-right text-sm transition-transform duration-300 ease-in-out text-slate-900 -rotate-45 group-hover:text-amber-400 group-hover:rotate-0"></i>
                   </div>
                 </button>
               </div>
@@ -419,7 +453,9 @@ const Navbar = () => {
                   {token && role ? (
                     <div className="relative" ref={mobileRef}>
                       <button
-                        onClick={() => setMobileUserDropdown(!mobileUserDropdown)}
+                        onClick={() =>
+                          setMobileUserDropdown(!mobileUserDropdown)
+                        }
                         className="group inline-flex items-center justify-center w-9 h-9 rounded-full bg-slate-900 border-2 border-white transition-all duration-300 ease-in-out hover:border-red-500 hover:bg-white"
                       >
                         <User
@@ -455,7 +491,7 @@ const Navbar = () => {
                             <button
                               onClick={() => {
                                 if (role === "user") {
-                                  navigate("/userDashboard");
+                                  navigate("/dashboard");
                                 } else {
                                   navigate("/admin/dashboard");
                                 }

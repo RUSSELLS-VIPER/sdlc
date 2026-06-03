@@ -14,6 +14,8 @@ import userRoutes from "./src/routes/user.routes";
 
 
 import adminRoutes from "./src/routes/admin.routes";
+import clientRoutes from "./src/routes/client.routes";
+import agentRoutes from "./src/routes/agent.routes";
 import { createServer } from "http"; // Native Node module
 import { Server } from "socket.io";
 import { initializeChatSockets } from "./src/sockets/chat.socket"; // Your chat socket file
@@ -58,6 +60,8 @@ app.use("/api/users", userRoutes);
 
 
 app.use("/api/admin", adminRoutes);
+app.use("/api/client", clientRoutes);
+app.use("/api/agent", agentRoutes);
 
 // Create the HTTP server server container instance wrapping your express app
 const httpServer = createServer(app);

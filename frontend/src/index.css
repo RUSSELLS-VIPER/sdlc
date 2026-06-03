@@ -1,19 +1,348 @@
-/* PlayFair Font */
+
 @import url("https://fonts.googleapis.com/css2?family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap");
-/* Inter Font */
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Inactive dot style matching your hidden comment block */
+/* Paste it inside the utilities layer */
+@layer utilities {
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #facc15 #1e293b;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #1e293b;
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #facc15;
+    border-radius: 10px;
+    border: 2px solid #1e293b;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #e5930f;
+  }
+}
+
+
+@layer base {
+
+  html, body {
+    scrollbar-width: thin;
+    scrollbar-color: #999 #f1f1f1;
+  }
+
+ 
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  html::-webkit-scrollbar-track,
+  body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  html::-webkit-scrollbar-thumb,
+  body::-webkit-scrollbar-thumb {
+    background: #999;
+    border-radius: 20px;
+  }
+
+  html::-webkit-scrollbar-thumb:hover,
+  body::-webkit-scrollbar-thumb:hover {
+    background: #666;
+  }
+}
+
+
 #sliderDots .swiper-pagination-bullet {
-  background-color: #e5e7eb !important; /* gray-200 */
+  background-color: #e5e7eb !important; 
   opacity: 1;
 }
 
-/* Active dot style matching your yellow design */
 #sliderDots .swiper-pagination-bullet-active {
-  background-color: #fcaa31 !important; /* Your signature yellow */
+  background-color: #fcaa31 !important; 
+}
+
+
+@keyframes textFade {
+
+    0%,
+    25% {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    30%,
+    95% {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    100% {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+.activity-line-1 {
+    animation: textFade 9s infinite ease-in-out;
+}
+
+.activity-line-2 {
+    animation: textFade 9s infinite ease-in-out -3s;
+}
+
+.activity-line-3 {
+    animation: textFade 9s infinite ease-in-out -6s;
+}
+
+
+@keyframes textFade {
+
+    0%,
+    25% {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    30%,
+    95% {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    100% {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+.activity-line-1 {
+    animation: textFade 9s infinite ease-in-out;
+}
+
+.activity-line-2 {
+    animation: textFade 9s infinite ease-in-out -3s;
+}
+
+.activity-line-3 {
+    animation: textFade 9s infinite ease-in-out -6s;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+@keyframes triImageFade1 {
+
+    0%,
+    28% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    33%,
+    95% {
+        opacity: 0;
+        transform: scale(1.05);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes triImageFade2 {
+
+    0%,
+    28% {
+        opacity: 0;
+        transform: scale(1.05);
+    }
+
+    33%,
+    61% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    66%,
+    100% {
+        opacity: 0;
+        transform: scale(1.05);
+    }
+}
+
+@keyframes triImageFade3 {
+
+    0%,
+    61% {
+        opacity: 0;
+        transform: scale(1.05);
+    }
+
+    66%,
+    95% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1.05);
+    }
+}
+
+.slide-track-1 {
+    animation: triImageFade1 9s infinite ease-in-out;
+}
+
+.slide-track-2 {
+    animation: triImageFade2 9s infinite ease-in-out;
+}
+
+.slide-track-3 {
+    animation: triImageFade3 9s infinite ease-in-out;
+}
+
+@keyframes textFade {
+
+    0%,
+    25% {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    30%,
+    95% {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    100% {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+.activity-line-1 {
+    animation: textFade 9s infinite ease-in-out;
+}
+
+.activity-line-2 {
+    animation: textFade 9s infinite ease-in-out -3s;
+}
+
+.activity-line-3 {
+    animation: textFade 9s infinite ease-in-out -6s;
+}
+
+@keyframes crossFade {
+
+    0%,
+    30% {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    33%,
+    97% {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    100% {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+.slide-1 {
+    animation: crossFade 12s infinite ease-in-out;
+}
+
+.slide-2 {
+    animation: crossFade 12s infinite ease-in-out -4s;
+}
+
+.slide-3 {
+    animation: crossFade 12s infinite ease-in-out -8s;
+}
+
+
+.scrollbar-none::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.custom-feed-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-feed-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-feed-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.4);
+    border-radius: 9999px;
+}
+
+.custom-feed-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.6);
+}
+
+@keyframes textFade {
+
+    0%,
+    25% {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    30%,
+    95% {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    100% {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+.activity-line-1 {
+    animation: textFade 9s infinite ease-in-out;
+}
+
+.activity-line-2 {
+    animation: textFade 9s infinite ease-in-out -3s;
+}
+
+.activity-line-3 {
+    animation: textFade 9s infinite ease-in-out -6s;
 }

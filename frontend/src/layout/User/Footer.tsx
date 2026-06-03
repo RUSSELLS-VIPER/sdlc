@@ -279,10 +279,10 @@ const Footer = () => {
               <NavLink to="#" className="hover:text-[#fca311] transition">
                 OFFERS
               </NavLink>
-              <NavLink to="#" className="hover:text-[#fca311] transition">
+              <NavLink to="terms-condition" className="hover:text-[#fca311] transition">
                 TERMS OF SERVICE
               </NavLink>
-              <NavLink to="#" className="hover:text-[#fca311] transition">
+              <NavLink to="privacy-policy" className="hover:text-[#fca311] transition">
                 PRIVACY POLICY
               </NavLink>
               <NavLink to="#" className="hover:text-[#fca311] transition">

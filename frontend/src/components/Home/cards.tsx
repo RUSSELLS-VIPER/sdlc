@@ -546,7 +546,12 @@ export const CardsSection = () => {
                       </p>
 
                       <button
-                        onClick={() => navigate(`/property/${item._id}`)}
+                        onClick={() => {
+                          if(!token && !user){
+                            toast.success("Please Login first to see profile details")
+                            return 
+                          }
+                          navigate(`/property/${item._id}`)}}
                         className="bg-[#171e2e] text-white px-5 py-2.5 rounded-lg text-xs font-bold hover:bg-[#facc15] hover:text-[#171E2E] transform hover:-translate-x-2 shadow hover:shadow-md transition-all duration-200"
                       >
                         Get Quote
