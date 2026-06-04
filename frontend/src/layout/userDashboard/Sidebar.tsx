@@ -57,6 +57,15 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     },
   });
 
+  const arrayBufferToBase64 = (arr: number[]): string => {
+    let binary = "";
+    const len = arr.length;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(arr[i]);
+    }
+    return btoa(binary);
+  };
+
   // Safe converter logic parsing database buffers into viewable components
   const getAvatarSource = (): string => {
     if (user?.profilePic) {
@@ -82,18 +91,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       ) {
         try {
           const bufferImageData = imageData as LegacyBufferData;
-          const base64String = btoa(
-            String.fromCharCode(...new Uint8Array(bufferImageData.data))
-          );
+          const base64String = arrayBufferToBase64(bufferImageData.data);
           return `data:${contentType};base64,${base64String}`;
         } catch (error) {
           console.error("Error processing buffer-shaped profile picture:", error);
         }
       } else if (Array.isArray(imageData)) {
         try {
-          const base64String = btoa(
-            String.fromCharCode(...new Uint8Array(imageData))
-          );
+          const base64String = arrayBufferToBase64(imageData);
           return `data:${contentType};base64,${base64String}`;
         } catch (error) {
           console.error("Error processing profile picture buffer:", error);
@@ -105,7 +110,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   // Synchronize avatar preview properly on state load and updates
   useEffect(() => {
-    // Only parse background image buffer streams if the user hasn't explicitly staged a new file upload locally
     if (!profileFile) {
       setImagePreview(getAvatarSource());
     }
@@ -121,13 +125,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   }, [imagePreview]);
 
   useEffect(() => {
-    const userId = user?.id // Cover both id field architectures safely
+    const userId = user?.id; // Cover both id field architectures safely
     if (userId) {
       dispatch(getProfileById({ userId }));
     }
   }, [dispatch]);
   
-
   useEffect(() => {
     if (user && isModalOpen) {
       reset({

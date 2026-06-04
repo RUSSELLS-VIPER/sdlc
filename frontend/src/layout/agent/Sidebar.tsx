@@ -46,6 +46,15 @@ const Sidebar: React.FC<AgentSidebarProps> = ({ isOpen, onMenuClose }) => {
     },
   });
 
+  const arrayBufferToBase64 = (arr: number[]): string => {
+    let binary = "";
+    const len = arr.length;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(arr[i]);
+    }
+    return btoa(binary);
+  };
+
   // Safe converter logic parsing database buffers into viewable components
   const getAvatarSource = (): string => {
     if (user?.profilePic) {
@@ -71,18 +80,14 @@ const Sidebar: React.FC<AgentSidebarProps> = ({ isOpen, onMenuClose }) => {
       ) {
         try {
           const bufferImageData = imageData as LegacyBufferData;
-          const base64String = btoa(
-            String.fromCharCode(...new Uint8Array(bufferImageData.data))
-          );
+          const base64String = arrayBufferToBase64(bufferImageData.data);
           return `data:${contentType};base64,${base64String}`;
         } catch (error) {
           console.error("Error processing buffer-shaped profile picture:", error);
         }
       } else if (Array.isArray(imageData)) {
         try {
-          const base64String = btoa(
-            String.fromCharCode(...new Uint8Array(imageData))
-          );
+          const base64String = arrayBufferToBase64(imageData);
           return `data:${contentType};base64,${base64String}`;
         } catch (error) {
           console.error("Error processing profile picture buffer:", error);
