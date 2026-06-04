@@ -277,8 +277,18 @@ function updateOverviewMetrics(dom, path, data) {
 
 export function createApiClient(dom) {
   function apiUrl(path) {
-    const baseUrl = String(dom.baseUrl?.value ?? window.location.origin).trim() || window.location.origin;
-    return baseUrl.replace(/\/$/, "") + path;
+    const rawBaseUrl = String(dom.baseUrl?.value ?? window.location.origin).trim() || window.location.origin;
+    const normalizedBaseUrl = rawBaseUrl.replace(/\/$/, "");
+
+    if (
+      window.location.protocol === "https:" &&
+      normalizedBaseUrl.startsWith("http://") &&
+      normalizedBaseUrl.slice("http://".length).split("/")[0] === window.location.host
+    ) {
+      return window.location.origin.replace(/\/$/, "") + path;
+    }
+
+    return normalizedBaseUrl + path;
   }
 
   function headers(authRequired = false, isFormData = false) {
