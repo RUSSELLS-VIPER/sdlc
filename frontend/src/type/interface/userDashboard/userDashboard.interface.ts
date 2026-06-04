@@ -81,7 +81,7 @@ export interface UserAgentListDataProps {
 }
 
 export interface NotificationsData {
-    id: number;
+    id: string;
     title: string;
     description: string;
     time: string;

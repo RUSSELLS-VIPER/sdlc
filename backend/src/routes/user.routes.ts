@@ -7,7 +7,9 @@ import {
      searchChatContacts,
     getChatHistory,
     userSendMessage,
-    getMyNotifications
+    getMyNotifications,
+    markNotificationAsRead,
+    markAllNotificationsAsRead
 } from "../controllers/user.controller";
 
 
@@ -50,6 +52,8 @@ router.get("/history/:userId", authenticate, authorize(Role.ADMIN, Role.USER, Ro
 router.post("/chat/send", authenticate, authorize(Role.ADMIN, Role.USER, Role.AGENT),userSendMessage);
 
 router.get("/my-notifications", authenticate,authorize(Role.ADMIN, Role.USER, Role.AGENT), getMyNotifications);
+router.patch("/notifications/read-all", authenticate, markAllNotificationsAsRead);
+router.patch("/notifications/:id/read", authenticate, markNotificationAsRead);
 
 
 export default router;

@@ -19,7 +19,10 @@ export const endPoint = {
         toggleFavorite: (propertyId: string) => `/api/users/favorites/${propertyId}`,
         profileById: (id: string | undefined) => `/api/users/profile/${id}`,
         updateProfile: "/api/users/profile/update",
-        favorites: "/api/users/favorites/my-list"
+        favorites: "/api/users/favorites/my-list",
+        myNotifications: "/api/users/my-notifications",
+        readNotification: (id: string) => `/api/users/notifications/${id}/read`,
+        readAllNotifications: "/api/users/notifications/read-all"
     },
     client: {
         propertyInquiry: (propertyId: string) => `/api/client/property/${propertyId}/inquiry`

@@ -30,7 +30,10 @@ export const apiService = {
         getProfile: (id: string) => axiosInstance.get(endPoint.users.profileById(id)),
         updateProfile: (formData: FormData) => axiosInstance.put(endPoint.users.updateProfile, formData),
         toggleFavorite: (propertyId: string) => axiosInstance.post(endPoint.users.toggleFavorite(propertyId)),
-        getFavorites: () => axiosInstance.get(endPoint.users.favorites)
+        getFavorites: () => axiosInstance.get(endPoint.users.favorites),
+        getMyNotifications: () => axiosInstance.get(endPoint.users.myNotifications),
+        markNotificationAsRead: (id: string) => axiosInstance.patch(endPoint.users.readNotification(id)),
+        markAllNotificationsAsRead: () => axiosInstance.patch(endPoint.users.readAllNotifications)
     },
     client: {
         submitPropertyInquiry: (propertyId: string, data: InquiryPayload) =>
