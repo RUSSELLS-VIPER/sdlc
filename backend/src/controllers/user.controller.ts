@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import mongoose from "mongoose";
 import User, { Role } from "../models/user.model";
 import Property from "../models/property.model";
@@ -475,6 +475,21 @@ export const markAllNotificationsAsRead = async (req: AuthenticatedRequest, res:
         return res.status(200).json({ success: true, message: "All notifications marked as read" });
     } catch (error) {
         logError("markAllNotificationsAsRead", error);
+        return res.status(500).json(toErrorResponse(error));
+    }
+};
+
+export const getAllAgents = async (req: Request, res: Response) => {
+    try {
+        const agents = await User.find({ role: Role.AGENT })
+            .select("name email profilePic locality district city phoneNo");
+
+        return res.status(200).json({
+            success: true,
+            agents
+        });
+    } catch (error) {
+        logError("getAllAgents", error);
         return res.status(500).json(toErrorResponse(error));
     }
 };

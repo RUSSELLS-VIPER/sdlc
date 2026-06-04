@@ -33,7 +33,8 @@ export const apiService = {
         getFavorites: () => axiosInstance.get(endPoint.users.favorites),
         getMyNotifications: () => axiosInstance.get(endPoint.users.myNotifications),
         markNotificationAsRead: (id: string) => axiosInstance.patch(endPoint.users.readNotification(id)),
-        markAllNotificationsAsRead: () => axiosInstance.patch(endPoint.users.readAllNotifications)
+        markAllNotificationsAsRead: () => axiosInstance.patch(endPoint.users.readAllNotifications),
+        getAllAgents: () => axiosInstance.get(endPoint.users.allAgents)
     },
     client: {
         submitPropertyInquiry: (propertyId: string, data: InquiryPayload) =>

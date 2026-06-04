@@ -9,7 +9,8 @@ import {
     userSendMessage,
     getMyNotifications,
     markNotificationAsRead,
-    markAllNotificationsAsRead
+    markAllNotificationsAsRead,
+    getAllAgents
 } from "../controllers/user.controller";
 
 
@@ -23,6 +24,7 @@ const router = express.Router();
 // Note: Signup/Login are usually handled in an auth.route.ts, 
 // but you can include profile viewing here if public.
 router.get("/profile/:id", getUserProfile);
+router.get("/agents", getAllAgents);
 
 // --- Protected Routes (Requires Login) ---
 

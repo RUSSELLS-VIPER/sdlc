@@ -22,7 +22,8 @@ export const endPoint = {
         favorites: "/api/users/favorites/my-list",
         myNotifications: "/api/users/my-notifications",
         readNotification: (id: string) => `/api/users/notifications/${id}/read`,
-        readAllNotifications: "/api/users/notifications/read-all"
+        readAllNotifications: "/api/users/notifications/read-all",
+        allAgents: "/api/users/agents"
     },
     client: {
         propertyInquiry: (propertyId: string) => `/api/client/property/${propertyId}/inquiry`
