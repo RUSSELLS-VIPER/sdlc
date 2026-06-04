@@ -19,6 +19,9 @@ export const CardsSection = () => {
   const { user, token } = useAppSeletor((state) => state.auth);
   const { favouritesPropertyIds } = useAppSeletor((state) => state.users);
 
+
+  
+
   const popularCategories = [
     { label: "All", value: "all" as const },
     { label: "House", value: "home" as const },
@@ -71,6 +74,7 @@ export const CardsSection = () => {
   }, [items]);
 
   useEffect(() => {
+    
     if (token) {
       dispatch(getWishList());
     }

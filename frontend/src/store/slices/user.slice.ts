@@ -11,7 +11,8 @@ export const initialState: InitialUserState = {
   favouritesPropertyIds: [],
   loading: false,
   error: null,
-  wishList: []
+  wishList: [],
+  agent: []
 };
 
 export const toggleLikeUnlike = createAsyncThunk(
@@ -39,6 +40,22 @@ export const getWishList = createAsyncThunk(
     }
   },
 );
+
+
+export const getAgent = createAsyncThunk(
+  "get/agent",
+  async(_, {rejectWithValue})=> {
+    try {
+      const response = await axiosInstance.get(endPoint.users.allAgents);
+      return response.data
+      
+    } catch (error) {
+      return rejectWithValue(error)
+      
+    }
+
+  }
+)
 
 
 
@@ -83,7 +100,21 @@ export const userSlice = createSlice({
         // Map everything cleanly to an array of pure string IDs
         state.favouritesPropertyIds = favoritesArray.map((item:PropertyItem) =>
           String(item._id),
-        );
+        )
+      })
+      .addCase(getAgent.pending, (state)=>{
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAgent.fulfilled, (state, action)=>{
+        // console.log("action agent", action.payload.agents)
+        state.loading = false;
+        state.error = null;
+        state.agent = action.payload.agents;
+      })
+      .addCase(getAgent.rejected, (state, action)=>{
+        state.error = action.payload as string || "Failed to fetch agent";
+        state.loading = false
       })
       
   },

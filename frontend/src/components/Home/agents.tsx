@@ -1,27 +1,47 @@
-import { useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
 
-const agents = [
-  {
-    image: "/assets/infinity-home/images/index/agent-1.png",
-    alt: "Agent 1",
-  },
-  {
-    image: "/assets/infinity-home/images/index/agent-2.png",
-    alt: "Agent 2",
-  },
-  {
-    image: "/assets/infinity-home/images/index/agent-3.png",
-    alt: "Agent 3",
-  },
-  {
-    image: "/assets/infinity-home/images/index/agent-4.png",
-    alt: "Agent 4",
-  },
-];
+import { useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  useAppDispatch,
+  useAppSeletor,
+} from "../../services/helper/reduxstore";
+import { getAgent } from "../../store/slices/user.slice";
+import type { ProfilePic } from "../../type/interface/user/user.interface";
 
 export const AgentsSection = () => {
   const sliderRef = useRef<HTMLDivElement | null>(null);
+  const { agent, loading, error } = useAppSeletor((state) => state.users);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate()
+  console.log("agent", agent);
+
+  // Helper function to convert Buffer data into a usable image URL
+  const getImageSrc = (profilePic: ProfilePic | undefined): string => {
+    if (!profilePic || !profilePic.data || !profilePic.data.data) {
+      return "/assets/infinity-home/images/index/default-agent.png";
+    }
+
+    const contentType = profilePic.contentType;
+    const bufferArray = profilePic.data.data;
+
+    // 1. Convert the number array to a proper Uint8Array
+    const uint8Array = new Uint8Array(bufferArray);
+
+    // 2. Convert binary chunks safely to string chunks to prevent call stack overflows
+    let binaryString = "";
+    const chunkSize = 8192;
+    for (let i = 0; i < uint8Array.length; i += chunkSize) {
+      binaryString += String.fromCharCode.apply(
+        null,
+        uint8Array.subarray(i, i + chunkSize) as unknown as number[],
+      );
+    }
+
+    // 3. Turn into base64 string
+    const base64String = btoa(binaryString);
+
+    return `data:${contentType};base64,${base64String}`;
+  };
 
   const scrollAgentsRight = () => {
     const slider = sliderRef.current;
@@ -31,6 +51,10 @@ export const AgentsSection = () => {
     const gap = parseInt(window.getComputedStyle(slider).gap || "0", 10);
     slider.scrollBy({ left: card.offsetWidth + gap, behavior: "smooth" });
   };
+
+  useEffect(() => {
+    dispatch(getAgent());
+  }, [dispatch]);
 
   useEffect(() => {
     const slider = sliderRef.current;
@@ -98,48 +122,62 @@ export const AgentsSection = () => {
           ref={sliderRef}
           className="flex gap-4 sm:gap-6 overflow-x-auto no-scrollbar scroll-smooth cursor-pointer select-none pb-8 px-1"
         >
-          {agents.map((agent) => (
-            <div
-              key={agent.image}
-              className="agent-card group relative flex-shrink-0 w-[200px] sm:w-[270px] lg:w-[320px] h-[300px] sm:h-[400px] lg:h-[450px]"
-            >
-              <div className="absolute inset-0 overflow-hidden bg-white border border-gray-100 transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] rounded-[120px] group-hover:rounded-[24px] lg:rounded-[160px] lg:group-hover:rounded-[24px]">
-                <img
-                  src={agent.image}
-                  alt={agent.alt}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 pointer-events-none"
-                />
-                <div className="absolute inset-0 flex flex-col items-center justify-end pb-8 lg:pb-12 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-black/80 via-transparent to-transparent">
-                  <div className="flex items-center gap-1 mb-1">
-                    <span className="text-white text-base font-bold pt-1">4.9</span>
-                    <span className="text-orange-400 text-xl">&#9733;</span>
-                  </div>
-                  <h3 className="text-xl lg:text-2xl font-bold text-white mb-1">
-                    Danial Carter
-                  </h3>
-                  <p className="text-gray-300 text-xs lg:text-sm mb-2">
-                    Field Executive
-                  </p>
-                  <div className="flex gap-6 items-center justify-center text-[#FCA311] transition-all duration-300 px-5 py-2 border border-white backdrop-blur rounded-2xl">
-                    <Link to="#" className="hover:scale-110 transition-transform">
-                      <img
-                        src="/assets/infinity-home/images/index/fb-logo.png"
-                        alt="Facebook"
-                        className="w-5 h-5 lg:w-6 lg:h-6 object-contain"
-                      />
-                    </Link>
-                    <Link to="#" className="hover:scale-110 transition-transform">
-                      <img
-                        src="/assets/infinity-home/images/index/insta-logo.png"
-                        alt="Instagram"
-                        className="w-5 h-5 lg:w-6 lg:h-6 object-contain"
-                      />
-                    </Link>
+          {loading && (
+            <div>
+              <p>Loading...</p>
+            </div>
+          )}
+          {error && <p>{error}</p>}
+          {agent &&
+            agent.map((agentData) => (
+              <div
+                key={agentData._id}
+                className="agent-card group relative flex-shrink-0 w-[200px] sm:w-[270px] lg:w-[320px] h-[300px] sm:h-[400px] lg:h-[450px]"
+              >
+                <div onClick={()=> navigate(`/agent/${agentData._id}`)} className="absolute inset-0 overflow-hidden bg-white border border-gray-100 transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] rounded-[120px] group-hover:rounded-[24px] lg:rounded-[160px] lg:group-hover:rounded-[24px]">
+                  {/* UPDATED IMG TAG HERE */}
+                  <img
+                    src={getImageSrc(agentData.profilePic)}
+                    alt={agentData.name}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 pointer-events-none"
+                  />
+
+                  <div className="absolute inset-0 flex flex-col items-center justify-end pb-8 lg:pb-12 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-black/80 via-transparent to-transparent">
+                    <div className="flex items-center gap-1 mb-1">
+                      <span className="text-white text-base font-bold pt-1">
+                        4.9
+                      </span>
+                      <span className="text-orange-400 text-xl">&#9733;</span>
+                    </div>
+                    <h3 className="text-xl lg:text-2xl font-bold text-white mb-1">
+                      {agentData.name}
+                    </h3>
+                    <div className="flex gap-6 items-center justify-center text-[#FCA311] transition-all duration-300 px-5 py-2 border border-white backdrop-blur rounded-2xl">
+                      <Link
+                        to="#"
+                        className="hover:scale-110 transition-transform"
+                      >
+                        <img
+                          src="/assets/infinity-home/images/index/fb-logo.png"
+                          alt="Facebook"
+                          className="w-5 h-5 lg:w-6 lg:h-6 object-contain"
+                        />
+                      </Link>
+                      <Link
+                        to="#"
+                        className="hover:scale-110 transition-transform"
+                      >
+                        <img
+                          src="/assets/infinity-home/images/index/insta-logo.png"
+                          alt="Instagram"
+                          className="w-5 h-5 lg:w-6 lg:h-6 object-contain"
+                        />
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
     </section>

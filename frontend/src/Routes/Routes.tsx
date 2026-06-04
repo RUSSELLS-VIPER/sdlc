@@ -111,7 +111,7 @@ const Routes = createBrowserRouter([
         element: <PropertyById />,
       },
       {
-        path: "agent",
+        path: "agent/:id",
         element: <AgentById />,
       },
     ],
