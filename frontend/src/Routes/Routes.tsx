@@ -32,6 +32,9 @@ import AgentRoute from "../components/AgentRoute";
 import AgentWrapper from "../layout/agent/AgentWrapper";
 import AgentDashboard from "../pages/agent/AgentDashboard";
 import AdminDashboard from "../pages/admin/AdminDashboard";
+import AgentChats from "../pages/agent/AgentChats";
+import AgentManageProperties from "../pages/agent/AgentManageProperties";
+import AgentCustomerInquiry from "../pages/agent/AgentCustomerInquiry";
 
 const Routes = createBrowserRouter([
   {
@@ -168,7 +171,19 @@ const Routes = createBrowserRouter([
           {
             path: "dashboard",
             element: <AgentDashboard />
-          }
+          },
+          {
+            path: "chats",
+            element: <AgentChats />
+          },
+          {
+            path: "manage-properties",
+            element: <AgentManageProperties />
+          },
+          {
+            path: "inquiry",
+            element: <AgentCustomerInquiry />
+          },
         ]
       }
     ]

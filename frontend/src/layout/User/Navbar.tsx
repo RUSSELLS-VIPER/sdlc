@@ -252,8 +252,10 @@ const Navbar = () => {
                             onClick={() => {
                               if (role === "user") {
                                 navigate("/dashboard");
-                              } else {
-                                navigate("/admin/dashboard");
+                              } else if(role === "agent") {
+                                navigate("/agent/dashboard");
+                              }else if(role === "admin"){
+                                navigate("/admin/dashboard")
                               }
                               setDesktopUserDropdown(false);
                             }}
