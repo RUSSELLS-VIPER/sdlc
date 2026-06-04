@@ -150,7 +150,7 @@ export const getProperties = async (_req: AuthenticatedRequest, res: Response) =
                   ? { projectStatus }
                   : {};
 
-        const properties = await Property.find(query).populate("createdBy", "name email role");
+        const properties = await Property.find(query).populate("createdBy", "name email role profilePic");
         return res.json(properties.map((property) => toSafePropertyResponse(property)));
     } catch (error) {
         console.error("getProperties error:", error);
@@ -160,7 +160,7 @@ export const getProperties = async (_req: AuthenticatedRequest, res: Response) =
 
 export const getPropertyById = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const property = await Property.findById(req.params.id).populate("createdBy", "name email role");
+        const property = await Property.findById(req.params.id).populate("createdBy", "name email role profilePic");
 
         if (!property) {
             return res.status(404).json({ message: "Property not found" });

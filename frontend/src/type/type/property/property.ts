@@ -27,6 +27,16 @@ export type PropertyItem = {
     apartmentType?: string;
     propertyType?: string;
     likesCount: number;
+    createdBy?: {
+      _id: string;
+      name: string;
+      email: string;
+      role: string;
+      profilePic?: {
+        contentType: string;
+        data: any;
+      };
+    };
 };
 
 export type PropertyState = {

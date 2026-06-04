@@ -27,7 +27,16 @@ export interface UserDashboardPropertyCardProps {
       contentType: string;
       data: MongoBinaryData | number[] | LegacyBufferData;
     };
-    createdBy?: string;
+    createdBy?: string | {
+      _id: string;
+      name: string;
+      email: string;
+      role: string;
+      profilePic?: {
+        contentType: string;
+        data: any;
+      };
+    };
     likes?: string[];
     createdAt?: { $date: string } | string;
     updatedAt?: { $date: string } | string;
