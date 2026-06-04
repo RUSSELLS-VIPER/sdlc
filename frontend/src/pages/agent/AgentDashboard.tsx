@@ -1,14 +1,10 @@
 import React, { useState, useEffect, type FormEvent } from 'react';
-import { NavLink } from 'react-router-dom';
-// import { useAppDispatch, useAppSeletor } from '../../services/helper/reduxstore';
-// import { getProperties } from '../../store/slices/property.slice';
+import { NavLink, useNavigate } from 'react-router-dom';
 import propertyBoxImg1 from '../../assets/images/agent-dashboard-images/property-box-img-1.png'
 import propertyBoxImg2 from '../../assets/images/agent-dashboard-images/property-box-img-2.png'
 import propertyBoxImg3 from '../../assets/images/agent-dashboard-images/property-box-img-3.png'
 import propertyBoxImg4 from '../../assets/images/agent-dashboard-images/property-box-img-4.png'
 import { apiService } from '../../services/api.service';
-import { useAppSeletor } from '../../services/helper/reduxstore';
-import type { AuthUser } from '../../type/type/auth/auth.type';
 import AgentHeader from '../../layout/agent/AgentHeader';
 
 // TypeScript Interface for the API structure
@@ -98,7 +94,6 @@ const mapApiProperty = (property: AgentDashboardApiProperty, index: number): Pro
 
 
 const AgentDashboard = () => {
-  const currentUser = useAppSeletor((state) => state.auth.user);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalAnimating, setModalAnimating] = useState(false);
   const [currentActivityIndex, setCurrentActivityIndex] = useState(0);
@@ -108,6 +103,7 @@ const AgentDashboard = () => {
   const [dashboard, setDashboard] = useState<AgentDashboardSummary | null>(null);
   const [propertiesData, setPropertiesData] = useState<Property[]>([]);
   const [activities, setActivities] = useState<string[]>(defaultActivities);
+  const navigate = useNavigate()
 //   const {items} = useAppSeletor((state)=> state.property)
 //   const dispatch = useAppDispatch()
 //   console.log(items)
@@ -314,7 +310,7 @@ const AgentDashboard = () => {
                       </div>
                       <div className="flex justify-between items-center pt-4 border-t border-gray-100">
                         <span className="text-[13px] font-semibold text-gray-600">Sq.FT - {property.sqft}</span>
-                        <button className="bg-[#161a2b] hover:bg-gray-800 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors">Get Quote</button>
+                        <button className="bg-[#161a2b] hover:bg-gray-800 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors" onClick={()=> navigate(`/property/${property.id}`)}>Get Quote</button>
                       </div>
                     </div>
                   </div>

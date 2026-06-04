@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+// import { NavLink } from "react-router-dom";
 import { Plus, X } from "lucide-react";
 import faqillustrate from "../../assets/images/contacts-images/Frame 575.png";
 import { useState } from "react";
@@ -36,10 +36,10 @@ const FaqSection = () => {
             </div>
 
             <div className="mt-12 max-md:mt-7 lg:mt-[38px] max-w-[520px] lg:max-w-[360px] mx-auto lg:mx-0">
-              <label className="font-playfair text-[16px] max-md:text-sm md:text-[24px] lg:text-[10px] text-[#25314a] block mb-3 lg:mb-2.5 max-md:text-left">
+              {/* <label className="font-playfair text-[16px] max-md:text-sm md:text-[24px] lg:text-[10px] text-[#25314a] block mb-3 lg:mb-2.5 max-md:text-left">
                 Let me know
-              </label>
-              <div className="relative">
+              </label> */}
+              {/* <div className="relative">
                 <input
                   type="text"
                   id="faq-search-input"
@@ -53,7 +53,7 @@ const FaqSection = () => {
                 >
                   <i className="fa-solid fa-xmark"></i>
                 </NavLink>
-              </div>
+              </div> */}
             </div>
           </div>
 
