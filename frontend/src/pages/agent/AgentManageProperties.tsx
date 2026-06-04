@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { apiService } from '../../services/api.service';
 
 // --- Type Definitions & Contracts ---
 export type PropertyStatus = 'Ongoing' | 'Completed';
@@ -10,8 +11,14 @@ export interface PropertyItem {
   name: string;
   type: string;
   location: string;
-  price: string; 
+  price: string;
+  rawPrice?: string;
   status: PropertyStatus;
+  desc?: string;
+  bhk?: string;
+  sqft?: string;
+  aptType?: string;
+  propertyType?: string;
 }
 
 export interface ToastConfig {
@@ -34,12 +41,84 @@ export interface FormFields {
   fileName: string;
 }
 
+interface AgentApiProperty {
+  _id: string;
+  title?: string;
+  description?: string;
+  price?: number;
+  address?: string;
+  bhk?: string;
+  sqft?: string | number;
+  apartmentType?: string;
+  propertyType?: string;
+  projectStatus?: PropertyStatus;
+}
+
+interface AgentDashboardSummary {
+  propertiesList?: AgentApiProperty[];
+}
+
+const formatPrice = (price?: number) => {
+  if (typeof price !== 'number' || Number.isNaN(price)) return '\u20b90';
+  return '\u20b9' + price.toLocaleString('en-IN');
+};
+
+const toTitleCase = (value?: string) => {
+  if (!value) return 'N/A';
+  return value
+    .split(/[\s_-]+/)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(' ');
+};
+
+const toApiPropertyType = (value: string) => {
+  const normalized = value.trim().toLowerCase();
+  if (normalized === 'rent house') return 'rental';
+  return normalized || '--';
+};
+
+const mapApiProperty = (property: AgentApiProperty): PropertyItem => ({
+  id: property._id,
+  name: property.title || 'Untitled Property',
+  type: toTitleCase(property.propertyType),
+  location: property.address || 'N/A',
+  price: formatPrice(property.price),
+  rawPrice: typeof property.price === 'number' ? String(property.price) : '',
+  status: property.projectStatus || 'Ongoing',
+  desc: property.description || '',
+  bhk: property.bhk || '',
+  sqft: property.sqft ? String(property.sqft) : '',
+  aptType: property.apartmentType || '',
+  propertyType: property.propertyType || '',
+});
+
+const buildPropertyFormData = (formState: FormFields, selectedFile: File | null) => {
+  const formData = new FormData();
+
+  formData.append('title', formState.name);
+  formData.append('description', formState.desc);
+  formData.append('price', formState.price);
+  formData.append('address', formState.location);
+  formData.append('bhk', formState.bhk || '--');
+  formData.append('sqft', formState.sqft || '--');
+  formData.append('apartmentType', formState.aptType || '--');
+  formData.append('propertyType', toApiPropertyType(formState.type));
+  formData.append('projectStatus', formState.status || 'Ongoing');
+
+  if (selectedFile) {
+    formData.append('image', selectedFile);
+  }
+
+  return formData;
+};
+
 const ManagePropertiesDashboard: React.FC = () => {
   // --- Core State Reactive Containers ---
   const [propertiesData, setPropertiesData] = useState<PropertyItem[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalMode, setModalMode] = useState<ModalMode>('add');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   
   const [formState, setFormState] = useState<FormFields>({
     id: '',
@@ -64,24 +143,18 @@ const ManagePropertiesDashboard: React.FC = () => {
   const itemsPerPage = 10;
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const loadAgentProperties = async () => {
+    const response = await apiService.agent.getDashboardSummary();
+    const payload = response.data as AgentDashboardSummary;
+    setPropertiesData((payload.propertiesList || []).map(mapApiProperty));
+  };
 
-  // --- Dynamic Mock Initializer ---
+  // --- Database-backed initializer ---
   useEffect(() => {
-    const propertyTypes = ['Villa', 'Apartment', 'Home', 'Office', 'Rent House', 'Rental'];
-    const locations = ['Kolkata', 'Salt Lake', 'New Town', 'Rajarhat', 'Ballygunge', 'Howrah'];
-    const statuses: PropertyStatus[] = ['Ongoing', 'Completed', 'Ongoing', 'Completed'];
-    const propertyNames = ['Sunset View', 'Green Valley', 'Ocean Breeze', 'Skyline Tower', 'Imperial Estate'];
-
-    const initialGeneratedData: PropertyItem[] = Array.from({ length: 20 }, (_, i) => ({
-      id: `PRP-${1000 + i}`,
-      name: `${propertyNames[i % 5]} ${i + 1}`,
-      type: propertyTypes[i % 5],
-      location: locations[i % 6],
-      price: `₹${Math.floor(Math.random() * 80 + 20)},00,000`,
-      status: statuses[i % 4],
-    }));
-
-    setPropertiesData(initialGeneratedData);
+    loadAgentProperties().catch(() => {
+      setPropertiesData([]);
+      showToast('Unable to fetch properties from database', 'Deleted');
+    });
   }, []);
 
   // --- Calculations for Slice Offsets & Pagination ---
@@ -106,20 +179,26 @@ const ManagePropertiesDashboard: React.FC = () => {
     }
   };
 
-  const handleDeleteProperty = (id: string) => {
+  const handleDeleteProperty = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this property?')) {
       const targets = propertiesData.find((p) => p.id === id);
       if (targets) {
         const propName = targets.name;
-        const updatedList = propertiesData.filter((p) => p.id !== id);
-        
-        const nextTotalPages = Math.ceil(updatedList.length / itemsPerPage);
-        if (currentPage > nextTotalPages && nextTotalPages > 0) {
-          setCurrentPage(nextTotalPages);
-        }
+        try {
+          await apiService.properties.remove(id);
+          const updatedList = propertiesData.filter((p) => p.id !== id);
+          const nextTotalPages = Math.ceil(updatedList.length / itemsPerPage);
 
-        setPropertiesData(updatedList);
-        showToast(`Deleted "${propName}" successfully!`, 'Deleted');
+          if (currentPage > nextTotalPages && nextTotalPages > 0) {
+            setCurrentPage(nextTotalPages);
+          }
+
+          setPropertiesData(updatedList);
+          showToast(`Deleted "${propName}" successfully!`, 'Deleted');
+          loadAgentProperties().catch(() => undefined);
+        } catch (_error) {
+          showToast(`Failed to delete "${propName}"`, 'Deleted');
+        }
       }
     }
   };
@@ -127,6 +206,7 @@ const ManagePropertiesDashboard: React.FC = () => {
   // --- Modal Operations Logic ---
   const handleOpenModal = (mode: ModalMode, id: string | null = null) => {
     setModalMode(mode);
+    setSelectedFile(null);
     if (mode === 'add') {
       setFormState({
         id: '',
@@ -144,16 +224,15 @@ const ManagePropertiesDashboard: React.FC = () => {
     } else if (mode === 'edit' && id) {
       const match = propertiesData.find((p) => p.id === id);
       if (match) {
-        const structuralRawPrice = match.price.replace(/[^0-9]/g, '');
         setFormState({
           id: match.id,
           name: match.name,
-          price: structuralRawPrice,
-          desc: '', 
+          price: match.rawPrice || match.price.replace(/[^0-9]/g, ''),
+          desc: match.desc || '',
           location: match.location,
-          bhk: '',
-          sqft: '',
-          aptType: '',
+          bhk: match.bhk || '',
+          sqft: match.sqft || '',
+          aptType: match.aptType || '',
           type: match.type,
           status: match.status,
           fileName: 'Click to upload or drag and drop',
@@ -165,6 +244,7 @@ const ManagePropertiesDashboard: React.FC = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setSelectedFile(null);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -189,49 +269,38 @@ const ManagePropertiesDashboard: React.FC = () => {
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFormState((prev) => ({ ...prev, fileName: `Selected: ${e.target.files![0].name}` }));
+      const file = e.target.files[0];
+      setSelectedFile(file);
+      setFormState((prev) => ({ ...prev, fileName: `Selected: ${file.name}` }));
     }
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const formattedInPrice = '₹' + Number(formState.price).toLocaleString('en-IN');
+    const propertyName = formState.name || 'Property';
+    const formData = buildPropertyFormData(formState, selectedFile);
 
-    if (modalMode === 'add') {
-      const randomizedNewId = `PRP-${Math.floor(Math.random() * 9000) + 1000}`;
-      const newRecord: PropertyItem = {
-        id: randomizedNewId,
-        name: formState.name,
-        type: formState.type,
-        location: formState.location || 'N/A',
-        price: formattedInPrice,
-        status: (formState.status as PropertyStatus) || 'Ongoing',
-      };
+    try {
+      if (modalMode === 'add') {
+        await apiService.properties.create(formData);
+        setCurrentPage(1);
+        showToast('New Property added successfully!', 'Success');
+      } else {
+        await apiService.properties.update(formState.id, formData);
+        showToast('Property updated successfully!', 'Edit');
+      }
 
-      setPropertiesData((prev) => [newRecord, ...prev]);
-      setCurrentPage(1);
-      showToast('New Property added successfully!', 'Success');
-    } else {
-      setPropertiesData((prev) =>
-        prev.map((item) => {
-          if (item.id === formState.id) {
-            return {
-              ...item,
-              name: formState.name,
-              type: formState.type,
-              location: formState.location || 'N/A',
-              price: formattedInPrice,
-              status: (formState.status as PropertyStatus) || 'Ongoing',
-            };
-          }
-          return item;
-        })
+      await loadAgentProperties();
+      handleCloseModal();
+    } catch (_error) {
+      showToast(
+        modalMode === 'add'
+          ? `Failed to add "${propertyName}"`
+          : `Failed to update "${propertyName}"`,
+        modalMode === 'add' ? 'Deleted' : 'Edit'
       );
-      showToast('Property updated successfully!', 'Edit');
     }
-
-    handleCloseModal();
   };
 
   return (

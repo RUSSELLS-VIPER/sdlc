@@ -7,6 +7,9 @@ import propertyBoxImg1 from '../../assets/images/agent-dashboard-images/property
 import propertyBoxImg2 from '../../assets/images/agent-dashboard-images/property-box-img-2.png'
 import propertyBoxImg3 from '../../assets/images/agent-dashboard-images/property-box-img-3.png'
 import propertyBoxImg4 from '../../assets/images/agent-dashboard-images/property-box-img-4.png'
+import { apiService } from '../../services/api.service';
+import { useAppSeletor } from '../../services/helper/reduxstore';
+import type { AuthUser } from '../../type/type/auth/auth.type';
 
 // TypeScript Interface for the API structure
 interface Property {
@@ -21,13 +24,97 @@ interface Property {
   sqft: number;
 }
 
+interface AgentDashboardApiProperty {
+  _id: string;
+  title?: string;
+  price?: number;
+  address?: string;
+  bhk?: string;
+  sqft?: string | number;
+  projectStatus?: string;
+  status?: 'Available' | 'Sold' | 'Rented' | string;
+  image?: {
+    data?: {
+      data?: number[];
+    };
+    contentType?: string;
+  };
+}
+
+interface AgentDashboardSummary {
+  dashboardKPIs?: {
+    totalInquiries?: number;
+    propertiesSold?: number;
+    propertiesAvailable?: number;
+    totalInventoryCount?: number;
+  };
+  pieChartData?: {
+    datasets?: number[];
+  };
+  propertiesList?: AgentDashboardApiProperty[];
+}
+
+const fallbackPropertyImages = [propertyBoxImg1, propertyBoxImg2, propertyBoxImg3, propertyBoxImg4];
+const defaultActivities = ["No recent activity available yet."];
+
+const formatPrice = (price?: number) => {
+  if (typeof price !== "number" || Number.isNaN(price)) return "--";
+
+  if (price >= 10000000) {
+    return `${Number((price / 10000000).toFixed(1))}Cr`;
+  }
+
+  if (price >= 100000) {
+    return `${Number((price / 100000).toFixed(1))}L`;
+  }
+
+  return price.toLocaleString("en-IN");
+};
+
+const getPropertyImage = (property: AgentDashboardApiProperty, index: number) => {
+  const bytes = property.image?.data?.data;
+  const contentType = property.image?.contentType;
+
+  if (bytes?.length && contentType) {
+    const binary = bytes.reduce((value, byte) => value + String.fromCharCode(byte), "");
+    return `data:${contentType};base64,${btoa(binary)}`;
+  }
+
+  return fallbackPropertyImages[index % fallbackPropertyImages.length];
+};
+
+const mapApiProperty = (property: AgentDashboardApiProperty, index: number): Property => ({
+  id: property._id,
+  image: getPropertyImage(property, index),
+  title: property.title || "Untitled Property",
+  bhk: property.bhk || "--",
+  location: property.address || "--",
+  availability: property.status === "Sold" ? "SOLD" : "AVAILABLE",
+  status: property.projectStatus || property.status || "--",
+  value: formatPrice(property.price),
+  sqft: Number(property.sqft) || 0,
+});
+
+const getProfileImage = (user: AuthUser | null) => {
+  const profilePic = user?.profilePic;
+
+  if (!profilePic) return agent1;
+  if (typeof profilePic === "string") return profilePic;
+
+  return `data:${profilePic.contentType};base64,${profilePic.data}`;
+};
+
 const AgentDashboard = () => {
+  const currentUser = useAppSeletor((state) => state.auth.user);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalAnimating, setModalAnimating] = useState(false);
   const [currentActivityIndex, setCurrentActivityIndex] = useState(0);
   const [tickerFadeClass, setTickerFadeClass] = useState("fade-in");
   const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 });
   const [toast, setToast] = useState({ visible: false, message: '', type: '' });
+  const [dashboard, setDashboard] = useState<AgentDashboardSummary | null>(null);
+  const [propertiesData, setPropertiesData] = useState<Property[]>([]);
+  const [activities, setActivities] = useState<string[]>(defaultActivities);
 //   const {items} = useAppSeletor((state)=> state.property)
 //   const dispatch = useAppDispatch()
 //   console.log(items)
@@ -37,62 +124,65 @@ const AgentDashboard = () => {
 
 
 
-  const propertiesData: Property[] = [
-    {
-      id: 1,
-      image: propertyBoxImg1,
-      title: "Duplex House",
-      bhk: "2BHK",
-      location: "Barasat, Chapadali More",
-      availability: "AVAILABLE",
-      status: "Ready To Move",
-      value: "45L",
-      sqft: 800
-    },
-    {
-      id: 2,
-      image: propertyBoxImg2,
-      title: "Luxury Apartments",
-      bhk: "3BHK",
-      location: "Barasat, Colony More",
-      availability: "AVAILABLE",
-      status: "Under Construction",
-      value: "50L",
-      sqft: 1200
-    },
-    {
-      id: 2,
-      image: propertyBoxImg3,
-      title: "Luxury Apartments",
-      bhk: "3BHK",
-      location: "Barasat, Colony More",
-      availability: "SOLD",
-      status: "Under Construction",
-      value: "50L",
-      sqft: 1200
-    },
-    {
-      id: 2,
-      image: propertyBoxImg4,
-      title: "Luxury Apartments",
-      bhk: "3BHK",
-      location: "Barasat, Colony More",
-      availability: "SOLD",
-      status: "Under Construction",
-      value: "50L",
-      sqft: 1200
-    }
-  ];
-
-  const activities = [
-    "Rahul Sharma booked a schedule for Sunset View Villa.",
-    "Payment received for Imperial Estate (Token Amount).",
-    "Snehas Roy canceled the site visit for Downtown Office.",
-    "New inquiry received from Ananya Paul for 3BHK Apartment.",
-    "Property 'Green Valley' status updated to Sold.",
-  ];
+  const totalInquiries = dashboard?.dashboardKPIs?.totalInquiries ?? 0;
+  const propertiesSold = dashboard?.dashboardKPIs?.propertiesSold ?? 0;
+  const propertiesAvailable = dashboard?.dashboardKPIs?.propertiesAvailable ?? 0;
+  const totalInventoryCount = dashboard?.dashboardKPIs?.totalInventoryCount ?? propertiesData.length;
+  const conversionRate = totalInquiries > 0 ? Math.round((propertiesSold / totalInquiries) * 100) : 0;
+  const chartTotal = propertiesSold + propertiesAvailable;
+  const soldChartValue = chartTotal > 0 ? Math.round((propertiesSold / chartTotal) * 100) : 0;
+  const availableChartValue = chartTotal > 0 ? 100 - soldChartValue : 0;
+  const availableDashOffset = -soldChartValue;
+  const profileImage = getProfileImage(currentUser);
 
   useEffect(() => {
+    let isMounted = true;
+
+    const loadDashboardSummary = async () => {
+      try {
+        const response = await apiService.agent.getDashboardSummary();
+        const payload = response.data as AgentDashboardSummary;
+        const apiProperties = payload.propertiesList || [];
+        const mappedProperties = apiProperties.map(mapApiProperty);
+        const nextActivities = apiProperties.slice(0, 5).map((property) => {
+          const title = property.title || "Untitled Property";
+          const status = property.status || "Available";
+          return `Property '${title}' is currently marked as ${status}.`;
+        });
+
+        if (!isMounted) return;
+
+        setDashboard(payload);
+        setPropertiesData(mappedProperties);
+        setActivities(nextActivities.length ? nextActivities : defaultActivities);
+        setCurrentActivityIndex(0);
+      } catch (_error) {
+        if (!isMounted) return;
+
+        setDashboard({
+          dashboardKPIs: {
+            totalInquiries: 0,
+            propertiesSold: 0,
+            propertiesAvailable: 0,
+            totalInventoryCount: 0,
+          },
+          propertiesList: [],
+        });
+        setPropertiesData([]);
+        setActivities(defaultActivities);
+      }
+    };
+
+    loadDashboardSummary();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (activities.length <= 1) return;
+
     const interval = setInterval(() => {
       setTickerFadeClass("fade-out");
       setTimeout(() => {
@@ -159,7 +249,7 @@ const AgentDashboard = () => {
               <i className="fas fa-bell"></i>
             </button>
             <img
-              src={agent1}
+              src={profileImage}
               alt="User Profile"
               className="w-9 h-9 md:w-10 md:h-10 rounded-full object-cover border border-gray-200 cursor-pointer ml-1"
             />
@@ -182,7 +272,7 @@ const AgentDashboard = () => {
           <div className="bg-[#2b487c] text-white rounded-2xl p-6 shadow-lg flex justify-between items-center transition-transform hover:-translate-y-1 duration-300">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider mb-2 text-white/90 font-sans">TOTAL INQUIRIES</p>
-              <h3 className="text-4xl font-bold mb-4 font-sans">28</h3>
+              <h3 className="text-4xl font-bold mb-4 font-sans">{totalInquiries}</h3>
               <NavLink to="/inquiry" className="text-sm font-medium underline underline-offset-4 hover:text-gray-300 transition">View Inquiries</NavLink>
             </div>
             <div><i className="far fa-calendar-alt text-[56px] text-white"></i></div>
@@ -191,8 +281,8 @@ const AgentDashboard = () => {
           <div className="bg-[#e29100] text-white rounded-2xl p-6 shadow-lg flex justify-between items-center transition-transform hover:-translate-y-1 duration-300">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider mb-2 text-white/90 font-sans">TOTAL PROPERTY SOLD</p>
-              <h3 className="text-4xl font-bold mb-4 font-sans">15</h3>
-              <p className="text-sm font-medium text-white/95">65% Conversion Rate</p>
+              <h3 className="text-4xl font-bold mb-4 font-sans">{propertiesSold}</h3>
+              <p className="text-sm font-medium text-white/95">{conversionRate}% Conversion Rate</p>
             </div>
             <div><i className="fas fa-history text-[56px] text-white"></i></div>
           </div>
@@ -200,8 +290,8 @@ const AgentDashboard = () => {
           <div className="bg-[#394a6b] text-white rounded-2xl p-6 shadow-lg flex justify-between items-center transition-transform hover:-translate-y-1 duration-300">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider mb-2 text-white/90 font-sans">TOTAL PROPERTY AVAILABLE</p>
-              <h3 className="text-4xl font-bold mb-4 font-sans">8</h3>
-              <NavLink to="#" className="text-sm font-medium underline underline-offset-4 hover:text-gray-300 transition">Manage Listings</NavLink>
+              <h3 className="text-4xl font-bold mb-4 font-sans">{propertiesAvailable}</h3>
+              <NavLink to="/agent/manage-properties" className="text-sm font-medium underline underline-offset-4 hover:text-gray-300 transition">Manage Listings</NavLink>
             </div>
             <div><i className="far fa-heart text-[56px] text-white"></i></div>
           </div>
@@ -213,7 +303,7 @@ const AgentDashboard = () => {
             <div className="p-6 pb-2 shrink-0 border-b border-dashed border-gray-200 mb-2">
               <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold font-serif text-gray-900">My Properties</h2>
-                <span className="bg-[#fef3c7] text-[#92400e] text-xs font-bold px-3 py-1.5 rounded-full">4 Active Listings</span>
+                <span className="bg-[#fef3c7] text-[#92400e] text-xs font-bold px-3 py-1.5 rounded-full">{totalInventoryCount} Active Listings</span>
               </div>
             </div>
 
@@ -273,14 +363,14 @@ const AgentDashboard = () => {
                 <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90 z-10 relative overflow-visible drop-shadow-md">
                   <circle cx="18" cy="18" r="15.91549431" fill="transparent" stroke="#f1f5f9" strokeWidth="4"></circle>
                   <circle
-                    cx="18" cy="18" r="15.91549431" fill="transparent" stroke="#4f46e5" strokeWidth="4" strokeDasharray="63 37" strokeDashoffset="0"
+                    cx="18" cy="18" r="15.91549431" fill="transparent" stroke="#4f46e5" strokeWidth="4" strokeDasharray={`${soldChartValue} ${100 - soldChartValue}`} strokeDashoffset="0"
                     className="transition-all duration-300 cursor-pointer hover:stroke-[5] hover:drop-shadow-lg"
-                    onMouseOver={(e) => showChartTooltip(e, 'Sold', 15, '#4f46e5')} onMouseMove={moveChartTooltip} onMouseOut={hideChartTooltip}
+                    onMouseOver={(e) => showChartTooltip(e, 'Sold', propertiesSold, '#4f46e5')} onMouseMove={moveChartTooltip} onMouseOut={hideChartTooltip}
                   ></circle>
                   <circle
-                    cx="18" cy="18" r="15.91549431" fill="transparent" stroke="#10b981" strokeWidth="4" strokeDasharray="33 67" strokeDashoffset="-65"
+                    cx="18" cy="18" r="15.91549431" fill="transparent" stroke="#10b981" strokeWidth="4" strokeDasharray={`${availableChartValue} ${100 - availableChartValue}`} strokeDashoffset={availableDashOffset}
                     className="transition-all duration-300 cursor-pointer hover:stroke-[5] hover:drop-shadow-lg"
-                    onMouseOver={(e) => showChartTooltip(e, 'Available', 8, '#10b981')} onMouseMove={moveChartTooltip} onMouseOut={hideChartTooltip}
+                    onMouseOver={(e) => showChartTooltip(e, 'Available', propertiesAvailable, '#10b981')} onMouseMove={moveChartTooltip} onMouseOut={hideChartTooltip}
                   ></circle>
                 </svg>
               </div>
@@ -290,14 +380,14 @@ const AgentDashboard = () => {
                     <span className="block w-4 h-4 rounded-full bg-[#10b981] shadow-sm"></span>
                     <span className="text-sm font-bold text-gray-700">Total Property Available</span>
                   </div>
-                  <span className="text-sm font-bold text-gray-900">8 Listings</span>
+                  <span className="text-sm font-bold text-gray-900">{propertiesAvailable} Listings</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span className="block w-4 h-4 rounded-full bg-[#4f46e5] shadow-sm"></span>
                     <span className="text-sm font-bold text-gray-700">Total Property Sold</span>
                   </div>
-                  <span className="text-sm font-bold text-gray-900">15 Listings</span>
+                  <span className="text-sm font-bold text-gray-900">{propertiesSold} Listings</span>
                 </div>
               </div>
             </div>
@@ -360,9 +450,9 @@ const AgentDashboard = () => {
                     <label className="block text-sm font-semibold text-gray-700 mb-1.5">Interested Property <span className="text-red-500">*</span></label>
                     <select required defaultValue="" className="w-full bg-gray-50 border border-gray-200 rounded-xl py-2.5 px-3 text-sm focus:bg-white focus:ring-2 focus:ring-[#161a2b] focus:border-transparent outline-none transition-all cursor-pointer">
                       <option value="" disabled>Select a Property</option>
-                      <option>Sunset View Villa</option>
-                      <option>Imperial Estate</option>
-                      <option>Downtown Office Space</option>
+                      {propertiesData.map((property) => (
+                        <option key={property.id}>{property.title}</option>
+                      ))}
                     </select>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">

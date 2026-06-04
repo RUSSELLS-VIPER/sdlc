@@ -24,5 +24,8 @@ export const apiService = {
         updateProfile: (formData: FormData) => axiosInstance.put(endPoint.users.updateProfile, formData),
         toggleFavorite: (propertyId: string) => axiosInstance.post(endPoint.users.toggleFavorite(propertyId)),
         getFavorites: () => axiosInstance.get(endPoint.users.favorites)
+    },
+    agent: {
+        getDashboardSummary: () => axiosInstance.get(endPoint.agent.dashboardSummary)
     }
 };

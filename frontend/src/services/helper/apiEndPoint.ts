@@ -20,5 +20,8 @@ export const endPoint = {
         profileById: (id: string | undefined) => `/api/users/profile/${id}`,
         updateProfile: "/api/users/profile/update",
         favorites: "/api/users/favorites/my-list"
+    },
+    agent: {
+        dashboardSummary: "/api/agent/dashboard-summary"
     }
 };
