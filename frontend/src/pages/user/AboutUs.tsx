@@ -345,7 +345,7 @@ const AboutUs = () => {
                       style={{
                         color: "#D4AF37",
                         fontWeight: 900,
-                        top: "-2rem" /* This replaces -top-16 and forces it up */
+                        top: "-3rem" /* This replaces -top-16 and forces it up */
                       }}
                     >
                       {year}
