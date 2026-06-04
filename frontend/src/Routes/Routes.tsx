@@ -35,6 +35,10 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 import AgentChats from "../pages/agent/AgentChats";
 import AgentManageProperties from "../pages/agent/AgentManageProperties";
 import AgentCustomerInquiry from "../pages/agent/AgentCustomerInquiry";
+import Chat from "../pages/admin/Chat";
+import Calender from "../pages/admin/Calender";
+import Customer from "../pages/admin/Customer";
+import Revenue from "../pages/admin/Revenue";
 
 const Routes = createBrowserRouter([
   {
@@ -156,6 +160,22 @@ const Routes = createBrowserRouter([
             path: "dashboard",
             element: <AdminDashboard />,
           },
+          {
+            path:"chat",
+            element:<Chat/>
+          },
+          {
+            path:"calender",
+            element:<Calender/>
+          },
+          {
+            path:"customer",
+            element:<Customer/>
+          },
+          {
+            path:"revenue",
+            element:<Revenue/>
+          }
         ],
       },
     ],

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../../layout/User/Navbar";
-import Footer from "../../layout/User/Footer";
+// import Footer from "../../layout/User/Footer";
 
 const TERMS_BG = "/infinity-horizon/assets/images/terms/terms-bg.png";
 

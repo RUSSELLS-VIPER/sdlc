@@ -1,0 +1,136 @@
+
+
+import user1 from "../../assets/images/image/Rectangle 82.png";
+import user2 from "../../assets/images/image/Rectangle 82 (5).png";
+import user3 from "../../assets/images/image/Rectangle 80 (1).png";
+import user4 from "../../assets/images/image/Rectangle 82 (1).png";
+import user5 from "../../assets/images/image/Rectangle 82 (3).png";
+import user6 from "../../assets/images/image/Rectangle 79 (2).png";
+import user7 from "../../assets/images/image/Rectangle 81 (2).png";
+import type { Customer } from "../../type/interface/AdminDashboard/AdminDashboard.interface";
+
+
+
+export const customers: Customer[] = [
+  {
+    id: "CUS 2001",
+    name: "Robert Johnson",
+    image: user1,
+    propertyType: "House",
+    email: "sabuj00@gmail.com",
+    phone: "5645345670",
+    status: "Lost",
+    budget: "Rs.39,7860",
+    registrationDate: "Aug 8,2024",
+  },
+  {
+    id: "CUS 2002",
+    name: "Sarah Williams",
+    image: user2,
+    propertyType: "Office Space",
+    email: "abs123@gmail.com",
+    phone: "9745345670",
+    status: "Negotiation",
+    budget: "Rs 78,7668",
+    registrationDate: "Aug 9,2026",
+  },
+  {
+    id: "CUS 2003",
+    name: "Michael Brown",
+    image: user3,
+    propertyType: "Villa",
+    email: "suraj34@gmail.com",
+    phone: "9445345670",
+    status: "Site visit",
+    budget: "Rs.54,7860",
+    registrationDate: "Sep 7,2020",
+  },
+  {
+    id: "CUS 2004",
+    name: "Emily Davis",
+    image: user4,
+    propertyType: "Commercial",
+    email: "anupaul56@gmail.com",
+    phone: "9745775670",
+    status: "Inquiry",
+    budget: "Rs.44,7860",
+    registrationDate: "Jan 9,2018",
+  },
+  {
+    id: "CUS 2005",
+    name: "James Wilson",
+    image: user1,
+    propertyType: "Commercial",
+    email: "anupaul56@gmail.com",
+    phone: "9745775670",
+    status: "Inquiry",
+    budget: "Rs.44,7860",
+    registrationDate: "Jan 9,2018",
+  },
+  {
+    id: "CUS 2006",
+    name: "Jennifer Martinez",
+    image: user5,
+    propertyType: "Commercial",
+    email: "anupaul56@gmail.com",
+    phone: "9745775670",
+    status: "Inquiry",
+    budget: "Rs.44,7860",
+    registrationDate: "Jan 9,2018",
+  },
+  {
+    id: "CUS 2007",
+    name: "David Anderson",
+    image: user6,
+    propertyType: "Commercial",
+    email: "anupaul56@gmail.com",
+    phone: "9745775670",
+    status: "Inquiry",
+    budget: "Rs.44,7860",
+    registrationDate: "Jan 9,2018",
+  },
+  {
+    id: "CUS 2008",
+    name: "Lisa Taylor",
+    image: user4,
+    propertyType: "Commercial",
+    email: "anupaul56@gmail.com",
+    phone: "9745775670",
+    status: "Inquiry",
+    budget: "Rs.44,7860",
+    registrationDate: "Jan 9,2018",
+  },
+  {
+    id: "CUS 2009",
+    name: "Christopher Gomez",
+    image: user1,
+    propertyType: "Commercial",
+    email: "anupaul56@gmail.com",
+    phone: "9745775670",
+    status: "Inquiry",
+    budget: "Rs.44,7860",
+    registrationDate: "Jan 9,2018",
+  },
+  {
+    id: "CUS 2010",
+    name: "Patricia Garcia",
+    image: user4,
+    propertyType: "Commercial",
+    email: "anupaul56@gmail.com",
+    phone: "9745775670",
+    status: "Inquiry",
+    budget: "Rs.44,7860",
+    registrationDate: "Jan 9,2018",
+  },
+  {
+    id: "CUS 2011",
+    name: "Anu Paul",
+    image: user7,
+    propertyType: "Commercial",
+    email: "anupaul56@gmail.com",
+    phone: "9745775670",
+    status: "Inquiry",
+    budget: "Rs.44,7860",
+    registrationDate: "Jan 9,2018",
+  },
+];
