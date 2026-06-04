@@ -630,10 +630,17 @@ export const CardsSection = () => {
             <h2 className="text-4xl md:text-5xl text-slate-900 mb-5 tracking-tight">
               Our Ongoing Projects
             </h2>
-            <p className="text-slate-800 text-lg mb-10 leading-relaxed max-w-sm">
+            <p className="text-slate-800 text-lg mb-8 leading-relaxed max-w-sm">
               Building tomorrow's is our motto & we have been doing exactly
               that.
             </p>
+
+            <Link
+              to="/ongoingProject"
+              className="inline-block px-8 py-2.5 mb-10 border border-gray-300 rounded-lg text-sm text-[#161d2d] font-medium hover:bg-[#161d2d] hover:text-white transition-all duration-300 w-fit"
+            >
+              View All
+            </Link>
 
             <div className="flex gap-4">
               <button
