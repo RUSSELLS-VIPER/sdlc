@@ -26,6 +26,7 @@ import TextField from "@mui/material/TextField";
 import { toast } from "sonner";
 import type {
   MongoBinaryData,
+  LegacyBufferData,
   ProfileFormData,
   SidebarProps,
 } from "../../type/interface/userDashboard/userDashboard.interface";
@@ -71,6 +72,22 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         const embeddedBase64 = binaryImageData.$binary?.base64;
         if (embeddedBase64) {
           return `data:${contentType};base64,${embeddedBase64}`;
+        }
+      } else if (
+        imageData &&
+        typeof imageData === "object" &&
+        "type" in imageData &&
+        (imageData as LegacyBufferData).type === "Buffer" &&
+        Array.isArray((imageData as LegacyBufferData).data)
+      ) {
+        try {
+          const bufferImageData = imageData as LegacyBufferData;
+          const base64String = btoa(
+            String.fromCharCode(...new Uint8Array(bufferImageData.data))
+          );
+          return `data:${contentType};base64,${base64String}`;
+        } catch (error) {
+          console.error("Error processing buffer-shaped profile picture:", error);
         }
       } else if (Array.isArray(imageData)) {
         try {
