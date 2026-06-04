@@ -1,4 +1,5 @@
 
+import React, { useState, useEffect, useRef } from "react";
 import pvi1 from '../../assets/images/userDashboardImages/pvi1.png'
 import pvi2 from '../../assets/images/userDashboardImages/pvi2.png'
 import pvi3 from '../../assets/images/userDashboardImages/pvi3.png'
@@ -10,9 +11,83 @@ import send from '../../assets/images/userDashboardImages/send.svg'
 import UserVisitIndicatorCard from "../../components/Dashboard/userDashboard/UserVisitIndicatorCard";
 import type { AgentListData, VisitIndicatorData } from "../../type/interface/userDashboard/userDashboard.interface";
 import UserAgentListData from "../../components/Dashboard/userDashboard/UserAgentListData";
-
+import { useAppSeletor } from "../../services/helper/reduxstore";
+import { apiService } from "../../services/api.service";
 
 const MyInquiries = () => {
+    const authState = useAppSeletor((state) => state.auth);
+    const currentUserId = authState.user?.id;
+    const getProfilePicUrl = (pic: any) => {
+        if (!pic) return "https://randomuser.me/api/portraits/thumb/neutral.jpg";
+        if (typeof pic === "string") return pic;
+        return `data:${pic.contentType};base64,${pic.data}`;
+    };
+    const currentUserPic = getProfilePicUrl(authState.user?.profilePic);
+
+    const [contacts, setContacts] = useState<any[]>([]);
+    const [selectedContactId, setSelectedContactId] = useState<string>("");
+    const [searchContactQuery, setSearchContactQuery] = useState<string>("");
+    const [timeline, setTimeline] = useState<Record<string, any[]>>({});
+    const [messageText, setMessageText] = useState<string>("");
+    const [chattingUser, setChattingUser] = useState<any | null>(null);
+
+    const chatBottomRef = useRef<HTMLDivElement | null>(null);
+
+    const fetchContacts = async (query = "") => {
+        try {
+            const res = await apiService.chat.search(query);
+            setContacts(res.data || []);
+        } catch (e) {
+            console.error("Error fetching contacts:", e);
+        }
+    };
+
+    const fetchChatHistory = async (userId: string) => {
+        if (!userId) return;
+        try {
+            const res = await apiService.chat.history(userId);
+            setTimeline(res.data?.timeline || {});
+            setChattingUser(res.data?.userContext || null);
+        } catch (e) {
+            console.error("Error fetching history:", e);
+        }
+    };
+
+    useEffect(() => {
+        fetchContacts(searchContactQuery);
+    }, [searchContactQuery]);
+
+    useEffect(() => {
+        if (!selectedContactId) {
+            setTimeline({});
+            setChattingUser(null);
+            return;
+        }
+        fetchChatHistory(selectedContactId);
+
+        const interval = setInterval(() => {
+            fetchChatHistory(selectedContactId);
+        }, 3000);
+
+        return () => clearInterval(interval);
+    }, [selectedContactId]);
+
+    useEffect(() => {
+        chatBottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [timeline]);
+
+    const handleSendMessage = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedContactId || !messageText.trim()) return;
+        try {
+            const text = messageText.trim();
+            setMessageText("");
+            await apiService.chat.send(selectedContactId, text);
+            await fetchChatHistory(selectedContactId);
+        } catch (e) {
+            console.error("Error sending message:", e);
+        }
+    };
     const agentListData:AgentListData[] = [
     {
       id: 1,
@@ -184,80 +259,146 @@ const MyInquiries = () => {
               style={{
                 backgroundImage: "linear-gradient(to right, #3558A3, #14213D)",
               }}
-              className="lg:col-span-5 rounded-2xl border border-[#1b2a4a]/30 flex flex-col justify-between min-h-[460px]"
+              className="lg:col-span-5 rounded-2xl border border-[#1b2a4a]/30 flex flex-col justify-between min-h-[500px]"
             >
               <div
                 style={{
                   backgroundImage:
                     "linear-gradient(to right, #14213D, #4E638F, #14213D)",
                 }}
-                className="text-xl p-5 rounded-t-2xl font-bold text-white tracking-wide border-b border-white"
+                className="text-xl p-4 rounded-t-2xl font-bold text-white tracking-wide border-b border-white/20 flex flex-col gap-3"
               >
-                <h2> Chat Room</h2>
-              </div>
-              <div className="text-xl p-5 rounded-b-2xl font-bold text-white tracking-wide">
-                <div className="space-y-4 text-xs sm:text-sm">
-                  <div className="flex items-start gap-3">
-                    <img
-                      className="w-8 h-8 rounded-full object-cover border border-white/20"
-                      src={userMyInquiriesCR1}
-                      alt="userMyInquiriesCR1"
-                    />
-                    <div className="flex flex-col gap-1 w-full max-w-[260px]">
-                      <span className="text-xs font-semibold">User</span>
-                      <div className="bg-emerald-100 text-slate-800 p-3 rounded-2xl rounded-tl-none font-medium leading-relaxed">
-                        Hello, I am Arijit looking for a flat
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3 justify-end">
-                    <div className="flex flex-col gap-1 w-full max-w-[260px] text-right items-end">
-                      <span className="text-xs font-semibold">Agent</span>
-                      <div className="bg-cyan-100 text-slate-800 p-3 rounded-2xl rounded-tr-none font-medium leading-relaxed flex items-center gap-1">
-                        What's ur budget?
-                      </div>
-                    </div>
-                    <img
-                      className="w-8 h-8 rounded-full object-cover border border-white/20"
-                      src={userMyInquiriesCR2}
-                      alt="userMyInquiriesCR2"
-                    />
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <img
-                      className="w-8 h-8 rounded-full object-cover border border-white/20"
-                      src={userMyInquiriesCR3}
-                      alt="userMyInquiriesCR3"
-                    />
-                    <div className="flex flex-col gap-1 w-full max-w-[280px]">
-                      <span className="text-xs font-semibold">User</span>
-                      <div className="bg-emerald-100 text-slate-800 p-3 rounded-2xl rounded-tl-none font-medium leading-relaxed">
-                        My budget is under 50 Lakh and I looking near Kavi Subhas
-                        Metro Station...
-                      </div>
-                    </div>
-                  </div>
+                <div className="flex items-center justify-between">
+                  <h2>Chat Room</h2>
+                  {chattingUser && (
+                    <span className="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-normal">
+                      Active
+                    </span>
+                  )}
                 </div>
 
-                <div className="mt-6 relative flex items-center">
+                {/* Live Search & Selector for Agents/Admins */}
+                <div className="flex flex-col gap-1.5 text-xs font-normal text-slate-300">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Search Agent / Admin..."
+                      value={searchContactQuery}
+                      onChange={(e) => setSearchContactQuery(e.target.value)}
+                      className="w-full bg-slate-950/40 text-white placeholder-slate-400 border border-white/10 rounded-lg py-2 pl-8 pr-3 outline-none focus:border-white/30"
+                    />
+                    <span className="absolute left-2.5 top-2.5 text-slate-400">
+                      <i className="fas fa-search"></i>
+                    </span>
+                  </div>
+
+                  <select
+                    value={selectedContactId}
+                    onChange={(e) => setSelectedContactId(e.target.value)}
+                    className="w-full bg-[#1b2a4a] text-white border border-white/10 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500"
+                  >
+                    <option value="">-- Select Agent / Admin to Chat --</option>
+                    {contacts.map((contact) => (
+                      <option key={contact._id} value={contact._id}>
+                        {contact.name} ({contact.role === "admin" ? "Admin" : "Agent"})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Scrollable Conversation Stream */}
+              <div className="flex-1 flex flex-col p-4 overflow-hidden relative">
+                <div className="flex-1 overflow-y-auto space-y-4 pr-1 h-[280px] text-white">
+                  {!selectedContactId ? (
+                    <div className="h-full flex flex-col items-center justify-center text-center text-slate-300 text-xs sm:text-sm p-4 font-normal leading-relaxed">
+                      <i className="far fa-comments text-3xl mb-2 text-slate-400"></i>
+                      Select an Agent or Admin from the list above to view conversation history.
+                    </div>
+                  ) : Object.keys(timeline).length === 0 ? (
+                    <div className="h-full flex flex-col items-center justify-center text-center text-slate-400 text-xs p-4 font-normal">
+                      No message history found. Start the conversation below!
+                    </div>
+                  ) : (
+                    Object.keys(timeline).map((dateKey) => (
+                      <div key={dateKey} className="space-y-3">
+                        <div className="text-center my-2">
+                          <span className="bg-slate-950/40 text-slate-300 text-[10px] px-2.5 py-0.5 rounded-full font-semibold border border-white/5">
+                            {dateKey}
+                          </span>
+                        </div>
+                        {timeline[dateKey].map((msg: any) => {
+                          const isMe = msg.senderId === currentUserId;
+                          return (
+                            <div
+                              key={msg._id}
+                              className={`flex items-start gap-2.5 ${isMe ? "justify-end" : ""}`}
+                            >
+                              {!isMe && (
+                                <img
+                                  className="w-7 h-7 rounded-full object-cover border border-white/20 shrink-0"
+                                  src={getProfilePicUrl(chattingUser?.profilePic)}
+                                  alt="Avatar"
+                                />
+                              )}
+                              <div
+                                className={`flex flex-col gap-0.5 w-full max-w-[240px] ${
+                                  isMe ? "text-right items-end" : ""
+                                }`}
+                              >
+                                <span className="text-[10px] text-slate-400 font-semibold px-1">
+                                  {isMe ? "Me" : chattingUser?.name}
+                                </span>
+                                <div
+                                  className={`p-3 rounded-2xl text-slate-800 font-medium text-xs sm:text-sm leading-relaxed shadow-sm ${
+                                    isMe
+                                      ? "bg-cyan-100 rounded-tr-none"
+                                      : "bg-emerald-100 rounded-tl-none"
+                                  }`}
+                                >
+                                  {msg.messageText}
+                                  <div className="text-[9px] text-slate-500 mt-1 font-normal text-right">
+                                    {msg.timeLabel}
+                                  </div>
+                                </div>
+                              </div>
+                              {isMe && (
+                                <img
+                                  className="w-7 h-7 rounded-full object-cover border border-white/20 shrink-0"
+                                  src={currentUserPic || "https://randomuser.me/api/portraits/thumb/neutral.jpg"}
+                                  alt="Avatar"
+                                />
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ))
+                  )}
+                  <div ref={chatBottomRef} />
+                </div>
+
+                {/* Bottom Input Area */}
+                <form onSubmit={handleSendMessage} className="mt-4 relative flex items-center shrink-0">
                   <span className="absolute left-4 text-slate-400 text-lg cursor-pointer hover:text-slate-200">
                     <i className="fa-regular fa-face-smile"></i>
                   </span>
                   <input
                     type="text"
-                    placeholder="Message...."
-                    className="w-full bg-white text-slate-800 placeholder-slate-400 text-sm pl-11 pr-12 py-3 rounded-full outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder={selectedContactId ? "Message...." : "Select a contact first"}
+                    disabled={!selectedContactId}
+                    value={messageText}
+                    onChange={(e) => setMessageText(e.target.value)}
+                    className="w-full bg-white text-slate-800 placeholder-slate-400 text-sm pl-11 pr-12 py-3 rounded-full outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-100/50 disabled:cursor-not-allowed"
                   />
-                  <button className="absolute right-4 text-slate-500 hover:text-blue-600 transition-colors flex items-center justify-center">
-                    <img
-                      src={send}
-                      alt="send"
-                      className="w-5 h-5"
-                    />
+                  <button
+                    type="submit"
+                    disabled={!selectedContactId || !messageText.trim()}
+                    className="absolute right-4 text-slate-500 hover:text-blue-600 transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <img src={send} alt="send" className="w-5 h-5" />
                   </button>
-                </div>
+                </form>
               </div>
             </div>
           </div>

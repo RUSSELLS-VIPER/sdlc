@@ -27,8 +27,13 @@ export const endPoint = {
     agent: {
         dashboardSummary: "/api/agent/dashboard-summary",
         inquiryLeads: (page = 1, searchName = "") =>
-            `/api/agent/agent/leads?page=${page}${searchName ? `&searchName=${encodeURIComponent(searchName)}` : ""}`,
+            `/api/agent/agent/leads?page=${page}${searchName ? `&search=${encodeURIComponent(searchName)}` : ""}`,
         inquiryAction: (inquiryId: string) => `/api/agent/inquiry/${inquiryId}/action`,
         deleteInquiry: (inquiryId: string) => `/api/agent/inquiry/${inquiryId}`
+    },
+    chat: {
+        search: (search = "") => `/api/users/search-user-to-chat?search=${encodeURIComponent(search)}`,
+        history: (userId: string) => `/api/users/history/${userId}`,
+        send: "/api/users/chat/send"
     }
 };

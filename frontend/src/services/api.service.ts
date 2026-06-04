@@ -43,5 +43,10 @@ export const apiService = {
         updateInquiryAction: (inquiryId: string, action: "approved" | "disapproved") =>
             axiosInstance.patch(endPoint.agent.inquiryAction(inquiryId), { action }),
         deleteInquiry: (inquiryId: string) => axiosInstance.delete(endPoint.agent.deleteInquiry(inquiryId))
+    },
+    chat: {
+        search: (search?: string) => axiosInstance.get(endPoint.chat.search(search)),
+        history: (userId: string) => axiosInstance.get(endPoint.chat.history(userId)),
+        send: (receiverId: string, messageText: string) => axiosInstance.post(endPoint.chat.send, { receiverId, messageText })
     }
 };
