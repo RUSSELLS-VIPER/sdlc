@@ -39,9 +39,12 @@ const Login = () => {
   const onSubmit = async (data: Loginformvalue) => {
     try {
       const response = await dispatch(login(data)).unwrap();
-      if (response.user.role === "admin" || response.user.role === "agent") {
+      if (response.user.role === "admin") {
         toast.success("Successfully Loged in!");
         navigate("/admin/dashboard");
+      } else if (response.user.role === "agent") {
+        toast.success("Successfully Loged in!");
+        navigate("/agent/dashboard");
       } else {
         toast.success("Successfully Loged in!");
         navigate("/");

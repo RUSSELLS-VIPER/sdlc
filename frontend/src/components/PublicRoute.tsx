@@ -5,8 +5,12 @@ const PublicRoute = () => {
   const { token, role } = useAppSeletor((state) => state.auth);
 
   // Already logged in
-  if (token && (role === "admin" || role === "agent")) {
+  if (token && role === "admin") {
     return <Navigate to="/admin/dashboard" replace />;
+  }
+
+  if (token &&  role === "agent") {
+    return <Navigate to="/agent/dashboard" replace />;
   }
 
   if (token && role === "user") {

@@ -11,7 +11,6 @@ import Login from "../pages/auth/Login";
 import Signup from "../pages/auth/Signup";
 import VerifyEmail from "../pages/auth/VerifyEmail";
 import AdminWrapper from "../layout/admin/AdminWrapper";
-import Dashboard from "../pages/admin/Dashboard";
 import PublicRoute from "../components/PublicRoute";
 import AdminRoute from "../components/AdminRoute";
 import Wishlist from "../pages/user/Wishlist";
@@ -29,6 +28,10 @@ import Notification from "../pages/user/Notification";
 import UserProtectedRoute from "../components/UserProtectedRoute";
 import LogedInUserDashboard from "../pages/user/LogedInUserDashboard";
 import Terms from "../pages/user/Terms";
+import AgentRoute from "../components/AgentRoute";
+import AgentWrapper from "../layout/agent/AgentWrapper";
+import AgentDashboard from "../pages/agent/AgentDashboard";
+import AdminDashboard from "../pages/admin/AdminDashboard";
 
 const Routes = createBrowserRouter([
   {
@@ -148,11 +151,27 @@ const Routes = createBrowserRouter([
         children: [
           {
             path: "dashboard",
-            element: <Dashboard />,
+            element: <AdminDashboard />,
           },
         ],
       },
     ],
+  },
+
+  {
+    path: "/agent",
+    element: <AgentRoute />,
+    children: [
+      {
+        element: <AgentWrapper />,
+        children: [
+          {
+            path: "dashboard",
+            element: <AgentDashboard />
+          }
+        ]
+      }
+    ]
   },
   {
     path: "*",
