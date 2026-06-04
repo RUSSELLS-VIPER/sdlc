@@ -51,6 +51,14 @@ export const updateUserProfile = async (req: AuthenticatedRequest, res: Response
 
         const { name, email, city, district, locality, phoneNo } = req.body;
 
+        if (req.file) {
+            console.log("[updateUserProfile] received profile image upload:", {
+                fieldname: req.file.fieldname,
+                mimetype: req.file.mimetype,
+                size: req.file.size
+            });
+        }
+
         if (name) user.name = name;
         if (email) user.email = email;
         if (city) user.city = city;
@@ -78,6 +86,7 @@ export const updateUserProfile = async (req: AuthenticatedRequest, res: Response
                 district: user.district,
                 locality: user.locality,
                 phoneNo: user.phoneNo,
+                profilePic: convertBufferToBase64(user.profilePic)
             }
         });
     } catch (error) {
