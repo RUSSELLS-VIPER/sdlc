@@ -790,11 +790,12 @@ Near metro station, ready to move.</textarea>
       }
 
       const res = await fetch(apiUrl(path), options);
+      const responseText = await res.text();
       let data;
       try {
-        data = await res.json();
+        data = responseText ? JSON.parse(responseText) : null;
       } catch (_e) {
-        data = { raw: await res.text() };
+        data = { raw: responseText };
       }
       writeResponse(data, res.status);
       return { status: res.status, data };

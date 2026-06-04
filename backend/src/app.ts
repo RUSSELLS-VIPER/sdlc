@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import type { CorsOptions } from "cors";
 import fs from "fs";
 import path from "path";
 import dns from "dns";
@@ -35,6 +36,24 @@ if (process.env.DNS_SERVERS) {
 }
 
 const app = express();
+const corsOptions: CorsOptions = {
+  origin: true,
+  credentials: true,
+  methods: ["GET", "OPTIONS", "PATCH", "DELETE", "POST", "PUT"],
+  allowedHeaders: [
+    "Authorization",
+    "Content-Type",
+    "Accept",
+    "Accept-Version",
+    "Content-Length",
+    "Content-MD5",
+    "Date",
+    "X-Api-Version",
+    "X-CSRF-Token",
+    "X-Requested-With"
+  ],
+  maxAge: 86400
+};
 const viewsDir = resolveExistingPath([
   path.join(process.cwd(), "src", "views"),
   path.join(process.cwd(), "api", "src", "views"),
@@ -49,7 +68,7 @@ const assetsDir = resolveExistingPath([
   path.join(__dirname, "..", "api", "public", "assets")
 ]);
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/assets", express.static(assetsDir));

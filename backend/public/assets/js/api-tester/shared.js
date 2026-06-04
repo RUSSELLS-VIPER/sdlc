@@ -333,12 +333,13 @@ export function createApiClient(dom) {
       }
 
       const response = await fetch(apiUrl(path), options);
+      const responseText = await response.text();
       let data;
 
       try {
-        data = await response.json();
+        data = responseText ? JSON.parse(responseText) : null;
       } catch (_error) {
-        data = { raw: await response.text() };
+        data = { raw: responseText };
       }
 
       renderResponse(data, response.status, path);
