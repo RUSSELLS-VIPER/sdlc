@@ -246,6 +246,11 @@ body {
   color: #b45309;
 }
 
+.method-patch {
+  background: rgba(109, 40, 217, 0.1);
+  color: #6d28d9;
+}
+
 .method-delete {
   background: rgba(220, 38, 38, 0.08);
   color: #b91c1c;

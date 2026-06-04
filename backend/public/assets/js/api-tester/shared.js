@@ -4,6 +4,7 @@ const METHOD_TONES = {
   GET: "method-get",
   POST: "method-post",
   PUT: "method-put",
+  PATCH: "method-patch",
   DELETE: "method-delete"
 };
 

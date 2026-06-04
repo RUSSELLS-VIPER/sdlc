@@ -273,7 +273,7 @@ const AgentDashboard = () => {
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider mb-2 text-white/90 font-sans">TOTAL INQUIRIES</p>
               <h3 className="text-4xl font-bold mb-4 font-sans">{totalInquiries}</h3>
-              <NavLink to="/inquiry" className="text-sm font-medium underline underline-offset-4 hover:text-gray-300 transition">View Inquiries</NavLink>
+              <NavLink to="/agent/inquiry" className="text-sm font-medium underline underline-offset-4 hover:text-gray-300 transition">View Inquiries</NavLink>
             </div>
             <div><i className="far fa-calendar-alt text-[56px] text-white"></i></div>
           </div>

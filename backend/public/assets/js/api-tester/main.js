@@ -1,8 +1,11 @@
 import {
   cacheDom,
+  createActionButton,
+  createEndpointCard,
   cacheRootIds,
   createMetricsCard,
-  createSectionHeader
+  createSectionHeader,
+  createApiClient
 } from "./shared.js";
 import { renderAuthSection, getAuthLazyBodies, getAuthActions } from "./auth.js";
 import { renderPropertySection, getPropertyLazyBodies, getPropertyActions } from "./property.js";
@@ -10,7 +13,7 @@ import { renderProfileSection, getProfileLazyBodies, getProfileActions } from ".
 import { renderFavoriteSection, getFavoriteLazyBodies, getFavoriteActions } from "./favorite.js";
 import { renderChatSection, getChatLazyBodies, getChatActions } from "./chat.js";
 import { renderAdminSection, getAdminLazyBodies, getAdminActions } from "./admin.js";
-import { createApiClient } from "./shared.js";
+import { renderInquirySection, getInquiryLazyBodies, getInquiryActions } from "./inquiry.js";
 
 const state = {
   dom: cacheDom([
@@ -34,6 +37,7 @@ const state = {
     "section-users",
     "section-favorites",
     "section-chat",
+    "section-inquiries",
     "section-admin"
   ]),
   sectionBodies: {},
@@ -60,6 +64,24 @@ function renderDashboardSection() {
         <div class="col-xl-3 col-md-6">${createMetricsCard({ id: "metricFavorites", icon: "heart-fill", label: "Favorites", value: "0" })}</div>
         <div class="col-xl-3 col-md-6">${createMetricsCard({ id: "metricApiRequests", icon: "lightning-charge-fill", label: "API Requests", value: "0" })}</div>
       </div>
+      <div class="row g-4 mt-1">
+        <div class="col-lg-6">
+          ${createEndpointCard({
+            method: "GET",
+            path: "GET /api",
+            description: "Simple API status check.",
+            bodyHtml: `<div class="input-stack">${createActionButton({ action: "system.health", label: "Check API Status", variant: "secondary" })}</div>`
+          })}
+        </div>
+        <div class="col-lg-6">
+          ${createEndpointCard({
+            method: "GET",
+            path: "GET /api-docs.json",
+            description: "Fetch the generated Swagger/OpenAPI JSON document.",
+            bodyHtml: `<div class="input-stack">${createActionButton({ action: "system.docs-json", label: "Fetch API Docs JSON", variant: "outline" })}</div>`
+          })}
+        </div>
+      </div>
     `,
     lazyBodies: {}
   };
@@ -72,6 +94,7 @@ const sectionFactories = {
   "section-users": () => ({ html: renderProfileSection(), lazyBodies: getProfileLazyBodies() }),
   "section-favorites": () => ({ html: renderFavoriteSection(), lazyBodies: getFavoriteLazyBodies() }),
   "section-chat": () => ({ html: renderChatSection(), lazyBodies: getChatLazyBodies() }),
+  "section-inquiries": () => ({ html: renderInquirySection(), lazyBodies: getInquiryLazyBodies() }),
   "section-admin": () => ({ html: renderAdminSection(), lazyBodies: getAdminLazyBodies() })
 };
 
@@ -298,11 +321,18 @@ function init() {
   cacheNavButtons();
 
   state.actions = {
+    "system.health": async () => {
+      await api.sendRequest("/api", "GET");
+    },
+    "system.docs-json": async () => {
+      await api.sendRequest("/api-docs.json", "GET");
+    },
     ...getAuthActions(state, api),
     ...getPropertyActions(state, api),
     ...getProfileActions(state, api),
     ...getFavoriteActions(state, api),
     ...getChatActions(state, api),
+    ...getInquiryActions(state, api),
     ...getAdminActions(state, api)
   };
 

@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { apiService } from '../../services/api.service';
+import { getErrorMessage } from '../../services/helper/global.helper';
 
 // --- Type Definitions ---
 export type InquiryStatus = 'Pending' | 'Approved' | 'Disapproved' | 'Deleted';
@@ -19,10 +21,50 @@ export interface ToastConfig {
   visible: boolean;
 }
 
+interface AgentLeadProperty {
+  title?: string;
+}
+
+interface AgentLead {
+  _id: string;
+  name?: string;
+  email?: string;
+  messageText?: string;
+  requestAction?: 'pending' | 'approved' | 'disapproved';
+  propertyId?: AgentLeadProperty | null;
+}
+
+interface AgentLeadResponse {
+  pagination?: {
+    totalLeads?: number;
+    totalPages?: number;
+    currentPage?: number;
+  };
+  leads?: AgentLead[];
+}
+
+const mapRequestActionToStatus = (action?: AgentLead['requestAction']): InquiryStatus => {
+  if (action === 'approved') return 'Approved';
+  if (action === 'disapproved') return 'Disapproved';
+  return 'Pending';
+};
+
+const mapLeadToInquiry = (lead: AgentLead, index: number): CustomerInquiry => ({
+  id: lead._id,
+  img: `https://randomuser.me/api/portraits/${index % 2 === 0 ? 'men' : 'women'}/${30 + (index % 20)}.jpg`,
+  clientName: lead.name || 'Unknown Client',
+  clientEmail: lead.email || 'N/A',
+  customerMessage: lead.messageText || '',
+  propertyName: lead.propertyId?.title || 'Property Deleted',
+  status: mapRequestActionToStatus(lead.requestAction),
+});
+
 const AgentCustomerIquiry: React.FC = () => {
   // --- State Hooks ---
   const [customersData, setCustomersData] = useState<CustomerInquiry[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalResultCount, setTotalResultCount] = useState<number>(0);
+  const [apiTotalPages, setApiTotalPages] = useState<number>(1);
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(null);
   const [toast, setToast] = useState<ToastConfig>({
     message: 'Action Successful',
@@ -33,23 +75,31 @@ const AgentCustomerIquiry: React.FC = () => {
   const itemsPerPage = 16;
 const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // --- Mock Data Initialization (Matches Original Logic) ---
+  const loadCustomerInquiries = async (page = currentPage) => {
+    try {
+      const response = await apiService.agent.getInquiryLeads(page);
+      const payload = response.data as AgentLeadResponse;
+      const leads = payload.leads || [];
+
+      setCustomersData(leads.map((lead, index) => mapLeadToInquiry(lead, index)));
+      setTotalResultCount(payload.pagination?.totalLeads ?? leads.length);
+      setApiTotalPages(Math.max(1, payload.pagination?.totalPages ?? 1));
+      setCurrentPage(payload.pagination?.currentPage ?? page);
+    } catch (error) {
+      const message = getErrorMessage(error);
+
+      setCustomersData([]);
+      setTotalResultCount(0);
+      setApiTotalPages(1);
+      if (message !== 'No inquiry records found on this page slice.') {
+        showToast(message, 'Deleted');
+      }
+    }
+  };
+
+  // --- Database-backed Data Initialization ---
   useEffect(() => {
-    const generatedData: CustomerInquiry[] = Array.from({ length: 32 }, (_, i) => ({
-      id: `CUS ${2001 + i}`,
-      img: `https://randomuser.me/api/portraits/${i % 2 === 0 ? 'men' : 'women'}/${30 + (i % 20)}.jpg`,
-      clientName: `Client Name ${i + 1}`,
-      clientEmail: `client${i + 1}@gmail.com`,
-      customerMessage: `Hello, I want to know more details about this property (ID: ${2001 + i}). Could you arrange a site visit this weekend? Thanks.`,
-      propertyName: [
-        'Sunset Villa',
-        'Downtown Office Space',
-        'Lakeview Apartment',
-        'Commercial Hub',
-      ][i % 4],
-      status: 'Pending',
-    }));
-    setCustomersData(generatedData);
+    loadCustomerInquiries(1);
   }, []);
 
   // --- Click Outside Listener to Close Dropdowns ---
@@ -69,9 +119,9 @@ const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   // --- Pagination Slice Calculators ---
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentItems = activeCustomers.slice(startIndex, endIndex);
-  const totalPages = Math.ceil(activeCustomers.length / itemsPerPage);
+  const endIndex = startIndex + activeCustomers.length;
+  const currentItems = activeCustomers;
+  const totalPages = apiTotalPages;
 
   // --- Helper to Retrieve Dynamic Button Styling Classnames ---
   const getStatusBtnClass = (status: InquiryStatus): string => {
@@ -100,32 +150,43 @@ const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     setOpenDropdownIndex(openDropdownIndex === index ? null : index);
   };
 
-  const selectAction = (e: React.MouseEvent, targetId: string, action: InquiryStatus) => {
+  const selectAction = async (e: React.MouseEvent, targetId: string, action: InquiryStatus) => {
     e.preventDefault();
     e.stopPropagation();
     setOpenDropdownIndex(null);
 
-    setCustomersData((prevData) =>
-      prevData.map((cust) => {
-        if (cust.id === targetId) {
-          showToast(`Status updated to ${action} for ${cust.clientName}`, action);
-          return { ...cust, status: action };
-        }
-        return cust;
-      })
-    );
+    const targetCustomer = customersData.find((cust) => cust.id === targetId);
+    const clientName = targetCustomer?.clientName || 'customer';
+
+    try {
+      if (action === 'Approved') {
+        await apiService.agent.updateInquiryAction(targetId, 'approved');
+      } else if (action === 'Disapproved') {
+        await apiService.agent.updateInquiryAction(targetId, 'disapproved');
+      } else if (action === 'Deleted') {
+        await apiService.agent.deleteInquiry(targetId);
+      } else {
+        showToast(`${clientName} is already pending`, 'Pending');
+        return;
+      }
+
+      showToast(`Status updated to ${action} for ${clientName}`, action);
+      await loadCustomerInquiries(currentPage);
+    } catch (error) {
+      showToast(getErrorMessage(error), action);
+    }
   };
 
-  const changePage = (page: number) => {
+  const changePage = async (page: number) => {
     if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
       setOpenDropdownIndex(null);
+      await loadCustomerInquiries(page);
     }
   };
 
   // Pagination Display Adjustments
-  const displayStart = activeCustomers.length === 0 ? 0 : startIndex + 1;
-  const displayEnd = Math.min(endIndex, activeCustomers.length);
+  const displayStart = totalResultCount === 0 ? 0 : startIndex + 1;
+  const displayEnd = Math.min(startIndex + activeCustomers.length, totalResultCount);
 
   return (
     <>
@@ -181,6 +242,13 @@ const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
                   </tr>
                 </thead>
                 <tbody className="text-gray-600 relative z-0">
+                  {currentItems.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="px-5 py-8 text-center text-gray-500">
+                        No customer inquiries found.
+                      </td>
+                    </tr>
+                  )}
                   {currentItems.map((item, index) => {
                     // Positional layouts mapping matching original JS runtime calculations
                     const actualIndex = startIndex + index;
@@ -298,7 +366,7 @@ const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
             {/* Pagination Controls System Section layout */}
             <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-600 border-t border-gray-100 pt-4">
               <div>
-                Showing {displayStart}-{displayEnd} out of {activeCustomers.length} result
+                Showing {displayStart}-{displayEnd} out of {totalResultCount} result
               </div>
               
               {totalPages > 1 && (

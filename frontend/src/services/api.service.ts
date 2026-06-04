@@ -2,6 +2,13 @@ import { axiosInstance } from "../lib/axiosInstance";
 import { endPoint } from "./helper/apiEndPoint";
 import type { Loginformvalue, signupformvalue } from "../type/interface/auth.interface";
 
+type InquiryPayload = {
+    name?: string;
+    email?: string;
+    phoneNo?: string;
+    messageText: string;
+};
+
 export const apiService = {
     auth: {
         register: (data: signupformvalue) => axiosInstance.post(endPoint.auth.signup, data),
@@ -25,7 +32,16 @@ export const apiService = {
         toggleFavorite: (propertyId: string) => axiosInstance.post(endPoint.users.toggleFavorite(propertyId)),
         getFavorites: () => axiosInstance.get(endPoint.users.favorites)
     },
+    client: {
+        submitPropertyInquiry: (propertyId: string, data: InquiryPayload) =>
+            axiosInstance.post(endPoint.client.propertyInquiry(propertyId), data)
+    },
     agent: {
-        getDashboardSummary: () => axiosInstance.get(endPoint.agent.dashboardSummary)
+        getDashboardSummary: () => axiosInstance.get(endPoint.agent.dashboardSummary),
+        getInquiryLeads: (page?: number, searchName?: string) =>
+            axiosInstance.get(endPoint.agent.inquiryLeads(page, searchName)),
+        updateInquiryAction: (inquiryId: string, action: "approved" | "disapproved") =>
+            axiosInstance.patch(endPoint.agent.inquiryAction(inquiryId), { action }),
+        deleteInquiry: (inquiryId: string) => axiosInstance.delete(endPoint.agent.deleteInquiry(inquiryId))
     }
 };

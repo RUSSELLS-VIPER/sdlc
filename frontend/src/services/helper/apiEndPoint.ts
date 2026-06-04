@@ -21,7 +21,14 @@ export const endPoint = {
         updateProfile: "/api/users/profile/update",
         favorites: "/api/users/favorites/my-list"
     },
+    client: {
+        propertyInquiry: (propertyId: string) => `/api/client/property/${propertyId}/inquiry`
+    },
     agent: {
-        dashboardSummary: "/api/agent/dashboard-summary"
+        dashboardSummary: "/api/agent/dashboard-summary",
+        inquiryLeads: (page = 1, searchName = "") =>
+            `/api/agent/agent/leads?page=${page}${searchName ? `&searchName=${encodeURIComponent(searchName)}` : ""}`,
+        inquiryAction: (inquiryId: string) => `/api/agent/inquiry/${inquiryId}/action`,
+        deleteInquiry: (inquiryId: string) => `/api/agent/inquiry/${inquiryId}`
     }
 };

@@ -1431,7 +1431,7 @@ Near metro station, ready to move.</textarea>
         phoneNo: phoneNoVal || undefined
       };
 
-      const resultResponse = await sendRequest(`/api/inquiries/property/${propId}/inquiry`, "POST", payloadData, true);
+      const resultResponse = await sendRequest(`/api/client/property/${propId}/inquiry`, "POST", payloadData, true);
 
       if (typeof writeResponse === "function") {
         writeResponse(resultResponse.data, resultResponse.status);
