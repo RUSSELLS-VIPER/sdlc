@@ -1,6 +1,8 @@
 
 import { NavLink } from 'react-router-dom';
 import type { AgentSidebarProps } from '../../type/interface/agent/agent-dashboard.interface';
+import logo from '../../assets/images/agent-dashboard-images/logo.png';
+import agent1 from '../../assets/images/agent-dashboard-images/agent-1.jpg'
 
 
 
@@ -15,9 +17,9 @@ const Sidebar:React.FC<AgentSidebarProps> = ({ isOpen, onMenuClose })=> {
       >
         <div className="flex items-center justify-between mb-10">
           <div className="flex items-center w-full justify-center">
-            <NavLink to="/index" className="w-[74px] h-[92px]">
+            <NavLink to="/" className="w-[74px] h-[92px]">
               <img
-                src="assets/images/logo.png"
+                src={logo}
                 alt="Infinity Horizon Logo"
                 className="object-cover"
               />
@@ -34,7 +36,7 @@ const Sidebar:React.FC<AgentSidebarProps> = ({ isOpen, onMenuClose })=> {
 
         <nav className="flex-1 space-y-2 overflow-y-auto hide-scrollbar">
           <NavLink
-            to="/dashboard"
+            to="/agent/dashboard"
             className={({ isActive }) =>
               `flex items-center gap-3.5 px-4 py-3.5 rounded-xl transition-colors font-bold ${
                 isActive ? "bg-white text-[#161a2b] shadow-sm" : "hover:bg-white/10 hover:text-white"
@@ -46,7 +48,7 @@ const Sidebar:React.FC<AgentSidebarProps> = ({ isOpen, onMenuClose })=> {
           </NavLink>
           
           <NavLink
-            to="/inquiry"
+            to="/agent/inquiry"
             className={({ isActive }) =>
               `flex items-center gap-3.5 px-4 py-3.5 rounded-xl transition-colors ${
                 isActive ? "bg-white text-[#161a2b] shadow-sm font-bold" : "hover:bg-white/10 hover:text-white font-medium text-sm"
@@ -58,7 +60,7 @@ const Sidebar:React.FC<AgentSidebarProps> = ({ isOpen, onMenuClose })=> {
           </NavLink>
           
           <NavLink
-            to="/manage-properties"
+            to="/agent/manage-properties"
             className={({ isActive }) =>
               `flex items-center gap-3.5 px-4 py-3.5 rounded-xl transition-colors ${
                 isActive ? "bg-white text-[#161a2b] shadow-sm font-bold" : "hover:bg-white/10 hover:text-white font-medium text-sm"
@@ -70,7 +72,7 @@ const Sidebar:React.FC<AgentSidebarProps> = ({ isOpen, onMenuClose })=> {
           </NavLink>
           
           <NavLink
-            to="/chats"
+            to="/agent/chats"
             className={({ isActive }) =>
               `flex items-center gap-3.5 px-4 py-3.5 rounded-xl transition-colors ${
                 isActive ? "bg-white text-[#161a2b] shadow-sm font-bold" : "hover:bg-white/10 hover:text-white font-medium text-sm"
@@ -85,7 +87,7 @@ const Sidebar:React.FC<AgentSidebarProps> = ({ isOpen, onMenuClose })=> {
         <div className="mt-6 space-y-4">
           <div className="bg-white p-4 rounded-xl flex items-center gap-3 shadow-md">
             <img
-              src="assets/images/agent-1.jpg"
+              src={agent1}
               alt="Sneha Paul"
               className="w-12 h-12 rounded-xl object-cover"
             />
