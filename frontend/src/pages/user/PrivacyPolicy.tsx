@@ -283,7 +283,7 @@ const renderTextBlock = (block: TextBlock) => (
       <>
         <p className="mb-2 text-[16px] font-semibold">Infinity Horizon</p>
         <p className="mb-2 text-[16px]">Email: info@infinityhorizon.com</p>
-        <p className="mb-2 text-[16px]">Phone: +91 XXXXXXXXXX</p>
+        <p className="mb-2 text-[16px]">Phone: +28352032032-940</p>
         <p className="text-[16px]">Address: Kolkata, West Bengal, India</p>
       </>
     )}

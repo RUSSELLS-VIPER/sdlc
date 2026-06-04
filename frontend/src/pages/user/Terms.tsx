@@ -144,7 +144,7 @@ const Terms: React.FC = () => {
 					<p className="text-[16px] mb-4 leading-relaxed">For any questions, concerns, or requests relating to these Terms & Conditions, please contact:</p>
 					<p className="text-[16px] font-semibold mb-2">Infinity Horizon</p>
 					<p className="text-[16px] mb-2">Email: info@infinityhorizon.com</p>
-					<p className="text-[16px] mb-2">Phone: +91 XXXXXXXXXX</p>
+					<p className="text-[16px] mb-2">Phone: +28352032032-940</p>
 					<p className="text-[16px]">Address: Kolkata, West Bengal, India</p>
 				</section>
 

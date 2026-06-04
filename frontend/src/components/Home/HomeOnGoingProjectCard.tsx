@@ -41,7 +41,7 @@ const HomeOnGoingProjectCard = () => {
                 </p> */}
               </div>
                 <NavLink
-                  to={"/ongoingProject"}
+                  to={`/property/${project._id}`}
                   className="group/btn flex items-center gap-2 text-lg text-white font-medium hover:text-[#f59e0b] transition-colors duration-300 pointer-events-auto cursor-pointer self-start focus:outline-none"
                 >
                   More Details
