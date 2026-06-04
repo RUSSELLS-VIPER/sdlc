@@ -14,6 +14,8 @@ import {
 import { useAppDispatch, useAppSeletor } from "../../services/helper/reduxstore";
 import { getProperties } from "../../store/slices/property.slice";
 import { Helmet } from "react-helmet-async";
+import homeVideo from '../../assets/videos/home-video.mp4'
+import homeMiddle from '../../assets/videos/video-test-2.mp4'
 
 type SearchFieldKey = "propertyType" | "location" | "bhk" | "budget";
 
@@ -309,7 +311,7 @@ const Home = () => {
             className="object-cover w-full h-full"
           >
             <source
-              src="/assets/infinity-home/videos/video-test-1.mp4"
+              src={homeVideo}
               type="video/mp4"
             />
           </video>
@@ -721,7 +723,7 @@ const Home = () => {
             playsInline
           >
             <source
-              src="/assets/infinity-home/videos/video-test-1.mp4"
+              src={homeMiddle}
               type="video/mp4"
             />
           </video>
