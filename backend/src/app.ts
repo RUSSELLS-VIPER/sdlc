@@ -20,6 +20,12 @@ function resolveExistingPath(candidates: string[]) {
   return candidates.find((candidate) => fs.existsSync(candidate)) ?? candidates[0];
 }
 
+function getExternalOrigin(req: Request) {
+  const forwardedProto = String(req.headers["x-forwarded-proto"] ?? "").split(",")[0].trim();
+  const proto = forwardedProto || (req.secure ? "https" : req.protocol);
+  return `${proto}://${req.get("host")}`;
+}
+
 if (process.env.DNS_SERVERS) {
   dns.setServers(
     process.env.DNS_SERVERS.split(",")
@@ -66,13 +72,13 @@ app.use(async (req, _res, next) => {
 
 app.get("/", (req, res) => {
   res.render("api-tester", {
-    baseUrl: `${req.protocol}://${req.get("host")}`
+    baseUrl: getExternalOrigin(req)
   });
 });
 
 app.get("/tester", (req, res) => {
   res.render("api-tester2", {
-    baseUrl: `${req.protocol}://${req.get("host")}`
+    baseUrl: getExternalOrigin(req)
   });
 });
 
