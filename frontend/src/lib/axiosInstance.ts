@@ -25,15 +25,21 @@ const resolveBaseURL = () => {
 
 export const axiosInstance = axios.create({
   baseURL: resolveBaseURL(),
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
+  const isFormData = typeof FormData !== "undefined" && config.data instanceof FormData;
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  if (isFormData) {
+    delete config.headers["Content-Type"];
+  } else {
+    config.headers["Content-Type"] = "application/json";
+  }
+
   return config;
 });
