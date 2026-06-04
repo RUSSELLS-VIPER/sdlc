@@ -13,6 +13,7 @@ import {
 } from "../../components/Home";
 import { useAppDispatch, useAppSeletor } from "../../services/helper/reduxstore";
 import { getProperties } from "../../store/slices/property.slice";
+import { Helmet } from "react-helmet-async";
 
 type SearchFieldKey = "propertyType" | "location" | "bhk" | "budget";
 
@@ -1085,6 +1086,16 @@ const Home = () => {
 
   return (
     <div className="w-full text-white overflow-hidden">
+      <Helmet>
+        <title>Infinity Horizon: Where Every Horizon Leads Home</title>
+        <meta name="description" content="From stylish flats to dream residences, Infinity Horizon offers thoughtfully planned living spaces that redefine comfort and elevate everyday life." />
+        <meta property="og:locale" content="en_IN" />
+        <meta property="og:site_name" content="Infinity Horizon" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Infinity Horizon: Where Every Horizon Leads Home" />
+        <meta property="og:description" content="From stylish flats to dream residences, Infinity Horizon offers thoughtfully planned living spaces that redefine comfort and elevate everyday life." />
+        <meta property="og:url" content="https://sdlc-6d9t.vercel.app/" />
+      </Helmet>
       <Navbar />
       {heroSection}
       <CardsSection />

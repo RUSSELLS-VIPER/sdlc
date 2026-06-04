@@ -4,6 +4,7 @@ import { AgentsSection, TestimonialsSection } from "../../components/Home";
 import "../../styles/infinity-about.css";
 import "../../styles/infinity-cmn.css";
 import "../../styles/infinity-home.css";
+import { Helmet } from "react-helmet-async";
 const centerImage = "/infinity-horizon/assets/images/about-images/zeroIncidentCircle.png";
 const ABOUT_IMG = "/infinity-horizon/assets/images/about-images";
 const img = (name: string) => `${ABOUT_IMG}/${name}`;
@@ -75,6 +76,10 @@ const AboutUs = () => {
 
   return (
     <div className="bg-white text-gray-800 overflow-hidden">
+      <Helmet>
+        <title>Infinity Horizon | Modern Homes & Luxury Apartments</title>
+        <meta name="description" content="Discover Infinity Horizon, offering luxury apartments, modern homes, and premium residential properties designed for stylish and comfortable living" />
+      </Helmet>
       {/* Hero Section Starts */}
       <section
         className="relative w-full bg-cover bg-center bg-no-repeat flex flex-col"

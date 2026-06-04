@@ -2,12 +2,17 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../../layout/User/Navbar";
 import Footer from "../../layout/User/Footer";
+import { Helmet } from "react-helmet-async";
 
 const TERMS_BG = "/infinity-horizon/assets/images/terms/terms-bg.png";
 
 const Terms: React.FC = () => {
 	return (
 		<div className="min-h-screen flex flex-col">
+			<Helmet>
+				<title>Infinity Horizon | Terms & Conditions</title>
+				<meta name="description" content="Read the Terms & Conditions of Infinity Horizon to understand the rules, obligations, and policies governing the use of our website." />
+			</Helmet>
 			<Navbar />
 
 			<div

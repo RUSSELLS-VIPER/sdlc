@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 const PRIVACY_IMAGE_PATH = "/infinity-horizon/assets/images/privacy";
 const privacyImage = (fileName: string) => `${PRIVACY_IMAGE_PATH}/${fileName}`;
@@ -304,6 +305,21 @@ const PrivacyPolicy = () => {
 
   return (
     <div className="bg-white">
+      <Helmet>
+        <title>
+          {isTermsPage
+            ? "Infinity Horizon | Terms & Conditions"
+            : "Infinity Horizon | Privacy Policy & Data Protection"}
+        </title>
+        <meta
+          name="description"
+          content={
+            isTermsPage
+              ? "Read the Terms & Conditions of Infinity Horizon to understand the rules, obligations, and policies governing the use of our website."
+              : "Read the Infinity Horizon Privacy Policy to learn how we collect, use, store, and protect your personal information."
+          }
+        />
+      </Helmet>
       {/* Hero Banner Section */}
       <section
         className="relative flex h-[50vh] min-h-[400px] w-full flex-col bg-cover bg-center bg-no-repeat"

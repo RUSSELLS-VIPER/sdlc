@@ -1,5 +1,6 @@
 import { CalendarDays, User } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 const BLOG_IMAGE_PATH = "/infinity-horizon/assets/images/blog-images";
 const blogImage = (fileName: string) => `${BLOG_IMAGE_PATH}/${fileName}`;
@@ -195,6 +196,10 @@ const blogDetailsPath = (slug: string) => `/blog?article=${slug}`;
 const Blogs = () => {
   return (
     <div className="overflow-hidden bg-white text-neutral-900">
+      <Helmet>
+        <title>Infinity Horizon | Real Estate Tips & Market Updates</title>
+        <meta name="description" content="Discover valuable real estate insights, property tips, and market updates to make smarter investment decisions." />
+      </Helmet>
       {/* Hero Banner Section */}
       <section
         className="relative flex h-[50vh] min-h-[400px] w-full flex-col bg-cover bg-center bg-no-repeat"
