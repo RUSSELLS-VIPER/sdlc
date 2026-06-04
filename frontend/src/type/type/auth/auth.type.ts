@@ -3,7 +3,7 @@ export type AuthUser = {
     name: string;
     email: string;
     role: string;
-    profilePic?: {
+    profilePic?: string | {
         contentType: string;
         data: string
     }

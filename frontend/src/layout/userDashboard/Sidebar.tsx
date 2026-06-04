@@ -59,6 +59,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   // Safe converter logic parsing database buffers into viewable components
   const getAvatarSource = (): string => {
     if (user?.profilePic) {
+      if (typeof user.profilePic === "string") {
+        return user.profilePic;
+      }
+
       const contentType = user.profilePic.contentType;
       const imageData = user.profilePic.data;
 
@@ -153,6 +157,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       const response = await dispatch(updateProfile({data: formData})).unwrap();
       if (response) {
         toast.success(response.message || "Profile updated successfully!");
+        if (response.user?.profilePic) {
+          setImagePreview(response.user.profilePic);
+        }
         setProfileFile(null); // Clear active selected file state reference
         setIsModalOpen(false);
       }
