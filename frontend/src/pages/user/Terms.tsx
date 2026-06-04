@@ -1,13 +1,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../../layout/User/Navbar";
-// import Footer from "../../layout/User/Footer";
 
+import { Helmet } from "react-helmet-async";
 const TERMS_BG = "/infinity-horizon/assets/images/terms/terms-bg.png";
 
 const Terms: React.FC = () => {
 	return (
 		<div className="min-h-screen flex flex-col">
+			<Helmet>
+				<title>Infinity Horizon | Terms & Conditions</title>
+				<meta name="description" content="Read the Terms & Conditions of Infinity Horizon to understand the rules, obligations, and policies governing the use of our website." />
+			</Helmet>
 			<Navbar />
 
 			<div
@@ -139,7 +143,7 @@ const Terms: React.FC = () => {
 					<p className="text-[16px] mb-4 leading-relaxed">For any questions, concerns, or requests relating to these Terms & Conditions, please contact:</p>
 					<p className="text-[16px] font-semibold mb-2">Infinity Horizon</p>
 					<p className="text-[16px] mb-2">Email: info@infinityhorizon.com</p>
-					<p className="text-[16px] mb-2">Phone: +91 XXXXXXXXXX</p>
+					<p className="text-[16px] mb-2">Phone: +28352032032-940</p>
 					<p className="text-[16px]">Address: Kolkata, West Bengal, India</p>
 				</section>
 

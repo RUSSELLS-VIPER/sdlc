@@ -19,7 +19,11 @@ export const endPoint = {
         toggleFavorite: (propertyId: string) => `/api/users/favorites/${propertyId}`,
         profileById: (id: string | undefined) => `/api/users/profile/${id}`,
         updateProfile: "/api/users/profile/update",
-        favorites: "/api/users/favorites/my-list"
+        favorites: "/api/users/favorites/my-list",
+        myNotifications: "/api/users/my-notifications",
+        readNotification: (id: string) => `/api/users/notifications/${id}/read`,
+        readAllNotifications: "/api/users/notifications/read-all",
+        allAgents: "/api/users/agents"
     },
     client: {
         propertyInquiry: (propertyId: string) => `/api/client/property/${propertyId}/inquiry`
@@ -27,8 +31,13 @@ export const endPoint = {
     agent: {
         dashboardSummary: "/api/agent/dashboard-summary",
         inquiryLeads: (page = 1, searchName = "") =>
-            `/api/agent/agent/leads?page=${page}${searchName ? `&searchName=${encodeURIComponent(searchName)}` : ""}`,
+            `/api/agent/agent/leads?page=${page}${searchName ? `&search=${encodeURIComponent(searchName)}` : ""}`,
         inquiryAction: (inquiryId: string) => `/api/agent/inquiry/${inquiryId}/action`,
         deleteInquiry: (inquiryId: string) => `/api/agent/inquiry/${inquiryId}`
+    },
+    chat: {
+        search: (search = "") => `/api/users/search-user-to-chat?search=${encodeURIComponent(search)}`,
+        history: (userId: string) => `/api/users/history/${userId}`,
+        send: "/api/users/chat/send"
     }
 };

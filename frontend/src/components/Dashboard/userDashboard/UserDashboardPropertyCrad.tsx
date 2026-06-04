@@ -39,9 +39,12 @@ if (item?.image) {
 
       if (rawDataArray && rawDataArray.length > 0) {
         try {
-          const base64String = btoa(
-            String.fromCharCode(...new Uint8Array(rawDataArray))
-          );
+          let binary = "";
+          const len = rawDataArray.length;
+          for (let i = 0; i < len; i++) {
+            binary += String.fromCharCode(rawDataArray[i]);
+          }
+          const base64String = btoa(binary);
           processedImgSrc = `data:${contentType};base64,${base64String}`;
         } catch (error) {
           console.error("Error processing binary image buffer:", error);

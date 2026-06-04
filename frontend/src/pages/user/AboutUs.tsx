@@ -4,6 +4,7 @@ import { AgentsSection, TestimonialsSection } from "../../components/Home";
 import "../../styles/infinity-about.css";
 import "../../styles/infinity-cmn.css";
 import "../../styles/infinity-home.css";
+import { Helmet } from "react-helmet-async";
 const centerImage = "/infinity-horizon/assets/images/about-images/zeroIncidentCircle.png";
 const ABOUT_IMG = "/infinity-horizon/assets/images/about-images";
 const img = (name: string) => `${ABOUT_IMG}/${name}`;
@@ -75,6 +76,33 @@ const AboutUs = () => {
 
   return (
     <div className="bg-white text-gray-800 overflow-hidden">
+      <Helmet>
+        <title>Infinity Horizon | Modern Homes & Luxury Apartments</title>
+        <meta name="description" content="Discover Infinity Horizon, offering luxury apartments, modern homes, and premium residential properties designed for stylish and comfortable living" />
+        <link rel="canonical" href="https://sdlc-6d9t.vercel.app/about-us/" />
+        <script type="application/ld+json">{`
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "Infinity Horizon",
+            "url": "https://sdlc-6d9t.vercel.app/",
+            "logo": "https://sdlc-6d9t.vercel.app/assets/logo-D0xJZsRj.png",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "telephone": "+28352032032-940",
+              "contactType": "customer service",
+              "contactOption": "TollFree",
+              "areaServed": "IN",
+              "availableLanguage": "en"
+            },
+            "sameAs": [
+              "https://www.facebook.com/",
+              "https://www.instagram.com/",
+              "https://x.com/"
+            ]
+          }
+        `}</script>
+      </Helmet>
       {/* Hero Section Starts */}
       <section
         className="relative w-full bg-cover bg-center bg-no-repeat flex flex-col"
@@ -317,7 +345,7 @@ const AboutUs = () => {
                       style={{
                         color: "#D4AF37",
                         fontWeight: 900,
-                        top: "-2rem" /* This replaces -top-16 and forces it up */
+                        top: "-3rem" /* This replaces -top-16 and forces it up */
                       }}
                     >
                       {year}

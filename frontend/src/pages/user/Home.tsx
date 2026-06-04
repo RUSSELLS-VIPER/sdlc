@@ -13,6 +13,9 @@ import {
 } from "../../components/Home";
 import { useAppDispatch, useAppSeletor } from "../../services/helper/reduxstore";
 import { getProperties } from "../../store/slices/property.slice";
+import { Helmet } from "react-helmet-async";
+import homeVideo from '../../assets/videos/home-video.mp4'
+import homeMiddle from '../../assets/videos/video-test-2.mp4'
 
 type SearchFieldKey = "propertyType" | "location" | "bhk" | "budget";
 
@@ -308,7 +311,7 @@ const Home = () => {
             className="object-cover w-full h-full"
           >
             <source
-              src="/assets/infinity-home/videos/video-test-1.mp4"
+              src={homeVideo}
               type="video/mp4"
             />
           </video>
@@ -720,7 +723,7 @@ const Home = () => {
             playsInline
           >
             <source
-              src="/assets/infinity-home/videos/video-test-1.mp4"
+              src={homeMiddle}
               type="video/mp4"
             />
           </video>
@@ -736,10 +739,10 @@ const Home = () => {
               ></i>
             </button>
 
-            <h1 className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-[42px] leading-snug md:leading-tight mt-6 md:mt-8 max-w-3xl">
+            <h2 className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-[42px] leading-snug md:leading-tight mt-6 md:mt-8 max-w-3xl">
               Experience Our Professional <br className="hidden sm:block" />
               Real Estate Approach
-            </h1>
+            </h2>
           </div>
         </div>
       </section>
@@ -1085,6 +1088,17 @@ const Home = () => {
 
   return (
     <div className="w-full text-white overflow-hidden">
+      <Helmet>
+        <title>Infinity Horizon: Where Every Horizon Leads Home</title>
+        <meta name="description" content="From stylish flats to dream residences, Infinity Horizon offers thoughtfully planned living spaces that redefine comfort and elevate everyday life." />
+        <meta property="og:locale" content="en_IN" />
+        <meta property="og:site_name" content="Infinity Horizon" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Infinity Horizon: Where Every Horizon Leads Home" />
+        <meta property="og:description" content="From stylish flats to dream residences, Infinity Horizon offers thoughtfully planned living spaces that redefine comfort and elevate everyday life." />
+        <meta property="og:url" content="https://sdlc-6d9t.vercel.app/" />
+        <link rel="canonical" href="https://sdlc-6d9t.vercel.app/" />
+      </Helmet>
       <Navbar />
       {heroSection}
       <CardsSection />

@@ -1,12 +1,19 @@
 import React from "react";
 import type { UserNotificationProps } from "../../../type/interface/userDashboard/userDashboard.interface";
 
-const UserNotificationsData:React.FC<UserNotificationProps> = ({ notification }) => {
+interface ExtendedProps extends UserNotificationProps {
+  onClick?: () => void;
+}
+
+const UserNotificationsData:React.FC<ExtendedProps> = ({ notification, onClick }) => {
   return (
     <>
       <div
         key={notification.id}
-        className="flex items-center justify-between gap-6 p-6 bg-white border-2 border-slate-500/80 rounded-2xl shadow-sm hover:border-slate-500 transition-colors"
+        onClick={onClick}
+        className={`flex items-center justify-between gap-6 p-6 bg-white border-2 border-slate-500/80 rounded-2xl shadow-sm hover:border-slate-500 transition-colors ${
+          onClick ? "cursor-pointer hover:bg-slate-50/50" : ""
+        }`}
       >
         <div className="flex items-center gap-5">
           <div

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { apiService } from '../../services/api.service';
 import { getErrorMessage } from '../../services/helper/global.helper';
+import AgentHeader from '../../layout/agent/AgentHeader';
 
 // --- Type Definitions ---
 export type InquiryStatus = 'Pending' | 'Approved' | 'Disapproved' | 'Deleted';
@@ -195,28 +196,7 @@ const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
         <div className="mx-auto max-w-[1320px] flex flex-col p-4 md:p-6 lg:p-8 min-h-full">
           
           {/* Main Top Breadcrumb Header Content */}
-          <header className="sticky top-0 z-30 bg-[#f4f7f6] py-2 mb-6 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3 min-w-0 flex-1">
-              <h1 className="text-xl md:text-2xl lg:text-3xl font-extrabold text-[#161a2b] truncate">
-                Customer Inquiry
-              </h1>
-            </div>
-
-            <div className="flex items-center gap-2 md:gap-4 bg-white/50 backdrop-blur-sm p-1.5 rounded-full shadow-sm shrink-0">
-              <button className="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300 transition">
-                <i className="fas fa-search"></i>
-              </button>
-
-              <button className="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300 transition relative">
-                <i className="fas fa-bell"></i>
-              </button>
-              <img
-                src="https://randomuser.me/api/portraits/women/30.jpg" /* Replaced original broken asset ref path for local presentation safely */
-                alt="User Profile"
-                className="w-9 h-9 md:w-10 md:h-10 rounded-full object-cover border border-gray-200 cursor-pointer ml-1"
-              />
-            </div>
-          </header>
+          <AgentHeader title="Customer Inquiry" />
 
           <h2 className="text-xl font-bold text-[#161a2b] mb-4 shrink-0">
             List view

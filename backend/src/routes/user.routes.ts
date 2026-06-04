@@ -7,7 +7,10 @@ import {
      searchChatContacts,
     getChatHistory,
     userSendMessage,
-    getMyNotifications
+    getMyNotifications,
+    markNotificationAsRead,
+    markAllNotificationsAsRead,
+    getAllAgents
 } from "../controllers/user.controller";
 
 
@@ -21,6 +24,7 @@ const router = express.Router();
 // Note: Signup/Login are usually handled in an auth.route.ts, 
 // but you can include profile viewing here if public.
 router.get("/profile/:id", getUserProfile);
+router.get("/agents", getAllAgents);
 
 // --- Protected Routes (Requires Login) ---
 
@@ -50,6 +54,8 @@ router.get("/history/:userId", authenticate, authorize(Role.ADMIN, Role.USER, Ro
 router.post("/chat/send", authenticate, authorize(Role.ADMIN, Role.USER, Role.AGENT),userSendMessage);
 
 router.get("/my-notifications", authenticate,authorize(Role.ADMIN, Role.USER, Role.AGENT), getMyNotifications);
+router.patch("/notifications/read-all", authenticate, markAllNotificationsAsRead);
+router.patch("/notifications/:id/read", authenticate, markNotificationAsRead);
 
 
 export default router;

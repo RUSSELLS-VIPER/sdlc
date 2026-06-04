@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import mongoose from "mongoose";
 import User, { Role } from "../models/user.model";
 import Property from "../models/property.model";
@@ -410,8 +410,6 @@ export const userSendMessage = async (req: AuthenticatedRequest, res: Response) 
     }
 };
 
-
-
 export const getMyNotifications = async (req: AuthenticatedRequest, res: Response) => {
     try {
         if (!req.user) {
@@ -431,6 +429,67 @@ export const getMyNotifications = async (req: AuthenticatedRequest, res: Respons
         });
     } catch (error) {
         logError("getMyNotifications", error);
+        return res.status(500).json(toErrorResponse(error));
+    }
+};
+
+export const markNotificationAsRead = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user?.id;
+
+        if (!userId) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const notification = await Notification.findOneAndUpdate(
+            { _id: id, recipientId: userId },
+            { isRead: true },
+            { new: true }
+        );
+
+        if (!notification) {
+            return res.status(404).json({ message: "Notification not found" });
+        }
+
+        return res.status(200).json({ success: true, notification });
+    } catch (error) {
+        logError("markNotificationAsRead", error);
+        return res.status(500).json(toErrorResponse(error));
+    }
+};
+
+export const markAllNotificationsAsRead = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+        const userId = req.user?.id;
+
+        if (!userId) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        await Notification.updateMany(
+            { recipientId: userId, isRead: false },
+            { isRead: true }
+        );
+
+        return res.status(200).json({ success: true, message: "All notifications marked as read" });
+    } catch (error) {
+        logError("markAllNotificationsAsRead", error);
+        return res.status(500).json(toErrorResponse(error));
+    }
+};
+
+export const getAllAgents = async (req: Request, res: Response) => {
+    try {
+        const agents = await User.find({ role: Role.AGENT })
+            .select("name email profilePic locality district city phoneNo");
+
+        return res.status(200).json({
+            success: true,
+            agents
+        });
+    } catch (error) {
+        logError("getAllAgents", error);
         return res.status(500).json(toErrorResponse(error));
     }
 };

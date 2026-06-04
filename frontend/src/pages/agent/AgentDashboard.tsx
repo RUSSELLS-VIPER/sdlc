@@ -1,15 +1,11 @@
 import React, { useState, useEffect, type FormEvent } from 'react';
-import { NavLink } from 'react-router-dom';
-import agent1 from '../../assets/images/agent-dashboard-images/agent-1.jpg'
-// import { useAppDispatch, useAppSeletor } from '../../services/helper/reduxstore';
-// import { getProperties } from '../../store/slices/property.slice';
+import { NavLink, useNavigate } from 'react-router-dom';
 import propertyBoxImg1 from '../../assets/images/agent-dashboard-images/property-box-img-1.png'
 import propertyBoxImg2 from '../../assets/images/agent-dashboard-images/property-box-img-2.png'
 import propertyBoxImg3 from '../../assets/images/agent-dashboard-images/property-box-img-3.png'
 import propertyBoxImg4 from '../../assets/images/agent-dashboard-images/property-box-img-4.png'
 import { apiService } from '../../services/api.service';
-import { useAppSeletor } from '../../services/helper/reduxstore';
-import type { AuthUser } from '../../type/type/auth/auth.type';
+import AgentHeader from '../../layout/agent/AgentHeader';
 
 // TypeScript Interface for the API structure
 interface Property {
@@ -95,17 +91,9 @@ const mapApiProperty = (property: AgentDashboardApiProperty, index: number): Pro
   sqft: Number(property.sqft) || 0,
 });
 
-const getProfileImage = (user: AuthUser | null) => {
-  const profilePic = user?.profilePic;
 
-  if (!profilePic) return agent1;
-  if (typeof profilePic === "string") return profilePic;
-
-  return `data:${profilePic.contentType};base64,${profilePic.data}`;
-};
 
 const AgentDashboard = () => {
-  const currentUser = useAppSeletor((state) => state.auth.user);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalAnimating, setModalAnimating] = useState(false);
   const [currentActivityIndex, setCurrentActivityIndex] = useState(0);
@@ -115,6 +103,7 @@ const AgentDashboard = () => {
   const [dashboard, setDashboard] = useState<AgentDashboardSummary | null>(null);
   const [propertiesData, setPropertiesData] = useState<Property[]>([]);
   const [activities, setActivities] = useState<string[]>(defaultActivities);
+  const navigate = useNavigate()
 //   const {items} = useAppSeletor((state)=> state.property)
 //   const dispatch = useAppDispatch()
 //   console.log(items)
@@ -133,7 +122,6 @@ const AgentDashboard = () => {
   const soldChartValue = chartTotal > 0 ? Math.round((propertiesSold / chartTotal) * 100) : 0;
   const availableChartValue = chartTotal > 0 ? 100 - soldChartValue : 0;
   const availableDashOffset = -soldChartValue;
-  const profileImage = getProfileImage(currentUser);
 
   useEffect(() => {
     let isMounted = true;
@@ -235,26 +223,7 @@ const AgentDashboard = () => {
       <div className="mx-auto max-w-[1320px] flex flex-col p-4 md:p-6 lg:p-8 min-h-full">
         
         {/* Header content dashboard */}
-        <header className="sticky top-0 z-30 bg-[#f4f7f6] py-2 mb-6 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 min-w-0 flex-1">
-            <h1 className="text-xl md:text-2xl lg:text-3xl font-extrabold text-[#161a2b] truncate">
-              Dashboard
-            </h1>
-          </div>
-          <div className="flex items-center gap-2 md:gap-4 bg-white/50 backdrop-blur-sm p-1.5 rounded-full shadow-sm shrink-0">
-            <button className="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300 transition">
-              <i className="fas fa-search"></i>
-            </button>
-            <button className="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300 transition relative">
-              <i className="fas fa-bell"></i>
-            </button>
-            <img
-              src={profileImage}
-              alt="User Profile"
-              className="w-9 h-9 md:w-10 md:h-10 rounded-full object-cover border border-gray-200 cursor-pointer ml-1"
-            />
-          </div>
-        </header>
+        <AgentHeader title="Dashboard" />
 
         {/* Overview Row */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
@@ -341,7 +310,7 @@ const AgentDashboard = () => {
                       </div>
                       <div className="flex justify-between items-center pt-4 border-t border-gray-100">
                         <span className="text-[13px] font-semibold text-gray-600">Sq.FT - {property.sqft}</span>
-                        <button className="bg-[#161a2b] hover:bg-gray-800 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors">Get Quote</button>
+                        <button className="bg-[#161a2b] hover:bg-gray-800 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors" onClick={()=> navigate(`/property/${property.id}`)}>Get Quote</button>
                       </div>
                     </div>
                   </div>

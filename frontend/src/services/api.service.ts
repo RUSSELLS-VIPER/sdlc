@@ -30,7 +30,11 @@ export const apiService = {
         getProfile: (id: string) => axiosInstance.get(endPoint.users.profileById(id)),
         updateProfile: (formData: FormData) => axiosInstance.put(endPoint.users.updateProfile, formData),
         toggleFavorite: (propertyId: string) => axiosInstance.post(endPoint.users.toggleFavorite(propertyId)),
-        getFavorites: () => axiosInstance.get(endPoint.users.favorites)
+        getFavorites: () => axiosInstance.get(endPoint.users.favorites),
+        getMyNotifications: () => axiosInstance.get(endPoint.users.myNotifications),
+        markNotificationAsRead: (id: string) => axiosInstance.patch(endPoint.users.readNotification(id)),
+        markAllNotificationsAsRead: () => axiosInstance.patch(endPoint.users.readAllNotifications),
+        getAllAgents: () => axiosInstance.get(endPoint.users.allAgents)
     },
     client: {
         submitPropertyInquiry: (propertyId: string, data: InquiryPayload) =>
@@ -43,5 +47,10 @@ export const apiService = {
         updateInquiryAction: (inquiryId: string, action: "approved" | "disapproved") =>
             axiosInstance.patch(endPoint.agent.inquiryAction(inquiryId), { action }),
         deleteInquiry: (inquiryId: string) => axiosInstance.delete(endPoint.agent.deleteInquiry(inquiryId))
+    },
+    chat: {
+        search: (search?: string) => axiosInstance.get(endPoint.chat.search(search)),
+        history: (userId: string) => axiosInstance.get(endPoint.chat.history(userId)),
+        send: (receiverId: string, messageText: string) => axiosInstance.post(endPoint.chat.send, { receiverId, messageText })
     }
 };

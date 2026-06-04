@@ -4,9 +4,13 @@ import { toast } from 'sonner';
 import agentprofile from "../../assets/images/property_details/michael.png";
 import { apiService } from '../../services/api.service';
 import { getErrorMessage } from '../../services/helper/global.helper';
+import { useAppSeletor } from '../../services/helper/reduxstore';
 
 const LeftContent: React.FC = () => {
   const { id: propertyId } = useParams<{ id: string }>();
+  const { itemById } = useAppSeletor((state) => state.property);
+  const agent = itemById?.createdBy;
+
   const [formState, setFormState] = useState({
     name: '',
     email: '',
@@ -18,6 +22,55 @@ const LeftContent: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormState((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const arrayBufferToBase64 = (arr: number[]): string => {
+    let binary = "";
+    const len = arr.length;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(arr[i]);
+    }
+    return btoa(binary);
+  };
+
+  const getAvatarSource = (): string => {
+    const profilePic = agent?.profilePic;
+    if (profilePic) {
+      if (typeof profilePic === "string") {
+        return profilePic;
+      }
+
+      const contentType = profilePic.contentType;
+      const imageData = profilePic.data;
+
+      if (imageData && typeof imageData === "object" && "$binary" in imageData) {
+        const embeddedBase64 = (imageData as any).$binary?.base64;
+        if (embeddedBase64) {
+          return `data:${contentType};base64,${embeddedBase64}`;
+        }
+      } else if (
+        imageData &&
+        typeof imageData === "object" &&
+        "type" in imageData &&
+        imageData.type === "Buffer" &&
+        Array.isArray(imageData.data)
+      ) {
+        try {
+          const base64String = arrayBufferToBase64(imageData.data);
+          return `data:${contentType};base64,${base64String}`;
+        } catch (error) {
+          console.error("Error processing buffer-shaped profile picture:", error);
+        }
+      } else if (Array.isArray(imageData)) {
+        try {
+          const base64String = arrayBufferToBase64(imageData);
+          return `data:${contentType};base64,${base64String}`;
+        } catch (error) {
+          console.error("Error processing profile picture buffer:", error);
+        }
+      }
+    }
+    return agentprofile;
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -64,13 +117,19 @@ const LeftContent: React.FC = () => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
         <div className="flex items-center gap-4 mb-5">
           <img
-            src={agentprofile}
+            src={getAvatarSource()}
             alt="Agent Profile"
             className="w-16 h-16 rounded-lg object-cover border border-gray-200"
           />
           <div>
-            <h3 className="font-bold text-gray-900 text-lg">Michael Rutter</h3>
-            <p className="text-sm text-gray-500">Buying Agent</p>
+            <h3 className="font-bold text-gray-900 text-lg">
+              {agent?.name || "Michael Rutter"}
+            </h3>
+            <p className="text-sm text-gray-500">
+              {agent?.role
+                ? agent.role.charAt(0).toUpperCase() + agent.role.slice(1)
+                : "Buying Agent"}
+            </p>
           </div>
         </div>
         <button
