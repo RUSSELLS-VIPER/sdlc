@@ -4,11 +4,11 @@ export const GallerySection = () => (
           <div
             className="container mx-auto w-full max-w-[1320px] px-4 sm:px-8 lg:px-12"
           >
-            <h1
+            <h2
               className="mb-8 text-4xl leading-tight tracking-tight text-[#2a2f35] sm:text-[44px] sm:leading-none md:text-[52px]"
             >
               Projects Gallery
-            </h1>
+            </h2>
             <div
               className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:hidden"
             >

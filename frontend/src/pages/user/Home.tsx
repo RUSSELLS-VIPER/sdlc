@@ -737,10 +737,10 @@ const Home = () => {
               ></i>
             </button>
 
-            <h1 className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-[42px] leading-snug md:leading-tight mt-6 md:mt-8 max-w-3xl">
+            <h2 className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-[42px] leading-snug md:leading-tight mt-6 md:mt-8 max-w-3xl">
               Experience Our Professional <br className="hidden sm:block" />
               Real Estate Approach
-            </h1>
+            </h2>
           </div>
         </div>
       </section>
@@ -1095,6 +1095,7 @@ const Home = () => {
         <meta property="og:title" content="Infinity Horizon: Where Every Horizon Leads Home" />
         <meta property="og:description" content="From stylish flats to dream residences, Infinity Horizon offers thoughtfully planned living spaces that redefine comfort and elevate everyday life." />
         <meta property="og:url" content="https://sdlc-6d9t.vercel.app/" />
+        <link rel="canonical" href="https://sdlc-6d9t.vercel.app/" />
       </Helmet>
       <Navbar />
       {heroSection}

@@ -199,6 +199,7 @@ const Blogs = () => {
       <Helmet>
         <title>Infinity Horizon | Real Estate Tips & Market Updates</title>
         <meta name="description" content="Discover valuable real estate insights, property tips, and market updates to make smarter investment decisions." />
+        <link rel="canonical" href="https://sdlc-6d9t.vercel.app/blog/" />
       </Helmet>
       {/* Hero Banner Section */}
       <section

@@ -79,6 +79,29 @@ const AboutUs = () => {
       <Helmet>
         <title>Infinity Horizon | Modern Homes & Luxury Apartments</title>
         <meta name="description" content="Discover Infinity Horizon, offering luxury apartments, modern homes, and premium residential properties designed for stylish and comfortable living" />
+        <link rel="canonical" href="https://sdlc-6d9t.vercel.app/about-us/" />
+        <script type="application/ld+json">{`
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "Infinity Horizon",
+            "url": "https://sdlc-6d9t.vercel.app/",
+            "logo": "https://sdlc-6d9t.vercel.app/assets/logo-D0xJZsRj.png",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "telephone": "+28352032032-940",
+              "contactType": "customer service",
+              "contactOption": "TollFree",
+              "areaServed": "IN",
+              "availableLanguage": "en"
+            },
+            "sameAs": [
+              "https://www.facebook.com/",
+              "https://www.instagram.com/",
+              "https://x.com/"
+            ]
+          }
+        `}</script>
       </Helmet>
       {/* Hero Section Starts */}
       <section
