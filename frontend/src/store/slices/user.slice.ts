@@ -63,7 +63,7 @@ export const agentById = createAsyncThunk(
   "agent/id",
   async({agentId}:{agentId:string | undefined}, {rejectWithValue} )=>{
     if(!agentId){
-      toast.success("Please Login First")
+      toast.success("Agent id is required")
       return
     }
     try {

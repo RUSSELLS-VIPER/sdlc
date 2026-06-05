@@ -7,10 +7,12 @@ import {
 } from "../../services/helper/reduxstore";
 import { getAgent } from "../../store/slices/user.slice";
 import type { ProfilePic } from "../../type/interface/user/user.interface";
+import { toast } from "sonner";
 
 export const AgentsSection = () => {
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const { agent, loading, error } = useAppSeletor((state) => state.users);
+  const {token, user} = useAppSeletor((state)=> state.auth)
   const dispatch = useAppDispatch();
   const navigate = useNavigate()
   console.log("agent", agent);
@@ -134,7 +136,13 @@ export const AgentsSection = () => {
                 key={agentData._id}
                 className="agent-card group relative flex-shrink-0 w-[200px] sm:w-[270px] lg:w-[320px] h-[300px] sm:h-[400px] lg:h-[450px]"
               >
-                <div onClick={()=> navigate(`/agent/${agentData._id}`)} className="absolute inset-0 overflow-hidden bg-white border border-gray-100 transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] rounded-[120px] group-hover:rounded-[24px] lg:rounded-[160px] lg:group-hover:rounded-[24px]">
+                <div onClick={()=> {
+                  if(!token && !user){
+                    toast.success("Please Login first to see agent details")
+                    return
+                  }
+                  navigate(`/agent/${agentData._id}`)}
+                  } className="absolute inset-0 overflow-hidden bg-white border border-gray-100 transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] rounded-[120px] group-hover:rounded-[24px] lg:rounded-[160px] lg:group-hover:rounded-[24px]">
                   {/* UPDATED IMG TAG HERE */}
                   <img
                     src={getImageSrc(agentData.profilePic)}
