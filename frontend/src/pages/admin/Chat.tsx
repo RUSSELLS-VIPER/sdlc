@@ -9,7 +9,7 @@ import img4 from "../../assets/images/image/Rectangle 82 (6).png";
 import img5 from "../../assets/images/image/Rectangle 82.png";
 import img6 from "../../assets/images/image/logo_us.png";
 import img7 from "../../assets/images/image/logo_us.png";
-import img8 from "../../assets/images/image/Ellipse 3 (1).png";
+// import img8 from "../../assets/images/image/Ellipse 3 (1).png";
 const Chat = () => {
   const users = [
     {
@@ -95,25 +95,7 @@ const Chat = () => {
               </h1>
             </div>
 
-            <div className="flex items-center gap-3 pr-1">
-              <button className="flex h-9 w-9 items-center justify-center rounded-full bg-[#8d92a5] text-white cursor-pointer">
-                <i className="fa-solid fa-magnifying-glass text-[17px]"></i>
-              </button>
-
-              <button className="flex h-9 w-9 items-center justify-center rounded-full bg-[#8d92a5] text-white cursor-pointer">
-                <i className="fa-solid fa-comment-dots text-[17px]"></i>
-              </button>
-
-              <button className="flex h-9 w-9 items-center justify-center rounded-full bg-[#8d92a5] text-white cursor-pointer">
-                <i className="fa-solid fa-bell text-[17px]"></i>
-              </button>
-
-              <img
-                src={img8}
-                alt="Profile"
-                className="h-10 w-10 rounded-full object-cover cursor-pointer"
-              />
-            </div>
+          
           </div>
         </div>
 

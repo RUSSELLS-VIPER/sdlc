@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../../layout/User/Navbar";
 
-import { Helmet } from "react-helmet-async";
+ import { Helmet } from "react-helmet-async";
 const TERMS_BG = "/infinity-horizon/assets/images/terms/terms-bg.png";
 
 const Terms: React.FC = () => {

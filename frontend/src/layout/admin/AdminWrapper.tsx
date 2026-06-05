@@ -13,28 +13,18 @@ import profileImg from "../../assets/images/image/Ellipse 3 (1).png";
 const AdminWrapper = () => {
   const location = useLocation();
 
-  const getTitle = () => {
-    switch (location.pathname) {
-      case "/admin":
-        return "Dashboard";
+ const getTitle = () => {
+  const path = location.pathname;
+   console.log("Current Path:", location.pathname);
 
-      case "/revenue":
-        return "Revenue";
+  if (path.includes("/dashboard")) return "Dashboard";
+  if (path.includes("/chat")) return "Chat";
+  if (path.includes("/calender")) return "Calendar";
+  if (path.includes("/customer")) return "Customer";
+  if (path.includes("/revenue")) return "Revenue";
 
-      case "/customer":
-        return "Customer";
-
-      case "/chat":
-        return "Chat";
-
-      case "/calendar":
-        return "Calendar";
-
-      default:
-        return "Dashboard";
-    }
-  };
-
+  return "Dashboard";
+};
   return (
     <div className="bg-[#eef4fb] min-h-screen">
 
