@@ -3,6 +3,7 @@ import { axiosInstance } from "../../lib/axiosInstance";
 import { endPoint } from "../../services/helper/apiEndPoint";
 import type {PropertyItem } from "../../type/type/property/property";
 import type { InitialUserState } from "../../type/interface/user/user.interface";
+import { toast } from "sonner";
 
 
 
@@ -12,7 +13,8 @@ export const initialState: InitialUserState = {
   loading: false,
   error: null,
   wishList: [],
-  agent: []
+  agent: [],
+  agentId: null
 };
 
 export const toggleLikeUnlike = createAsyncThunk(
@@ -47,6 +49,25 @@ export const getAgent = createAsyncThunk(
   async(_, {rejectWithValue})=> {
     try {
       const response = await axiosInstance.get(endPoint.users.allAgents);
+      return response.data
+      
+    } catch (error) {
+      return rejectWithValue(error)
+      
+    }
+
+  }
+)
+
+export const agentById = createAsyncThunk(
+  "agent/id",
+  async({agentId}:{agentId:string | undefined}, {rejectWithValue} )=>{
+    if(!agentId){
+      toast.success("Please Login First")
+      return
+    }
+    try {
+      const response = await axiosInstance.get(endPoint.users.agentById(agentId))
       return response.data
       
     } catch (error) {
@@ -113,6 +134,20 @@ export const userSlice = createSlice({
         state.agent = action.payload.agents;
       })
       .addCase(getAgent.rejected, (state, action)=>{
+        state.error = action.payload as string || "Failed to fetch agent";
+        state.loading = false
+      })
+      .addCase(agentById.pending, (state)=>{
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(agentById.fulfilled, (state, action)=>{
+        console.log("action agent", action.payload)
+        state.loading = false;
+        state.error = null;
+        state.agentId = action.payload;
+      })
+      .addCase(agentById.rejected, (state, action)=>{
         state.error = action.payload as string || "Failed to fetch agent";
         state.loading = false
       })

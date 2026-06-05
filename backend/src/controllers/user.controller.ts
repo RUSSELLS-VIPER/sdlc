@@ -493,3 +493,37 @@ export const getAllAgents = async (req: Request, res: Response) => {
         return res.status(500).json(toErrorResponse(error));
     }
 };
+
+
+
+export const getAgentProfileWithProperties = async (req: Request, res: Response) => {
+    try {
+        const { agentId } = req.params;
+
+        // 1. Fetch the user profile and confirm they are actually an agent
+        const agentProfile = await User.findOne({ _id: agentId, role: "agent" })
+            .select("-password -tokens -otp"); // Strict projection: hide authentication security credentials
+
+        if (!agentProfile) {
+            return res.status(404).json({ 
+                message: "Agent profile not found or user does not possess agent status credentials." 
+            });
+        }
+
+        // 2. Fetch the complete catalog of properties uploaded by this specific agent
+        const agentProperties = await Property.find({ createdBy: agentId })
+            .sort({ createdAt: -1 }); // Order chronologically: newest listings show first
+
+        // 3. Return unified payload
+        return res.status(200).json({
+            success: true,
+            agent: agentProfile,
+            count: agentProperties.length,
+            properties: agentProperties
+        });
+
+    } catch (error) {
+        logError("getAgentProfileWithProperties", error);
+        return res.status(500).json(toErrorResponse(error));
+    }
+};

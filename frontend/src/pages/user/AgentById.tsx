@@ -1,20 +1,58 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import agentByImage from '../../assets/images/agent-images/agent-bg.png';
-import agentImage from '../../assets/images/agent-images/agent-1.png';
-import image1 from '../../assets/images/agent-images/list-img-1.png';
-import image2 from '../../assets/images/agent-images/list-img-2.png';
-import image3 from '../../assets/images/agent-images/list-img-3.png';
-import image4 from '../../assets/images/agent-images/list-img-1.png';
 import AgentByIdPropertyCard from '../../components/agent/AgentByIdPropertyCard';
 import review1 from '../../assets/images/agent-images/review-1.png';
 import { agentContactschema } from '../../services/validation/agent.valiadtion';
 import type { AgentDataType } from '../../type/type/agent/agent.type';
+import { useEffect } from 'react';
+import { useAppDispatch, useAppSeletor } from '../../services/helper/reduxstore';
+import { agentById } from '../../store/slices/user.slice';
+import type { AgentPic } from '../../type/interface/user/user.interface';
 
 
 
 const AgentById = () => {
+  const {id} = useParams()
+  
+  const dispatch = useAppDispatch()
+  const {agentId} = useAppSeletor((state)=> state.users)
+  console.log("id", id)
+  console.log("agentId", agentId)
+
+  const getImageSrc = (profilePic: AgentPic | undefined): string => {
+      if (!profilePic || !profilePic.data || !profilePic.data.data) {
+        return "/assets/infinity-home/images/index/default-agent.png";
+      }
+  
+      const contentType = profilePic.contentType;
+      const bufferArray = profilePic.data.data;
+  
+      // 1. Convert the number array to a proper Uint8Array
+      const uint8Array = new Uint8Array(bufferArray);
+  
+      // 2. Convert binary chunks safely to string chunks to prevent call stack overflows
+      let binaryString = "";
+      const chunkSize = 8192;
+      for (let i = 0; i < uint8Array.length; i += chunkSize) {
+        binaryString += String.fromCharCode.apply(
+          null,
+          uint8Array.subarray(i, i + chunkSize) as unknown as number[],
+        );
+      }
+  
+      // 3. Turn into base64 string
+      const base64String = btoa(binaryString);
+  
+      return `data:${contentType};base64,${base64String}`;
+    };
+  
+
+  useEffect(()=> {
+    dispatch(agentById({agentId: id}))
+
+  }, [])
   const {
     register,
     handleSubmit,
@@ -37,59 +75,7 @@ const AgentById = () => {
     reset()
   };
 
-  const properties = [
-    {
-      id: 1,
-      category: "residential",
-      imgSrc: image1,
-      title: "Duplex House",
-      location: "BT Road",
-      size: "9580 sq. ft.",
-      price: "₹ 48 Lacs",
-      redirectUrl: "#",
-      badge: {
-        text: "Special Offers",
-        className: "bg-[#FCA311]"
-      }
-    },
-    {
-      id: 2,
-      category: "single-family",
-      imgSrc: image2,
-      title: "Single Family House",
-      location: "Sonarpur",
-      size: "4580 sq. ft.",
-      price: "₹ 38 Lacs",
-      redirectUrl: "#",
-      badge: {
-        text: "Featured",
-        className: "bg-[#1e293b]"
-      }
-    },
-    {
-      id: 3,
-      category: "apartment",
-      imgSrc: image3,
-      title: "Luxury Apartment",
-      location: "Baruipur",
-      size: "1250 sq. ft.",
-      price: "₹ 18 Lacs",
-      redirectUrl: "#",
-      badge: null
-    },
-    {
-      id: 4,
-      category: "apartment",
-      imgSrc: image4,
-      title: "Luxury Apartment",
-      location: "Baruipur",
-      size: "1250 sq. ft.",
-      price: "₹ 18 Lacs",
-      redirectUrl: "#",
-      badge: null
-    }
-  ];
-
+  
   return (
     <>
       <div
@@ -98,6 +84,7 @@ const AgentById = () => {
       >
         <div className="absolute inset-0 bg-black/30"></div>
       </div>
+      
 
       <section className="px-4 md:px-6">
         <div className="container mx-auto">
@@ -105,7 +92,7 @@ const AgentById = () => {
             <div className="flex flex-col lg:flex-row gap-8 lg:gap-10">
               <div className="flex-shrink-0 w-full sm:w-[320px] mx-auto lg:mx-0">
                 <img
-                  src={agentImage}
+                  src={getImageSrc(agentId?.agent?.profilePic)}
                   alt="Jason Malfr"
                   className="w-full h-[320px] object-cover rounded-2xl shadow-sm"
                 />
@@ -122,20 +109,20 @@ const AgentById = () => {
                   <span className="text-gray-500 text-sm ml-1">1 review</span>
                 </div>
                 <span className="text-3xl sm:text-4xl lg:text-[40px] font-bold text-gray-900 leading-tight">
-                  Jason Malfr
+                  {agentId?.agent?.name}
                 </span>
                 <p className="text-gray-500 text-sm mt-1 mb-6">Buying Agent</p>
                 <div className="space-y-2 text-sm text-gray-800 break-words">
                   <p>
                     <span className="font-bold text-gray-900">Primary Phone:</span>
                     <a href="tel:3055559999" className="hover:text-blue-600">
-                      (305) 555-9999
+                      {agentId?.agent?.phoneNo}
                     </a>
                   </p>
                   <p>
                     <span className="font-bold text-gray-900 uppercase">Email:</span>
                     <a href="mailto:Michael@Website.Net" className="hover:text-blue-600">
-                      Michael@Website.Net
+                     {agentId?.agent?.email}
                     </a>
                   </p>
                 </div>
@@ -168,7 +155,7 @@ const AgentById = () => {
                     Whatsapp
                   </button>
                   <button className="w-full sm:w-auto border-2 border-gray-200 text-gray-700 px-4 sm:px-6 py-2.5 rounded-md text-[10px] sm:text-xs font-bold tracking-widest hover:bg-[#facc15] hover:text-[#171E2E] transition text-center">
-                    305 555 9999
+                    {agentId?.agent?.phoneNo}
                   </button>
                 </div>
               </div>
@@ -247,11 +234,11 @@ const AgentById = () => {
                 <div className="space-y-4 sm:space-y-5 text-[12px] sm:text-[13px] text-gray-700 font-medium mb-8 sm:mb-10 break-all sm:break-normal">
                   <div className="flex items-center gap-3 sm:gap-4">
                     <i className="fa-solid fa-phone text-gray-400 text-base sm:text-lg w-5 text-center flex-shrink-0"></i>
-                    <p>305 555 9999</p>
+                    <p>{agentId?.agent?.phoneNo}</p>
                   </div>
                   <div className="flex items-center gap-3 sm:gap-4">
                     <i className="fa-solid fa-envelope text-gray-400 text-base sm:text-lg w-5 text-center flex-shrink-0"></i>
-                    <p>Akshaydutta5454@Gmail.Com</p>
+                    <p>{agentId?.agent?.email}</p>
                   </div>
                   <div className="flex items-center gap-3 sm:gap-4">
                     <i className="fa-solid fa-globe text-gray-400 text-base sm:text-lg w-5 text-center flex-shrink-0"></i>
@@ -259,7 +246,7 @@ const AgentById = () => {
                   </div>
                   <div className="flex items-center gap-3 sm:gap-4">
                     <i className="fa-brands fa-skype text-gray-400 text-base sm:text-lg w-5 text-center flex-shrink-0"></i>
-                    <p>Akshay .Wp</p>
+                    <p>{agentId?.agent?.name} .Wp</p>
                   </div>
                 </div>
 
@@ -377,8 +364,8 @@ const AgentById = () => {
           </div>
 
           <div id="property-slider" className="flex overflow-x-auto gap-4 sm:gap-6 snap-x snap-mandatory hide-scrollbar pb-6 w-full">
-            {properties.map((item) => (
-              <AgentByIdPropertyCard key={item.id} item={item} />
+            {agentId?.properties?.map((item) => (
+              <AgentByIdPropertyCard key={item._id} item={item} />
             ))}
           </div>
 

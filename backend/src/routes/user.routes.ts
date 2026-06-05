@@ -10,7 +10,8 @@ import {
     getMyNotifications,
     markNotificationAsRead,
     markAllNotificationsAsRead,
-    getAllAgents
+    getAllAgents,
+    getAgentProfileWithProperties
 } from "../controllers/user.controller";
 
 
@@ -56,6 +57,7 @@ router.post("/chat/send", authenticate, authorize(Role.ADMIN, Role.USER, Role.AG
 router.get("/my-notifications", authenticate,authorize(Role.ADMIN, Role.USER, Role.AGENT), getMyNotifications);
 router.patch("/notifications/read-all", authenticate, markAllNotificationsAsRead);
 router.patch("/notifications/:id/read", authenticate, markNotificationAsRead);
+router.get("/agent/:agentId/properties", getAgentProfileWithProperties);
 
 
 export default router;

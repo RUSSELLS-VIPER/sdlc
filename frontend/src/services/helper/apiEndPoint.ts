@@ -23,7 +23,8 @@ export const endPoint = {
         myNotifications: "/api/users/my-notifications",
         readNotification: (id: string) => `/api/users/notifications/${id}/read`,
         readAllNotifications: "/api/users/notifications/read-all",
-        allAgents: "/api/users/agents"
+        allAgents: "/api/users/agents",
+        agentById: (agentId:string)=> `/api/users/agent/${agentId}/properties`
     },
     client: {
         propertyInquiry: (propertyId: string) => `/api/client/property/${propertyId}/inquiry`
